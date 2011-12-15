@@ -1,0 +1,386 @@
+#tablesWorkspace {
+	position:absolute;
+	top: 0px;
+	left: 280px;
+/*	width: 850px;*/
+	margin-bottom: 10px;
+	margin-top: 10px;
+	overflow: auto;
+}
+
+#ScrollHeadersPlaceholder table{
+	overflow: auto;
+}
+
+.Worksheet {
+	margin-bottom: 20px;
+	margin-right: 50px;
+/*	display: table;*/
+	display: inline-block;
+	min-width:350px;
+}
+
+.fg-toolbar { 
+	padding: .1em; 
+	margin: 0; 
+}
+.fg-toolbar .fg-buttonset { 
+	margin-right:1.5em; 
+	padding-left: 0.1px; 
+}
+.fg-toolbar .fg-button { 
+	font-size: 1em;  
+}
+
+.nestedTablePager {
+	width: 250px;
+	background-color: #C0C0C0;
+	font-family: Helvetica;
+	font-size: 11px;
+	padding:5px;
+	z-index: 0;
+}
+
+.WorksheetTitleDiv{
+	background-color: #C0C0C0;
+	/*background-image: url("../images/navBG.png");
+	background-repeat: repeat-x;*/
+	color:black;
+}
+
+.nestedTableLastRow img{
+	height : 10px;
+	/*width: 100%;*/
+}
+
+.nestedTableLastRow {
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+	height: 10px;
+}
+
+.tableTitleTextDiv {
+	display: inline-block;
+	font-size: 18px;
+	font-family: arial;
+	font-weight: bold;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.solid1px {
+	border: solid 1px;
+}
+
+.WorksheetOptionsButtonDiv {
+	float: left;
+	/*display: inline-block;*/
+	cursor: pointer;
+    width: 20px;
+    height: 14px;
+    margin-left:4px;
+    margin-top: 5px;
+    margin-right: 4px;
+}
+
+.showHideWorkSheet {
+	float: right;
+	margin-top: 3px;
+}
+
+.minimizeWorksheetImg {
+	height: 20px;
+	width:20px;
+	cursor: pointer;
+}
+
+.TableDiv {
+	background-color: #F5F5F5;
+}
+
+div.ColumnHeadingNameDiv {
+	margin-top: 2px;
+}
+div.semanticTypeDiv {
+	cursor: pointer;
+	font-size: 10px;
+	display:inline-block;
+	width: auto;
+	padding: 2px;
+	margin: 2px;
+}
+div.HighConfidenceLevel {
+	background-color: #525252;
+	color: white;
+}
+
+div.MediumConfidenceLevel {
+	background-color: #525252;
+	color: white;
+}
+
+div.LowConfidenceLevel {
+	background-color: #CD4F39;
+	color: white;
+}
+
+div.HighConfidenceLevel:hover {
+	background-color: #3B3B3B;
+}
+
+div.MediumConfidenceLevel:hover {
+	background-color: #3B3B3B;
+}
+
+div.LowConfidenceLevel:hover {
+	background-color: #8B3626;
+	color: white;
+}
+
+/*#commHistoryAndWorkspace thead tr td {
+	background-color: #7EC0EE;
+	color:black;
+	font-family: Helvetica;
+	font-size: 14px;
+	font-weight: bold;
+	border-left: 2px;
+	border: solid 1px;
+}*/
+
+#commHistoryAndWorkspace td{
+	text-align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+/*	height: 20px;*/
+/*	padding: 3px;*/
+	border-width: 1px;
+}
+
+#commHistoryAndWorkspace div.nestedTableLastRow img {
+	height: 5px;
+	width: 100%;
+	max-width: 80px;
+}
+
+div.editedValue {
+	color: #CD3700;
+	border-color: black;
+}
+.noLineBelow {
+	border: solid 1px;
+	border-bottom: none;
+}
+.noLineAboveAndBelow {
+	border: solid 1px;
+	border-top: none;
+	border-bottom: none;
+}
+#commHistoryAndWorkspace table {
+	border-width: 0px; 
+	border-spacing: 0px; 
+	border-collapse: collapse;
+	border-bottom: solid 1px;
+}
+.table01cell {
+	background-color: #E0EEEE ;
+}
+.table02cell {
+	background-color: #FFE4C4;
+}
+.table03cell {
+	background-color: #AEEEEE;
+}
+.table04cell {
+	background-color: #C1CDCD;
+}
+.table05cell {
+	background-color: #7FFFD4;
+}
+.table06cell {
+	background-color: #FFD39B;
+}
+.table07cell {
+	background-color: #98F5FF;
+}
+.table08cell {
+	background-color: #CDC8B1;
+}
+.table09cell {
+	background-color: #BDB76B;
+}
+.table10cell {
+	background-color: #E6E6FA;
+}
+.topLevelTableCell {
+	background-color: #FFFFFF;
+}
+
+.topLevelpagerOptions {
+	background-color: #D4D4D4;
+	position: relative;
+	font-family: Helvetica;
+	font-size: 11px;
+	padding:5px;
+	top:0px;
+	left:0px;
+}
+
+.prevNextRowsDiv {
+	position:absolute;
+	padding:5px;
+	top:0px;
+	right:0px;
+}
+
+a.pagerResizeLink {
+	color: blue;
+	text-decoration: none;
+}
+
+a.pagerSizeSelected {
+	color:black;
+	text-decoration: none;
+	cursor: default;
+}
+
+.inactiveLink {
+   text-decoration:none;
+   color: #828282;
+   cursor: default;
+}
+
+.activeLink {
+   text-decoration:none;
+   color: blue;
+   cursor: pointer;
+}
+
+.ui-dialog-titlebar {
+        font-family: Verdana,Arial,sans-serif;
+        font-size: 0.6em;
+}
+
+#triangle {
+    border: 1px solid #4C4C4C;
+    border-width: 2px 0 0 2px;
+    width:7px;
+    height:7px;
+    /* for firefox, safari, chrome, etc. */
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform:rotate(45deg);
+    z-index: 0;
+    position: relative;
+    bottom: -4px;
+    margin-left: 80px;
+    background: #4C4C4C;
+}
+
+#tableCellMenutriangle {
+	border: 1px solid #4C4C4C;
+    border-width: 2px 0 0 2px;
+    width:7px;
+    height:7px;
+    /* for firefox, safari, chrome, etc. */
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform:rotate(45deg);
+    z-index: 0;
+    position: relative;
+    bottom: -4px;
+    margin-left: 32px;
+    background: #4C4C4C;
+}
+
+#CellValueDialog {
+	font-size: 12px;
+}
+
+#editCellTextArea {
+	width: 95%;
+	height: 75%;
+	resize: none;
+	font-family: Helvetica;
+	font-size: 12px;
+}
+
+#importDatabaseTableButton {
+	font-size: 26px;
+}
+
+div#ScrollHeadersPlaceholder table {
+	border-width: 0px; 
+	border-spacing: 0px; 
+	border-collapse: collapse;
+	border-bottom: solid 1px;
+}
+
+div#ScrollHeadersPlaceholder table td {
+	text-align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	border-width: 1px;
+}
+
+div#WorksheetOptionsDiv {
+	width: 135px;
+	padding: 4px;
+	background-color: #A3A3A3;
+}
+
+div#WorksheetOptionsDiv button {
+	margin: 2px;
+	width: 130px;
+}
+
+table#CRFSuggestedLabelsTable {
+	border-collapse: collapse;
+}
+
+div#ontologyOptionsTable {
+	font-size: 10px;
+	display: block;
+}
+
+div#ontologyOptionsTable td{
+	padding: 5px;
+}
+
+div#firstColumnTree {
+	overflow: auto;
+	max-height: 245px;
+}
+
+div#secondColumnTree {
+	overflow: auto;
+	max-height: 245px;
+}
+
+table#CRFSuggestedLabelsTable td {
+	padding: 4px;
+	font-size: 10px;
+}
+
+table#UnassignedLabelTable td {
+	padding: 4px;
+	font-size: 10px;
+}
+
+table#AlternativeParentLinksTable td {
+	padding: 4px;
+	font-size: 10px;
+}
+
+span.mediumSizedFont {
+	font-size: 14px;
+}
+
+span.smallSizedFont {
+	font-size: 10px;
+}
+
+
+
+
+
+

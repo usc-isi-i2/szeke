@@ -1,0 +1,77 @@
+#CSVImportDiv {
+	width: 60%;
+}
+
+#CSVImportDiv.button-form {
+	height: 24px;
+	width: 60px;
+}
+
+#CSVImportDiv table {
+	border-width: 0px; 
+	border-spacing: 0px; 
+	border-collapse: collapse;
+}
+
+#CSVImportOptionsTable td {
+	font-family: Helvetica, sans-serif;
+	text-align: left;
+	font-size: 12px;
+	height: 20px;
+	padding: 3px;
+}
+
+#CSVPreviewTable td {
+	font-family: Arial, sans-serif;
+	text-align: left;
+	font-size: 10px;
+	padding: 2px;
+}
+
+#CSVPreviewTable {
+	margin: 5px;
+}
+
+#CSVPreviewTable th {
+	font-family: Arial, sans-serif;
+	text-align: left;
+	font-size: 12px;
+	border-collapse: collapse;
+	border: solid 1px #000000;
+	padding: 2px;
+}
+
+#CSVPreviewTable th.ItalicColumnNames {
+	font-style: italic;
+}
+
+#CSVPreviewTable td {
+	border: 1px solid #000000;
+	border-collapse: collapse;
+}
+
+#CSVPreviewTable td.rowIndexCell {
+	border: 1px dotted #000000;
+	width: 60px;
+	text-align: center;
+}
+
+#CSVImportDiv td.inputElement {
+	text-align: right;
+	padding-left: 20px;
+}
+
+#CSVSourceName {
+	font-family: Helvetica;
+	font-size: 16px;
+}
+
+#importOptionsHeader {
+	font-weight: 700;
+}
+
+#previewTableHeader {
+	padding: 5px;
+	font-size: 14px;
+}
+
