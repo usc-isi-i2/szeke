@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.semantictypes;
 
 import java.util.ArrayList;
@@ -8,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
+import edu.isi.karma.controller.update.SemanticTypesUpdate;
 import edu.isi.karma.util.Jsonizable;
 import edu.isi.karma.util.Util;
 
@@ -35,7 +56,7 @@ public class CRFColumnModel implements Jsonizable {
 		writer.array();
 		for (String label : scoreMap.keySet()) {
 			writer.object();
-			writer.key("type").value(label);
+			writer.key(SemanticTypesUpdate.JsonKeys.FullType.name()).value(label);
 			writer.key("probability").value(scoreMap.get(label));
 			writer.endObject();
 		}
@@ -55,13 +76,15 @@ public class CRFColumnModel implements Jsonizable {
 			
 			// Check if the type contains domain
 			if(label.contains("|")){
-				oj.put("DisplayDomainLabel", SemanticTypeUtil.removeNamespace(label.split("\\|")[0]));
-				oj.put("Domain", label.split("\\|")[0]);
-				oj.put("DisplayLabel", SemanticTypeUtil.removeNamespace(label.split("\\|")[1]));
-				oj.put("Type", label.split("\\|")[1]);
+				oj.put(SemanticTypesUpdate.JsonKeys.DisplayDomainLabel.name(), SemanticTypeUtil.removeNamespace(label.split("\\|")[0]));
+				oj.put(SemanticTypesUpdate.JsonKeys.Domain.name(), label.split("\\|")[0]);
+				oj.put(SemanticTypesUpdate.JsonKeys.DisplayLabel.name(), SemanticTypeUtil.removeNamespace(label.split("\\|")[1]));
+				oj.put(SemanticTypesUpdate.JsonKeys.FullType.name(), label.split("\\|")[1]);
 			} else {
-				oj.put("Type", label);
-				oj.put("DisplayLabel", SemanticTypeUtil.removeNamespace(label));
+				oj.put(SemanticTypesUpdate.JsonKeys.FullType.name(), label);
+				oj.put(SemanticTypesUpdate.JsonKeys.DisplayLabel.name(), SemanticTypeUtil.removeNamespace(label));
+				oj.put(SemanticTypesUpdate.JsonKeys.DisplayDomainLabel.name(), "");
+				oj.put(SemanticTypesUpdate.JsonKeys.Domain.name(), "");
 			}
 			
 			oj.put("Probability", scoreMap.get(label));

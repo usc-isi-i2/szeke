@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.alignment;
 
 import java.util.ArrayList;
@@ -52,7 +72,8 @@ public class SteinerTree {
 				if (g.containsEdge(steinerNodes.get(i), steinerNodes.get(j)))
 					continue;
 				
-				LabeledWeightedEdge e = new LabeledWeightedEdge("e" + String.valueOf(i) + String.valueOf(j));
+				String id = "e" + String.valueOf(i) + String.valueOf(j);
+				LabeledWeightedEdge e = new LabeledWeightedEdge(id, new URI(id, null, null), null);
 				g.addEdge(steinerNodes.get(i), steinerNodes.get(j), e);
 				g.setEdgeWeight(e, path.getCost(steinerNodes.get(j)));
 				
@@ -244,84 +265,84 @@ public class SteinerTree {
 		return this.tree;
 	}
 	
-	public static void main(String[] args) {
-		
-		WeightedMultigraph<Vertex, LabeledWeightedEdge> g = 
-			new WeightedMultigraph<Vertex, LabeledWeightedEdge>(LabeledWeightedEdge.class);
-		
-		LabeledWeightedEdge e1 = new LabeledWeightedEdge("e1");
-		LabeledWeightedEdge e2 = new LabeledWeightedEdge("e2");
-		LabeledWeightedEdge e3 = new LabeledWeightedEdge("e3");
-		LabeledWeightedEdge e4 = new LabeledWeightedEdge("e4");
-		LabeledWeightedEdge e5 = new LabeledWeightedEdge("e5");
-		LabeledWeightedEdge e6 = new LabeledWeightedEdge("e6");
-		LabeledWeightedEdge e7 = new LabeledWeightedEdge("e7");
-		LabeledWeightedEdge e8 = new LabeledWeightedEdge("e8");
-		LabeledWeightedEdge e9 = new LabeledWeightedEdge("e9");
-		LabeledWeightedEdge e10 = new LabeledWeightedEdge("e10");
-		LabeledWeightedEdge e11 = new LabeledWeightedEdge("e11");
-		LabeledWeightedEdge e12 = new LabeledWeightedEdge("e12");
-
-		Vertex v1 = new Vertex("v1");
-		Vertex v2 = new Vertex("v2");
-		Vertex v3 = new Vertex("v3");
-		Vertex v4 = new Vertex("v4");
-		Vertex v5 = new Vertex("v5");
-		Vertex v6 = new Vertex("v6");
-		Vertex v7 = new Vertex("v7");
-		Vertex v8 = new Vertex("v8");
-		Vertex v9 = new Vertex("v9");
-		
-		g.addVertex(v1);
-		g.addVertex(v2);
-		g.addVertex(v3);
-		g.addVertex(v4);
-		g.addVertex(v5);
-		g.addVertex(v6);
-		g.addVertex(v7);
-		g.addVertex(v8);
-		g.addVertex(v9);
-		
-		List<Vertex> steinerNodes = new ArrayList<Vertex>();
-		steinerNodes.add(v1);
-		steinerNodes.add(v2);
-		steinerNodes.add(v3);
-		steinerNodes.add(v4);
-		
-		g.addEdge(v1, v2, e1);
-		g.addEdge(v2, v3, e2);
-		g.addEdge(v3, v4, e3);
-		g.addEdge(v4, v5, e4);
-		g.addEdge(v5, v6, e5);
-		g.addEdge(v6, v7, e6);
-		g.addEdge(v7, v8, e7);
-		g.addEdge(v8, v9, e8);
-		g.addEdge(v9, v1, e9);
-		g.addEdge(v5, v9, e10);
-		g.addEdge(v2, v6, e11);
-		g.addEdge(v3, v5, e12);
-		
-		g.setEdgeWeight(e1, 10.0);
-		g.setEdgeWeight(e2, 8.0);
-		g.setEdgeWeight(e3, 9.0);
-		g.setEdgeWeight(e4, 2.0);
-		g.setEdgeWeight(e5, 1.0);
-		g.setEdgeWeight(e6, 1.1);
-		g.setEdgeWeight(e7, 0.3);
-		g.setEdgeWeight(e8, 0.5);
-		g.setEdgeWeight(e9, 1.0);
-		g.setEdgeWeight(e10, 1.0);
-		g.setEdgeWeight(e11, 1.0);
-		g.setEdgeWeight(e12, 2.0);
-
-		SteinerTree st = new SteinerTree(g, steinerNodes);
-		WeightedMultigraph<Vertex, LabeledWeightedEdge> steiner = st.getSteinerTree();
-		double sum = 0.0;
-		for (LabeledWeightedEdge edge : steiner.edgeSet()) {
-			sum += steiner.getEdgeWeight(edge);
-        }
-		
-		System.out.println("Steiner Cost: " + sum);
-
-	}
+//	public static void main(String[] args) {
+//		
+//		WeightedMultigraph<Vertex, LabeledWeightedEdge> g = 
+//			new WeightedMultigraph<Vertex, LabeledWeightedEdge>(LabeledWeightedEdge.class);
+//		
+//		LabeledWeightedEdge e1 = new LabeledWeightedEdge("e1");
+//		LabeledWeightedEdge e2 = new LabeledWeightedEdge("e2");
+//		LabeledWeightedEdge e3 = new LabeledWeightedEdge("e3");
+//		LabeledWeightedEdge e4 = new LabeledWeightedEdge("e4");
+//		LabeledWeightedEdge e5 = new LabeledWeightedEdge("e5");
+//		LabeledWeightedEdge e6 = new LabeledWeightedEdge("e6");
+//		LabeledWeightedEdge e7 = new LabeledWeightedEdge("e7");
+//		LabeledWeightedEdge e8 = new LabeledWeightedEdge("e8");
+//		LabeledWeightedEdge e9 = new LabeledWeightedEdge("e9");
+//		LabeledWeightedEdge e10 = new LabeledWeightedEdge("e10");
+//		LabeledWeightedEdge e11 = new LabeledWeightedEdge("e11");
+//		LabeledWeightedEdge e12 = new LabeledWeightedEdge("e12");
+//
+//		Vertex v1 = new Vertex("v1");
+//		Vertex v2 = new Vertex("v2");
+//		Vertex v3 = new Vertex("v3");
+//		Vertex v4 = new Vertex("v4");
+//		Vertex v5 = new Vertex("v5");
+//		Vertex v6 = new Vertex("v6");
+//		Vertex v7 = new Vertex("v7");
+//		Vertex v8 = new Vertex("v8");
+//		Vertex v9 = new Vertex("v9");
+//		
+//		g.addVertex(v1);
+//		g.addVertex(v2);
+//		g.addVertex(v3);
+//		g.addVertex(v4);
+//		g.addVertex(v5);
+//		g.addVertex(v6);
+//		g.addVertex(v7);
+//		g.addVertex(v8);
+//		g.addVertex(v9);
+//		
+//		List<Vertex> steinerNodes = new ArrayList<Vertex>();
+//		steinerNodes.add(v1);
+//		steinerNodes.add(v2);
+//		steinerNodes.add(v3);
+//		steinerNodes.add(v4);
+//		
+//		g.addEdge(v1, v2, e1);
+//		g.addEdge(v2, v3, e2);
+//		g.addEdge(v3, v4, e3);
+//		g.addEdge(v4, v5, e4);
+//		g.addEdge(v5, v6, e5);
+//		g.addEdge(v6, v7, e6);
+//		g.addEdge(v7, v8, e7);
+//		g.addEdge(v8, v9, e8);
+//		g.addEdge(v9, v1, e9);
+//		g.addEdge(v5, v9, e10);
+//		g.addEdge(v2, v6, e11);
+//		g.addEdge(v3, v5, e12);
+//		
+//		g.setEdgeWeight(e1, 10.0);
+//		g.setEdgeWeight(e2, 8.0);
+//		g.setEdgeWeight(e3, 9.0);
+//		g.setEdgeWeight(e4, 2.0);
+//		g.setEdgeWeight(e5, 1.0);
+//		g.setEdgeWeight(e6, 1.1);
+//		g.setEdgeWeight(e7, 0.3);
+//		g.setEdgeWeight(e8, 0.5);
+//		g.setEdgeWeight(e9, 1.0);
+//		g.setEdgeWeight(e10, 1.0);
+//		g.setEdgeWeight(e11, 1.0);
+//		g.setEdgeWeight(e12, 2.0);
+//
+//		SteinerTree st = new SteinerTree(g, steinerNodes);
+//		WeightedMultigraph<Vertex, LabeledWeightedEdge> steiner = st.getSteinerTree();
+//		double sum = 0.0;
+//		for (LabeledWeightedEdge edge : steiner.edgeSet()) {
+//			sum += steiner.getEdgeWeight(edge);
+//        }
+//		
+//		System.out.println("Steiner Cost: " + sum);
+//
+//	}
 }

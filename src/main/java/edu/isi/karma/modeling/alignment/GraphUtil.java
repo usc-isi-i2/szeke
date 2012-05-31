@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.alignment;
 
 import org.jgrapht.DirectedGraph;
@@ -33,8 +53,8 @@ public class GraphUtil {
     	System.out.print("(");
     	System.out.print( vertex.getLocalID());
 //    	System.out.print( vertex.getID());
-//    	System.out.print(", ");
-//    	System.out.print(vertex.getLabel());
+    	System.out.print(", ");
+    	System.out.print(vertex.getUriString());
     	System.out.print(", ");
     	System.out.print(getNodeTypeString(vertex));
     	System.out.print(")");
@@ -45,11 +65,11 @@ public class GraphUtil {
 		// FIXME
 		if (edge.isInverse()) {
 			System.out.print( "inverseOf(" + edge.getLocalID() + ")" );
-		}
-    	System.out.print( edge.getLocalID());
+		} else 
+			System.out.print( edge.getLocalID());
 //    	System.out.print( edge.getID());
-//    	System.out.print(", ");
-//    	System.out.print(edge.getLabel());
+    	System.out.print(", ");
+    	System.out.print(edge.getUriString());
     	System.out.print(", ");
     	System.out.print(getLinkTypeString(edge));
     	System.out.print(", ");
@@ -98,9 +118,19 @@ public class GraphUtil {
 //        }
     	System.out.println("*** Graph ***");
 		for (LabeledWeightedEdge edge : graph.edgeSet()) {
-			System.out.print(edge.getSource().getLocalLabel());
-			System.out.print(" -> ");
-			System.out.print(edge.getTarget().getLocalLabel());
+			System.out.print("(");
+			System.out.print(edge.getSource().getLocalID());
+			System.out.print(")");
+			System.out.print(" - ");
+			System.out.print("(");
+			if (edge.isInverse())
+				System.out.print("invOf:");
+			System.out.print(edge.getLocalID());
+			System.out.print(")");
+			System.out.print(" - ");
+			System.out.print("(");
+			System.out.print(edge.getTarget().getLocalID());
+			System.out.print(")");
 			System.out.println();
         }
 		System.out.println("------------------------------------------");

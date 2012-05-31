@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.controller.command.alignment;
 
 import java.util.ArrayList;
@@ -7,20 +27,19 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 
 import edu.isi.karma.controller.command.Command;
 import edu.isi.karma.controller.command.CommandException;
-import edu.isi.karma.controller.update.AlignmentHeadersUpdate;
+import edu.isi.karma.controller.update.SVGAlignmentUpdate_ForceKarmaLayout;
 import edu.isi.karma.controller.update.SemanticTypesUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
-import edu.isi.karma.modeling.alignment.GraphUtil;
 import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.Vertex;
-import edu.isi.karma.rep.HNode;
+import edu.isi.karma.rdf.WorksheetRDFGenerator;
 import edu.isi.karma.rep.HNodePath;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.view.VWorksheet;
 import edu.isi.karma.view.VWorkspace;
-import edu.isi.karma.view.alignmentHeadings.AlignmentForest;
+import edu.isi.karma.webserver.KarmaException;
 
 public class AddUserLinkToAlignmentCommand extends Command {
 
@@ -89,29 +108,25 @@ public class AddUserLinkToAlignmentCommand extends Command {
 		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree = alignment
 				.getSteinerTree();
 		Vertex root = alignment.GetTreeRoot();
-
-		List<HNode> sortedHeaders = worksheet.getHeaders().getSortedHNodes();
-		// Convert the tree into a AlignmentForest
-		AlignmentForest forest = AlignmentForest.constructFromSteinerTree(tree,
-				root, sortedHeaders);
-		AlignmentHeadersUpdate alignmentUpdate = new AlignmentHeadersUpdate(
-				forest, vWorksheetId, alignmentId);
-		GraphUtil.printGraph(tree);
 		
-		// Create new vWorksheet using the new header order
-		List<HNodePath> columnPaths = new ArrayList<HNodePath>();
-		for (HNode node : sortedHeaders) {
-			HNodePath path = new HNodePath(node);
-			columnPaths.add(path);
-		}
-		vWorkspace.getViewFactory().updateWorksheet(vWorksheetId, worksheet,
-				columnPaths, vWorkspace);
+		List<String> hNodeIdList = new ArrayList<String>();
 		VWorksheet vw = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId);
+		List<HNodePath> columns = vw.getColumns();
+		for(HNodePath path:columns)
+			hNodeIdList.add(path.getLeaf().getId());
+		
+		SVGAlignmentUpdate_ForceKarmaLayout svgUpdate = new SVGAlignmentUpdate_ForceKarmaLayout(vWorksheetId, alignmentId, tree, root, hNodeIdList);
 
+		//mariam		
+		try{
+			WorksheetRDFGenerator.testRDFGeneration(vWorkspace.getWorkspace(), worksheet, tree, root);
+		}catch(KarmaException e){
+			e.printStackTrace();
+		}
+				
 		UpdateContainer c = new UpdateContainer();
-		c.add(alignmentUpdate);
-		vw.update(c);
 		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId));
+		c.add(svgUpdate);
 		return c;
 	}
 }

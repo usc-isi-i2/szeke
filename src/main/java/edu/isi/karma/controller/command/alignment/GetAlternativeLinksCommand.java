@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.controller.command.alignment;
 
 import java.io.PrintWriter;
@@ -14,7 +34,7 @@ import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
 import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
-import edu.isi.karma.modeling.semantictypes.SemanticTypeUtil;
+import edu.isi.karma.modeling.alignment.Vertex;
 import edu.isi.karma.view.VWorkspace;
 
 public class GetAlternativeLinksCommand extends Command {
@@ -22,7 +42,7 @@ public class GetAlternativeLinksCommand extends Command {
 	private final String alignmentId;
 
 	private enum JsonKeys {
-		updateType, edgeLabel, edgeId, edgeSource, Edges
+		updateType, edgeLabel, edgeId, edgeSource, Edges, selected
 	}
 
 	public String getNodeId() {
@@ -62,6 +82,7 @@ public class GetAlternativeLinksCommand extends Command {
 				alignmentId);
 		final List<LabeledWeightedEdge> edges = alignment.getAlternatives(
 				nodeId, true);
+		final LabeledWeightedEdge currentLink = alignment.getAssignedLink(nodeId); 
 
 		UpdateContainer upd = new UpdateContainer(new AbstractUpdate() {
 			@Override
@@ -73,17 +94,33 @@ public class GetAlternativeLinksCommand extends Command {
 				try {
 					obj.put(JsonKeys.updateType.name(), "GetAlternativeLinks");
 					for (LabeledWeightedEdge edge : edges) {
+						
+						String edgeLabel = "";
+//						if(edge.getPrefix() != null && !edge.getPrefix().equals(""))
+//							edgeLabel = edge.getPrefix() + ":" + edge.getLocalLabel();
+//						else
+							edgeLabel = edge.getLocalLabel();
+						
+						String edgeSourceLabel = "";
+						Vertex edgeSource = edge.getSource();
+//						if(edgeSource.getPrefix() != null && !edgeSource.getPrefix().equals(""))
+//							edgeSourceLabel = edgeSource.getPrefix() + ":" + edgeSource.getLocalLabel();
+//						else
+							edgeSourceLabel = edgeSource.getLocalID();
+						
 						JSONObject edgeObj = new JSONObject();
 						edgeObj.put(JsonKeys.edgeId.name(), edge.getID());
-						edgeObj.put(JsonKeys.edgeLabel.name(), SemanticTypeUtil
-								.removeNamespace(edge.getLabel()));
-						edgeObj.put(JsonKeys.edgeSource.name(),
-								SemanticTypeUtil.removeNamespace(edge
-										.getSource().getLabel()));
+						edgeObj.put(JsonKeys.edgeLabel.name(), edgeLabel);
+						edgeObj.put(JsonKeys.edgeSource.name(),edgeSourceLabel);
+						if(currentLink != null && edge.getID().equals(currentLink.getID()))
+							edgeObj.put(JsonKeys.selected.name(), true);
+						else
+							edgeObj.put(JsonKeys.selected.name(), false);
+
 						edgesArray.put(edgeObj);
 					}
 					obj.put(JsonKeys.Edges.name(), edgesArray);
-					pw.println(obj.toString(4));
+					pw.println(obj.toString());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

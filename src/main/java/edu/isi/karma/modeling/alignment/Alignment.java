@@ -1,6 +1,28 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.alignment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,6 +30,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import edu.isi.karma.modeling.ontology.OntologyManager;
 import edu.isi.karma.rep.semantictypes.SemanticType;
 
 
@@ -16,11 +39,21 @@ public class Alignment {
 
 	static Logger logger = Logger.getLogger(Alignment.class);
 
+	private class SemanticTypeComparator implements Comparator<SemanticType> {
+	    @Override
+	    public int compare(SemanticType o1, SemanticType o2) {
+	    	String s1 = (o1.getDomain() != null?o1.getDomain().getUriString():"") + o1.getType().getUriString();
+	    	String s2 = (o2.getDomain() != null?o2.getDomain().getUriString():"") + o2.getType().getUriString();
+	        return s1.compareTo(s2);
+	    }
+	}
+	
+	private OntologyManager ontologyManager;
+	private boolean separateDomainInstancesForSameDataProperties;
 	private List<SemanticType> semanticTypes;
 	private List<Vertex> semanticNodes;
 
 	private List<LabeledWeightedEdge> linksForcedByUser;
-	private List<LabeledWeightedEdge> linksForcedByDomain;
 	private List<LabeledWeightedEdge> linksPreferredByUI;
 
 	private DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> steinerTree = null;
@@ -28,12 +61,15 @@ public class Alignment {
 	
 	private GraphBuilder graphBuilder;
 	
-	public Alignment(List<SemanticType> semanticTypes) {
+	public Alignment(OntologyManager ontologyManager, List<SemanticType> semanticTypes) {
+		this.ontologyManager = ontologyManager;
+		this.separateDomainInstancesForSameDataProperties = true;
+
 		this.semanticTypes = semanticTypes;
+		Collections.sort(this.semanticTypes, new SemanticTypeComparator());
 
 		logger.info("building initial graph ...");
-		graphBuilder = new GraphBuilder(this.semanticTypes);
-		linksForcedByDomain = graphBuilder.getLinksForcedByDomain();
+		graphBuilder = new GraphBuilder(ontologyManager, this.semanticTypes, separateDomainInstancesForSameDataProperties);
 		
 		linksForcedByUser = new ArrayList<LabeledWeightedEdge>();
 		linksPreferredByUI = new ArrayList<LabeledWeightedEdge>();
@@ -42,16 +78,52 @@ public class Alignment {
 		
 	}
 	
+	public Alignment(OntologyManager ontologyManager, List<SemanticType> semanticTypes, boolean separateDomainInstancesForSameDataProperties) {
+		this.ontologyManager = ontologyManager;
+		this.separateDomainInstancesForSameDataProperties = separateDomainInstancesForSameDataProperties;
+		
+		this.semanticTypes = semanticTypes;
+		Collections.sort(this.semanticTypes, new SemanticTypeComparator());
+
+		logger.info("building initial graph ...");
+		graphBuilder = new GraphBuilder(ontologyManager, this.semanticTypes, separateDomainInstancesForSameDataProperties);
+		
+		linksForcedByUser = new ArrayList<LabeledWeightedEdge>();
+		linksPreferredByUI = new ArrayList<LabeledWeightedEdge>();
+		
+		semanticNodes = graphBuilder.getSemanticNodes();
+		
+	}
 	public List<SemanticType> getSemanticTypes() {
 		return this.semanticTypes;
+	}
+	
+	private void addToLinksForcedByUserList(LabeledWeightedEdge e) {
+		LabeledWeightedEdge[] links = linksForcedByUser.toArray(new LabeledWeightedEdge[0]);
+		for (LabeledWeightedEdge link : links) {
+			if (link.getTarget().getID().equalsIgnoreCase(e.getTarget().getID()))
+				clearUserLink(link.getID());
+		}
+		linksForcedByUser.add(e);
+		logger.info("link " + e.getID() + " has been added to user selected links.");
+	}
+	
+	private void removeInvalidForcedLinks(List<Vertex> dangledVertexList) {
+		LabeledWeightedEdge[] links = linksForcedByUser.toArray(new LabeledWeightedEdge[0]);
+		for (LabeledWeightedEdge link : links) {
+			for (Vertex v : dangledVertexList) {
+				if (link.getTarget().getID().equalsIgnoreCase(v.getID()) || 
+						link.getSource().getID().equalsIgnoreCase(v.getID()))
+					clearUserLink(link.getID());
+			}
+		}
 	}
 	
 	public void addUserLink(String linkId) {
 		LabeledWeightedEdge[] allLinks =  this.graphBuilder.getGraph().edgeSet().toArray(new LabeledWeightedEdge[0]);
 		for (int i = 0; i < allLinks.length; i++) {
 			if (allLinks[i].getID().equalsIgnoreCase(linkId)) {
-				linksForcedByUser.add(allLinks[i]);
-				logger.info("link " + linkId + " has been added to user selected links.");
+				addToLinksForcedByUserList(allLinks[i]);
 				align();
 				return;
 			}
@@ -66,9 +138,8 @@ public class Alignment {
 			boolean found = false;
 			for (int i = 0; i < allLinks.length; i++) {
 				if (allLinks[i].getID().equalsIgnoreCase(linkIds.get(j))) {
-					linksForcedByUser.add(allLinks[i]);
+					addToLinksForcedByUserList(allLinks[i]);
 					found = true;
-					logger.info("link " + linkIds.get(j) + " has been added to user selected links.");
 				}
 			}
 			if (!found)
@@ -123,9 +194,10 @@ public class Alignment {
 				
 				Vertex v = this.graphBuilder.copyNode(source);
 				this.graphBuilder.copyLinks(source, v);
+				target.setDomainVertexId(v.getID());
 				
 //				GraphUtil.printGraph(this.graphBuilder.getGraph());
-				linksForcedByUser.add(this.graphBuilder.getGraph().getEdge(v, target));
+				addToLinksForcedByUserList(this.graphBuilder.getGraph().getEdge(v, target));
 				
 				// do we need to keep the outgoing links of the source which are already in the tree? 
 				
@@ -141,7 +213,7 @@ public class Alignment {
 	
 	public void reset() {
 		
-		graphBuilder = new GraphBuilder(this.semanticTypes);
+		graphBuilder = new GraphBuilder(ontologyManager, this.semanticTypes, separateDomainInstancesForSameDataProperties);
 		linksForcedByUser.clear();
 		semanticNodes = graphBuilder.getSemanticNodes();
 		align();
@@ -166,6 +238,10 @@ public class Alignment {
 		
 		if (!includeAssignedLink)
 			assignedLink = getAssignedLink(nodeId);
+
+		List<String> displayedNodes = new ArrayList<String>();
+		for (Vertex v : this.steinerTree.vertexSet())
+			displayedNodes.add(v.getID());
 		
 		for (Vertex v : this.graphBuilder.getGraph().vertexSet()) {
 			if (v.getID().equalsIgnoreCase(nodeId)) {
@@ -177,6 +253,12 @@ public class Alignment {
 							if (assignedLink.getID().equalsIgnoreCase(incomingLinks[i].getID()))
 								continue;
 						}
+						
+						// if the node is not in the UI, don't show it to the user
+						// Scenario: multiple domain, then again merge it. The created node is in the graph but not in the tree.
+//						if (displayedNodes.indexOf(incomingLinks[i].getSource().getID()) == -1)
+//							continue;
+						
 						alternatives.add(incomingLinks[i]);
 					}
 				}
@@ -189,8 +271,6 @@ public class Alignment {
 		// order of adding lists is important: linksPreferredByUI should be first 
 		for (LabeledWeightedEdge e : linksPreferredByUI)
 			e.setLinkStatus(LinkStatus.PreferredByUI);
-		for (LabeledWeightedEdge e : linksForcedByDomain)
-			e.setLinkStatus(LinkStatus.ForcedByDomain);
 		for (LabeledWeightedEdge e : linksForcedByUser)
 			e.setLinkStatus(LinkStatus.ForcedByUser);
 	}
@@ -220,6 +300,18 @@ public class Alignment {
 		}
 	}
 	
+	private List<LabeledWeightedEdge> buildSelectedLinks() {
+		List<LabeledWeightedEdge> selectedLinks = new ArrayList<LabeledWeightedEdge>();
+
+		addUILinksFromTree();
+		updateLinksStatus();
+
+		selectedLinks.addAll(linksPreferredByUI);
+		selectedLinks.addAll(linksForcedByUser);
+
+		return selectedLinks;
+	}
+	
 	private void align() {
 		
 
@@ -227,13 +319,8 @@ public class Alignment {
 		
 		logger.info("preparing G Prime for steiner algorithm input ...");
 		
-		addUILinksFromTree();
-		updateLinksStatus();
-		List<LabeledWeightedEdge> selectedLinks = new ArrayList<LabeledWeightedEdge>();
+		List<LabeledWeightedEdge> selectedLinks = buildSelectedLinks();
 		// order of adding lists is important: linksPreferredByUI should be first 
-		selectedLinks.addAll(linksPreferredByUI);
-//		selectedLinks.addAll(linksForcedByDomain);
-		selectedLinks.addAll(linksForcedByUser);
 		
 		GraphPreProcess graphPreProcess = new GraphPreProcess(this.graphBuilder.getGraph(), semanticNodes, selectedLinks );
 		UndirectedGraph<Vertex, LabeledWeightedEdge> undirectedGraph = graphPreProcess.getUndirectedGraph();
@@ -252,6 +339,7 @@ public class Alignment {
 		
 		logger.info("updating link directions ...");
 		TreePostProcess treePostProcess = new TreePostProcess(tree);
+		removeInvalidForcedLinks(treePostProcess.getDangledVertexList());
 		
 		this.steinerTree = treePostProcess.getTree();
 		this.root = treePostProcess.getRoot();
@@ -271,8 +359,12 @@ public class Alignment {
 		if (this.steinerTree == null)
 			align();
 		
-//		GraphUtil.printGraph(this.graphBuilder.getGraph());
+		GraphUtil.printGraph(this.steinerTree);
 		return this.steinerTree;
 	}
 
+	public DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> getAlignmentGraph() {
+		return this.graphBuilder.getGraph();
+	}
+	
 }

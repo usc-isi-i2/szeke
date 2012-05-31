@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 /**
  * 
  */
@@ -38,11 +58,34 @@ public class Node extends RepEntity {
 
 	private CellValue originalValue = StringCellValue.getEmptyString();
 
+	//mariam
+	/**
+	 * The row that this node belongs to
+	 */
+	private Row belongsToRow;
+	
 	Node(String id, String hNodeId) {
 		super(id);
 		this.hNodeId = hNodeId;
 	}
 
+	//mariam
+	public void setBelongsToRow(Row row){
+		belongsToRow=row;
+	}
+	public Row getBelongsToRow(){
+		return belongsToRow;
+	}
+	/**
+	 * Return the table that this node belongs to.
+	 * @return
+	 * 		the table that this node belongs to.
+	 */
+	public Table getParentTable(){
+		return belongsToRow.getBelongsToTable();
+	}
+	///////////////
+	
 	public String getHNodeId() {
 		return hNodeId;
 	}
@@ -63,6 +106,11 @@ public class Node extends RepEntity {
 		this.value = value;
 		this.status = status;
 	}
+	
+	public void clearValue(NodeStatus status) {
+		this.value = null;
+		this.status = status;
+	}
 
 	public void setValue(String value, NodeStatus status) {
 		setValue(new StringCellValue(value), status);
@@ -74,6 +122,8 @@ public class Node extends RepEntity {
 
 	public void setNestedTable(Table nestedTable) {
 		this.nestedTable = nestedTable;
+		//mariam
+		nestedTable.setNestedTableInNode(this);
 	}
 
 	public boolean hasNestedTable() {

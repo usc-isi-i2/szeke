@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 /**
  * 
  */
@@ -11,6 +31,8 @@ import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.Js
 import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys.status;
 import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys.value;
 import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys.worksheetId;
+import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys.isTruncated;
+import static edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys.fullValue;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,11 +51,13 @@ import edu.isi.karma.controller.update.WorksheetHierarchicalDataUpdate.JsonKeys;
 import edu.isi.karma.rep.CellValue;
 import edu.isi.karma.rep.Table;
 import edu.isi.karma.rep.TablePager;
+import edu.isi.karma.util.JSONUtil;
 import edu.isi.karma.view.Stroke;
 import edu.isi.karma.view.Stroke.StrokeStyle;
 import edu.isi.karma.view.VTableCssTags;
 import edu.isi.karma.view.VWorksheet;
 import edu.isi.karma.view.VWorkspace;
+import edu.isi.karma.view.ViewPreferences.ViewPreference;
 import edu.isi.karma.view.tabledata.VDCell.MinMaxDepth;
 import edu.isi.karma.view.tabledata.VDCell.Position;
 import edu.isi.karma.view.tabledata.VDCellStrokes.StrokeIterator;
@@ -507,7 +531,7 @@ public class VDTableCells {
 			}
 
 			// Now calculate the left and right strokes.
-			//TODO: refactor separatorDepth, should not be using it.
+			// TODO: refactor separatorDepth, should not be using it.
 			int cssDepth = 0;
 			StrokeStyle leftStrokeStyle = StrokeStyle.none;
 			if (separatorDepth >= columnDepth) {
@@ -883,9 +907,19 @@ public class VDTableCells {
 		generateJsonVerticalSeparators(Position.left, Position.top, rowIndex,
 				colIndex, cellDepth, 0, jw, vWorksheet, vWorkspace);
 
-		CellValue cellValue = c.getNode() == null ? null : c.getNode()
-				.getValue();
-		String valueString = cellValue == null ? "" : cellValue.asString();
+		boolean isValueTruncated = false;
+		CellValue cellValue = c.getNode() == null ? null : c.getNode().getValue();
+		String valueString = (cellValue == null || cellValue.asString() == null) ? "" : cellValue.asString();
+
+		if(valueString.length() > vWorkspace.getPreferences().getIntViewPreferenceValue(
+						ViewPreference.maxCharactersInCell)) {
+			valueString = JSONUtil.truncateCellValue(
+					valueString,
+					vWorkspace.getPreferences().getIntViewPreferenceValue(
+							ViewPreference.maxCharactersInCell));
+			isValueTruncated = true;
+		}
+		
 		String codedStatus = c.getNode() == null ? "" : c.getNode().getStatus()
 				.getCodedStatus();
 
@@ -896,7 +930,7 @@ public class VDTableCells {
 				c.getNode() == null ? CellType.dummyContent : CellType.content,
 				c.getFillHTableId(),
 				css.getCssTag(c.getFillHTableId(), c.getDepth()), strokeStyles);
-
+		
 		jw.object()
 				.key(JsonKeys.attr.name())
 				.value(attributes)
@@ -933,6 +967,20 @@ public class VDTableCells {
 				.key("_bottomStrokes")
 				.value("BOT " + Stroke.toString(c.getBottomStrokes()))//
 		;
+		
+		// Add the node id
+		if(c.getNode() != null){
+			jw.key(JsonKeys.nodeId.name())
+				.value(c.getNode().getId());
+		}
+		
+		// Add the full value if the display value was truncated
+		jw.key(isTruncated.name())
+			.value(isValueTruncated);
+		if(isValueTruncated) {
+			jw.key(fullValue.name())
+				.value(cellValue.asString());
+		}
 
 		jw.key("_vdCellStrokes");
 		c.getVdCellStrokes().prettyPrintJson(jw, defaultStrokes);

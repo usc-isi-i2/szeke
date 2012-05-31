@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.alignment;
 
 import java.util.ArrayList;
@@ -35,14 +55,10 @@ public class GraphPreProcess {
 		
 		gPrime = (DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge>)this.graph.clone();
 		
-		if (selectedLinks == null || selectedLinks.size() == 0) {
-			logger.debug("exit>");
-			return;
-		}
-		
 		LabeledWeightedEdge e;
 		LinkStatus status;
 		
+		if (selectedLinks != null) 
 		for (int i = 0; i < selectedLinks.size(); i++) {
 			
 			e = (LabeledWeightedEdge)selectedLinks.get(i);
@@ -51,7 +67,7 @@ public class GraphPreProcess {
 			if (status == LinkStatus.PreferredByUI) {
 				gPrime.setEdgeWeight(e, GraphBuilder.DEFAULT_WEIGHT - GraphBuilder.MIN_WEIGHT);
 				
-			} else if (status == LinkStatus.ForcedByUser || status == LinkStatus.ForcedByDomain) {
+			} else if (status == LinkStatus.ForcedByUser) {
 				
 				e = (LabeledWeightedEdge)selectedLinks.get(i);
 				
@@ -76,44 +92,38 @@ public class GraphPreProcess {
 				// if it is a subclass link, change the weight to epsilon
 				//if (e.getType() == LinkType.HasSubClass)
 				gPrime.setEdgeWeight(e, GraphBuilder.MIN_WEIGHT);
+				
+				if (target.getNodeType() == NodeType.DataProperty)
+					target.setDomainVertexId(source.getID());
 			}			
 		}
 		
-//		GraphUtil.printGraph(gPrime);
-		
-		// if there are 2 DataProperties go to one node, we have to select only one of them. 
-		// The target is definitely one of the source columns and we cannot have two classes pointed to that.
-		// User can change our selected link later.
-		
-//		for (Vertex v: gPrime.vertexSet()) {
-//			
-//			if (v.getNodeType() != NodeType.DataProperty)
-//				continue;
-//			
-//			double weight;
-//			int minIndex;
-//			double minWeight;
-//			
-//			LabeledWeightedEdge[] incomingLinks = gPrime.incomingEdgesOf(v).toArray(new LabeledWeightedEdge[0]);
-//			if (incomingLinks != null && incomingLinks.length != 0) {
-//				
-//				minWeight = GraphBuilder.MAX_WEIGHT;
-//				minIndex = 0;
-//				// keeping only the link with minimum weight and remove the others.
-//				// we select minimum to prefer the UI links in previous model.
-//				for (int i = 0; i < incomingLinks.length; i++) {
-//					weight = gPrime.getEdgeWeight(incomingLinks[i]);
-//					if (weight < minWeight) {
-//						minWeight = weight;
-//						minIndex = i;
-//					}
-//				}
-//				for (int i = 0; i < incomingLinks.length; i++)
-//					if (i != minIndex)
-//					gPrime.removeEdge(incomingLinks[i]);
-//			}
-//		}
-		
+		// adding the domains of data property nodes to steiner nodes collection
+		// It is possible that some data property nodes have multiple incoming links from 
+		// different instances of the same class. We only keep the one that comes from its domain instance.
+		for (Vertex v: gPrime.vertexSet()) {
+			
+			if (v.getNodeType() != NodeType.DataProperty)
+				continue;
+			
+			String domainVertexId = v.getDomainVertexId();
+			if (domainVertexId == null)
+				continue;
+
+			LabeledWeightedEdge[] incomingLinks = gPrime.incomingEdgesOf(v).toArray(new LabeledWeightedEdge[0]);
+			if (incomingLinks != null && incomingLinks.length != 0) {
+				
+					for (int i = 0; i < incomingLinks.length; i++) {
+						if (!incomingLinks[i].getSource().getID().equalsIgnoreCase(domainVertexId)) {
+							if (incomingLinks.length > 1)   // only for data property nodes who have links from multiple instances of the same class
+								gPrime.removeEdge(incomingLinks[i]); 
+						}
+						else if (!steinerNodes.contains(incomingLinks[i].getSource()))
+							steinerNodes.add(incomingLinks[i].getSource());
+				}
+			}
+		}
+
 		logger.debug("exit>");
 //		GraphUtil.printGraph(gPrime);
 	}

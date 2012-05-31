@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.webserver;
 
 import java.io.File;
@@ -865,4 +885,149 @@ public class SampleDataFactory {
 			return null;
 		}
 	}
+	
+	public static Worksheet createSamplePathwaysWorksheet(Workspace workspace) {
+		String json = "[" +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA2039\"," +
+		                   "\"NAME\": \"Methotrexate Pathway\"," +
+		                   "\"DRUG_ID\": \"PA452621\"," +
+		                   "\"DRUG_NAME\": \"antineoplastic agents\"," +
+		                   "\"GENE_ID\": \"PA267\"," +
+		                   "\"GENE_NAME\": \"ABCB1\"," +
+		                   "\"DISEASE_ID\": \"PA443434\"," +
+		                   "\"DISEASE_NAME\": \"Arthritis, Rheumatoid\"" +
+		               "}," +
+		               "{" +
+		                  "\"ACCESSION_ID\": \"PA2040\"," +
+		                   "\"NAME\": \"Thiopurine Pathway\"," +
+		                   "\"DRUG_ID\": \"PA452621\"," +
+		                   "\"DRUG_NAME\": \"antineoplastic agents\"," +
+		                   "\"GENE_ID\": \"PA397\"," +
+		                   "\"GENE_NAME\": \"ABCC4\"," +
+		                   "\"DISEASE_ID\": \"PA446116\"," +
+		                   "\"DISEASE_NAME\": \"Inflammatory Bowel Diseases\"" +
+		               "}," +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA145011108\"," +
+		                   "\"NAME\": \"Statin Pathway (PK)\"," +
+		                   "\"DRUG_ID\": \"PA448500\"," +
+		                   "\"DRUG_NAME\": \"atorvastatin\"," +
+		                   "\"GENE_ID\": \"PA267\"," +
+		                   "\"GENE_NAME\": \"ABCB1\"," +
+		                   "\"DISEASE_ID\": \"PA443635\"," +
+		                   "\"DISEASE_NAME\": \"Cardiovascular Diseases\"" +
+		               "}," +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA145011115\"," +
+		                   "\"NAME\": \"Phenytoin Pathway (PK)\"," +
+		                   "\"DRUG_ID\": \"PA450947\"," +
+		                   "\"DRUG_NAME\": \"phenytoin\"," +
+		                   "\"GENE_ID\": \"PA27093\"," +
+		                   "\"GENE_NAME\": \"CYP1A2\"," +
+		                   "\"DISEASE_ID\": \"PA444065\"," +
+		                   "\"DISEASE_NAME\": \"Epilepsy\"" +
+		               "}," +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA164713560\"," +
+		                   "\"NAME\": \"il22 soluble receptor signaling pathway - (BioCarta via Pathway Interaction Database)\"," +
+		                   "\"DRUG_ID\": \"\"," +
+		                   "\"DRUG_NAME\": \"\"," +
+		                   "\"GENE_ID\": \"PA29779\"," +
+		                   "\"GENE_NAME\": \"IL10RA\"," +
+		                   "\"DISEASE_ID\": \"\"," +
+		                   "\"DISEASE_NAME\": \"\"" +
+		               "}" +
+		           "];";
+		System.out.println(json);
+		return createWorksheetFromJsonString("PathwaysPharmGKB", json, workspace);
+	}
+
+	public static Worksheet createSamplePathwaysWithNestingWorksheet(Workspace workspace) {
+		String json = "[" +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA2039\"," +
+		                   "\"NAME\": \"Methotrexate Pathway\"," +
+		                   "\"DRUG\": {"+
+		                       "\"DRUG_ID\": \"PA452621\","+
+		                       "\"DRUG_NAME\": ["+
+		                           "\"antineoplastic agents\","+
+		                           "\"TEST1\","+
+		                           "\"TEST2\""+
+		                       "]"+
+		                   "},"+
+		                   "\"GENE_ID\": \"PA267\"," +
+		                   "\"GENE_NAME\": \"ABCB1\"," +
+		                   "\"DISEASE_ID\": \"PA443434\"," +
+		                   "\"DISEASE_NAME\": \"Arthritis, Rheumatoid\"" +
+		               "}," +
+		               /*
+		               "{" +
+		                  "\"ACCESSION_ID\": \"PA2040\"," +
+		                   "\"NAME\": \"Thiopurine Pathway\"," +
+		                   "\"DRUG\": {"+
+	                       "\"DRUG_ID\": \"PA452621\","+
+	                       "\"DRUG_NAME\": ["+
+	                           "\"antineoplastic agents\","+
+	                           "\"TEST3\","+
+	                           "\"TEST4\""+
+	                       "]"+
+	                   "},"+
+		                   "\"GENE_ID\": \"PA397\"," +
+		                   "\"GENE_NAME\": \"ABCC4\"," +
+		                   "\"DISEASE_ID\": \"PA446116\"," +
+		                   "\"DISEASE_NAME\": \"Inflammatory Bowel Diseases\"" +
+		               "}," +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA145011108\"," +
+		                   "\"NAME\": \"Statin Pathway (PK)\"," +
+		                   "\"DRUG\": {"+
+	                       "\"DRUG_ID\": \"PA448500\","+
+	                       "\"DRUG_NAME\": ["+
+	                           "\"atorvastatin\","+
+	                           "\"TEST5\","+
+	                           "\"TEST6\""+
+	                       "]"+
+	                   "},"+
+		                   "\"GENE_ID\": \"PA267\"," +
+		                   "\"GENE_NAME\": \"ABCB1\"," +
+		                   "\"DISEASE_ID\": \"PA443635\"," +
+		                   "\"DISEASE_NAME\": \"Cardiovascular Diseases\"" +
+		               "}," +
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA145011115\"," +
+		                   "\"NAME\": \"Phenytoin Pathway (PK)\"," +
+		                   "\"DRUG\": {"+
+	                       "\"DRUG_ID\": \"PA450947\","+
+	                       "\"DRUG_NAME\": ["+
+	                           "\"phenytoin\","+
+	                           "\"TEST1\","+
+	                           "\"TEST2\""+
+	                       "]"+
+	                   "},"+
+		                   "\"GENE_ID\": \"PA27093\"," +
+		                   "\"GENE_NAME\": \"CYP1A2\"," +
+		                   "\"DISEASE_ID\": \"PA444065\"," +
+		                   "\"DISEASE_NAME\": \"Epilepsy\"" +
+		               "}," +
+		               */
+		               "{" +
+		                   "\"ACCESSION_ID\": \"PA164713560\"," +
+		                   "\"NAME\": \"il22 soluble receptor signaling pathway - (BioCarta via Pathway Interaction Database)\"," +
+		                   "\"DRUG\": {"+
+	                       "\"DRUG_ID\": \"\","+
+	                       "\"DRUG_NAME\": ["+
+	                           "\"\","+
+	                       "]"+
+	                   "},"+
+		                   "\"GENE_ID\": \"PA29779\"," +
+		                   "\"GENE_NAME\": \"IL10RA\"," +
+		                   "\"DISEASE_ID\": \"\"," +
+		                   "\"DISEASE_NAME\": \"\"" +
+		               "}" +
+		           "];";
+		System.out.println(json);
+		return createWorksheetFromJsonString("PathwaysPharmGKBNesting", json, workspace);
+	}
+
 }

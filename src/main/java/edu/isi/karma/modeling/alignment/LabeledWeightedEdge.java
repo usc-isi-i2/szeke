@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.modeling.alignment;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -11,42 +31,24 @@ public class LabeledWeightedEdge extends DefaultWeightedEdge {
 	
 	private String id;
 	private LinkType linkType;
-	private String label;
 	private boolean inverse;
+	private URI uri;
 	private LinkStatus linkStatus;
 	
-	public LabeledWeightedEdge(String id) {
+	public LabeledWeightedEdge(String id, URI name, LinkType linkType) {
 		super();
 		this.id = id;
-		this.linkType = LinkType.None;
-		this.label = id;
-		this.inverse = false;
-		this.linkStatus = LinkStatus.None;
-	}
-
-	public LabeledWeightedEdge(String id, String label) {
-		super();
-		this.id = id;
-		this.linkType = LinkType.None;
-		this.label = label;
+		this.linkType = linkType;
+		this.uri = name;
 		this.inverse = false;
 		this.linkStatus = LinkStatus.None;
 	}
 	
-	public LabeledWeightedEdge(String id, String label, LinkType linkType) {
+	public LabeledWeightedEdge(String id, URI name, LinkType linkType, boolean inverse) {
 		super();
 		this.id = id;
 		this.linkType = linkType;
-		this.label = label;
-		this.inverse = false;
-		this.linkStatus = LinkStatus.None;
-	}
-	
-	public LabeledWeightedEdge(String id, String label, LinkType linkType, boolean inverse) {
-		super();
-		this.id = id;
-		this.linkType = linkType;
-		this.label = label;
+		this.uri = name;
 		this.inverse = inverse;;
 		this.linkStatus = LinkStatus.None;
 	}
@@ -55,35 +57,21 @@ public class LabeledWeightedEdge extends DefaultWeightedEdge {
 		super();
 		this.id = e.id;
 		this.linkType = e.linkType;
-		this.label = e.label;
+		this.uri = new URI(e.uri);
 		this.inverse = e.inverse;;
 		this.linkStatus = LinkStatus.None;
 	}
 	
 	public String getLocalID() {
-		if (id == null)
-			return "";
-		
-		int index = id.indexOf('#');
-		if (index == -1)
-			return id;
-		
-		String result = id.substring(index + 1);
-		
-		return result;
+		String s = this.id;
+		s = s.replaceAll(this.uri.getNs(), "");
+		return s;
 	}
 	
 	public String getLocalLabel() {
-		if (label == null)
-			return "";
-		
-		int index = label.indexOf('#');
-		if (index == -1)
-			return label;
-		
-		String result = label.substring(index + 1);
-		
-		return result;
+		String s = this.uri.getUriString();
+		s = s.replaceAll(this.uri.getNs(), "");
+		return s;
 	}
 	
 	
@@ -103,8 +91,16 @@ public class LabeledWeightedEdge extends DefaultWeightedEdge {
 		return this.id;
 	}
 	
-	public String getLabel() {
-		return this.label;
+	public String getUriString() {
+		return this.uri.getUriString();
+	}
+	
+	public String getNs() {
+		return this.uri.getNs();
+	}
+	
+	public String getPrefix() {
+		return this.uri.getPrefix();
 	}
 	
 	public LinkType getLinkType() {

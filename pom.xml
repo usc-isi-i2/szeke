@@ -23,24 +23,70 @@
       <id>JGraphT Repository</id>
       <url>http://tanesha.net/maven2/</url>
  	</repository>
+ 	<repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Maven 2 Repository</name>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+      <snapshots>
+         <enabled>true</enabled>
+      </snapshots>
+      </repository>
    </repositories>
   
   <dependencies>
-      <dependency>
+  	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.16</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.6.4</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>1.6.4</version>
+	</dependency>
+	<dependency>
+		<groupId>xml-apis</groupId>
+		<artifactId>xml-apis</artifactId>
+		<version>2.0.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>weka</groupId>
+	    <artifactId>weka</artifactId>
+	    <version>3.6</version>
+	    <scope>system</scope>
+	    <systemPath>${project.basedir}/lib/weka.jar</systemPath>
+	</dependency>
+    <!-- The Java API for KML -->
+   <dependency>
+      <groupId>de.micromata.jak</groupId>
+      <artifactId>JavaAPIforKml</artifactId>
+      <version>2.2.0-SNAPSHOT</version>
+   </dependency>
+   <dependency>
     	<groupId>com.hp.hpl.jena</groupId>
     	<artifactId>arq</artifactId>
-    	<version>2.8.1</version>
-    	<exclusions>
-    		<exclusion>
-    			<artifactId>slf4j-log4j12</artifactId>
-    			<groupId>org.slf4j</groupId>
-    		</exclusion>
-    	</exclusions>
+    	<version>2.8.8</version>
     </dependency>
     <dependency>
     	<groupId>com.hp.hpl.jena</groupId>
     	<artifactId>jena</artifactId>
     	<version>2.6.4</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.hp.hpl.jena</groupId>
+    	<artifactId>iri</artifactId>
+    	<version>0.8</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.hp.hpl.jena</groupId>
+    	<artifactId>tdb</artifactId>
+    	<version>0.8.10</version>
     </dependency>
     <dependency>
 		<groupId>jgrapht</groupId>
@@ -57,13 +103,6 @@
     	<groupId>org.eclipse.jetty</groupId>
     	<artifactId>jetty-server</artifactId>
     	<version>${jettyVersion}</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-simple</artifactId>
-    	<version>1.6.2</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.json</groupId>
@@ -102,6 +141,61 @@
         	<artifactId>jackcess</artifactId>
         	<version>1.2.4</version>
         </dependency>
+        <dependency>
+        	<groupId>org.jdom</groupId>
+        	<artifactId>jdom</artifactId>
+        	<version>1.1.2</version>
+        	<exclusions>
+        		<exclusion>
+        			<artifactId>maven-cobertura-plugin</artifactId>
+        			<groupId>maven-plugins</groupId>
+        		</exclusion>
+        		<exclusion>
+        			<artifactId>maven-findbugs-plugin</artifactId>
+        			<groupId>maven-plugins</groupId>
+        		</exclusion>
+        	</exclusions>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.poi</groupId>
+        	<artifactId>poi</artifactId>
+        	<version>3.8-beta5</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.poi</groupId>
+        	<artifactId>poi-ooxml</artifactId>
+        	<version>3.8-beta5</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+        </dependency>
+		<dependency>
+		      <groupId>com.google.code.gson</groupId>
+		      <artifactId>gson</artifactId>
+		      <version>2.1</version>
+		      <scope>compile</scope>
+	    </dependency>
+		<dependency>
+	        <groupId>net.sf.json-lib</groupId>
+	        <artifactId>json-lib</artifactId>
+	        <version>2.3</version>
+	        <type>jar</type>
+	        <classifier>jdk15</classifier>
+	        <scope>compile</scope>
+	    </dependency>
+        <dependency>
+              <groupId>uk.com.robust-it</groupId>
+              <artifactId>cloning</artifactId>
+              <version>1.7.9</version>
+        </dependency>
+            
+        <dependency>
+        	<groupId>net.sourceforge.jtds</groupId>
+        	<artifactId>jtds</artifactId>
+        	<version>1.2.4</version>
+        </dependency>
   </dependencies>
   
   <build>
@@ -110,6 +204,19 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
+<!-- change user/pwd in config/jettyrealm.properties -->
+<!--  <configuration>
+   <webAppConfig>
+      <contextPath>/*</contextPath>
+    </webAppConfig>
+    <loginServices>
+      <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+        <name>TestRealm</name>
+        <config>${project.basedir}/config/jettyrealm.properties</config>
+      </loginService>
+    </loginServices>
+  </configuration>
+-->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

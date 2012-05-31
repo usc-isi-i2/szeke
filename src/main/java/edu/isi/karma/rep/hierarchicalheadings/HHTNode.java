@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.rep.hierarchicalheadings;
 
 import java.util.ArrayList;
@@ -19,6 +39,8 @@ public class HHTNode {
 	private List<HHTNode> children;
 	
 	private final TNode tNode;
+	
+	private int htmlColSpan;
 
 	public HHTNode(TNode tNode) {
 		super();
@@ -101,19 +123,33 @@ public class HHTNode {
 	}
 	
 	public int getHTMLColSpan() {
-		if(isLeaf())
-			return 1;
-		else {
-			int span = 0;
-			for(HHTNode child:children){
-				span += child.getHTMLColSpan();
-				if(!child.isLeaf())
-					span += 2;
-			}
-			return span;
-		}
+//		int corr = 0;
+//		if(isLeaf())
+//			corr = 1;
+//		else {
+//			int span = 0;
+//			for(HHTNode child:children){
+//				span += child.getHTMLColSpan();
+//				if(!child.isLeaf())
+//					span += 2;
+//			}
+//			corr = span;
+////			return span;
+//		}
+//		System.out.println("Correct HTML Col span: " + corr);
+//		System.out.println("Coordinate based: " + htmlColSpan);
+		//return corr;
+		return htmlColSpan;
 	}
 	
+	public int getHtmlColSpan() {
+		return htmlColSpan;
+	}
+
+	public void setHtmlColSpan(int htmlColSpan) {
+		this.htmlColSpan = htmlColSpan;
+	}
+
 	public void prettyprint(String prefix) {
 		System.out.print(prefix + "HHTNode [startCol=" + startCol + ", endCol=" + endCol
 				+ ", depth=" + depth + ", leftStroke=" + leftStroke

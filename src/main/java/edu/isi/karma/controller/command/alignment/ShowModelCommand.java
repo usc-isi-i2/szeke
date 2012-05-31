@@ -1,28 +1,39 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.controller.command.alignment;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.WorksheetCommand;
-import edu.isi.karma.controller.update.SemanticTypesUpdate;
+import edu.isi.karma.controller.update.ErrorUpdate;
+import edu.isi.karma.controller.update.TagsUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.modeling.alignment.AlignToOntology;
-import edu.isi.karma.modeling.semantictypes.CRFColumnModel;
+import edu.isi.karma.modeling.ontology.OntologyManager;
 import edu.isi.karma.modeling.semantictypes.SemanticTypeUtil;
-import edu.isi.karma.modeling.semantictypes.crfmodelhandler.CRFModelHandler;
-import edu.isi.karma.modeling.semantictypes.crfmodelhandler.CRFModelHandler.ColumnFeature;
-import edu.isi.karma.rep.HNodePath;
 import edu.isi.karma.rep.Worksheet;
-import edu.isi.karma.rep.semantictypes.SemanticType;
-import edu.isi.karma.rep.semantictypes.SemanticTypes;
+import edu.isi.karma.rep.metadata.Tag;
+import edu.isi.karma.rep.metadata.TagsContainer.TagName;
 import edu.isi.karma.view.VWorkspace;
 
 public class ShowModelCommand extends WorksheetCommand {
@@ -64,99 +75,34 @@ public class ShowModelCommand extends WorksheetCommand {
 		UpdateContainer c = new UpdateContainer();
 		Worksheet worksheet = vWorkspace.getViewFactory()
 				.getVWorksheet(vWorksheetId).getWorksheet();
+
 		worksheetName = worksheet.getTitle();
 
+		// Get the Outlier Tag
+		Tag outlierTag = vWorkspace.getWorkspace().getTagsContainer()
+				.getTag(TagName.Outlier);
+
 		// Generate the semantic types for the worksheet
-		boolean semanticTypesChangedOrAdded = populateSemanticTypes(worksheet);
-		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId));
+		OntologyManager ontMgr = vWorkspace.getWorkspace().getOntologyManager();
+		SemanticTypeUtil.populateSemanticTypesUsingCRF(worksheet, outlierTag, vWorkspace.getWorkspace().getCrfModelHandler(), ontMgr);
 
 		// Get the alignment update if any
 		AlignToOntology align = new AlignToOntology(worksheet, vWorkspace,
 				vWorksheetId);
-		align.update(c, semanticTypesChangedOrAdded);
 
-		return c;
-	}
-
-	private boolean populateSemanticTypes(Worksheet worksheet) {
-		boolean semanticTypesChangedOrAdded = false;
-		// Prepare the CRF Model
 		try {
-			SemanticTypeUtil.prepareCRFModelHandler();
-		} catch (IOException e) {
-			logger.error("Error creating CRF Model file!", e);
+			align.update(c, true);
+		} catch (Exception e) {
+			logger.error("Error occured while generating the model Reason:.", e);
+			return new UpdateContainer(new ErrorUpdate(
+					"Error occured while generating the model for the source."));
 		}
-
-		SemanticTypes types = worksheet.getSemanticTypes();
-
-		List<HNodePath> paths = worksheet.getHeaders().getAllPaths();
-
-		for (HNodePath path : paths) {
-			ArrayList<String> trainingExamples = SemanticTypeUtil
-					.getTrainingExamples(worksheet, path);
-
-			// Prepare the column name feature
-			String columnName = path.getLeaf().getColumnName();
-			Collection<String> columnNameList = new ArrayList<String>();
-			columnNameList.add(columnName);
-			Map<ColumnFeature, Collection<String>> columnFeatures = new HashMap<ColumnFeature, Collection<String>>();
-			columnFeatures.put(ColumnFeature.ColumnHeaderName, columnNameList);
-
-			// Stores the probability scores
-			ArrayList<Double> scores = new ArrayList<Double>();
-			// Stores the predicted labels
-			ArrayList<String> labels = new ArrayList<String>();
-			CRFModelHandler.predictLabelForExamples(trainingExamples, 4,
-					labels, scores, null, columnFeatures);
-			if (labels.size() == 0) {
-				continue;
-			}
-
-			// Add the scores information to the Full CRF Model of the worksheet
-			CRFColumnModel columnModel = new CRFColumnModel(labels, scores);
-			worksheet.getCrfModel().addColumnModel(path.getLeaf().getId(),
-					columnModel);
-
-			// Create and add the semantic type to the semantic types set of the
-			// worksheet
-			String topLabel = labels.get(0);
-			String domain = "";
-			String type = topLabel;
-			// Check if it contains domain information
-			if (topLabel.contains("|")) {
-				domain = topLabel.split("\\|")[0];
-				type = topLabel.split("\\|")[1];
-			}
-
-			SemanticType semtype = new SemanticType(path.getLeaf().getId(),
-					type, domain, SemanticType.Origin.CRFModel, scores.get(0));
-
-			// Check if the user already provided a semantic type manually
-			SemanticType existingType = types.getSemanticTypeByHNodeId(path
-					.getLeaf().getId());
-			if (existingType == null) {
-				if (semtype.getConfidenceLevel() != SemanticType.ConfidenceLevel.Low) {
-					worksheet.getSemanticTypes().addType(semtype);
-					semanticTypesChangedOrAdded = true;
-				}
-			} else {
-				if (existingType.getOrigin() != SemanticType.Origin.User) {
-					worksheet.getSemanticTypes().addType(semtype);
-					
-					// Check if the new semantic type is different from the older one
-					if (!existingType.getType().equals(semtype.getType())
-							|| !existingType.getDomain().equals(
-									semtype.getDomain()))
-						semanticTypesChangedOrAdded = true;
-				}
-			}
-		}
-		return semanticTypesChangedOrAdded;
+		c.add(new TagsUpdate());
+		return c;
 	}
 
 	@Override
 	public UpdateContainer undoIt(VWorkspace vWorkspace) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

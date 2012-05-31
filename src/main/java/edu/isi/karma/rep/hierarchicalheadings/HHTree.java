@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.rep.hierarchicalheadings;
 
 import java.util.ArrayList;
@@ -6,6 +26,7 @@ import java.util.Map;
 
 import edu.isi.karma.view.Stroke;
 import edu.isi.karma.view.Stroke.StrokeStyle;
+import edu.isi.karma.view.alignmentHeadings.AlignmentNode;
 
 public class HHTree {
 	private List<HHTNode> rootNodes = new ArrayList<HHTNode>();
@@ -206,5 +227,55 @@ public class HHTree {
 
 	public List<HHTNode> getRootNodes() {
 		return rootNodes;
+	}
+
+	public void computeHTMLColSpanUsingColCoordinates(ColumnCoordinateSet ccMap, ColspanMap cspanmap) {
+		for(HHTNode root:rootNodes) {
+			computeHTMLColSpan(root, ccMap, cspanmap);
+		}
+	}
+
+	private void computeHTMLColSpan(HHTNode node, ColumnCoordinateSet ccMap, ColspanMap cspanmap) {
+		int startIndex = cspanmap.getSpan(node).getStartIndex();
+		int endIndex = cspanmap.getSpan(node).getEndIndex();
+
+		int numHtmlColsBetween = ccMap.getNumberOfCoordinatesBetweenTwoIndexes(startIndex, endIndex, node.getDepth());
+		node.setHtmlColSpan(numHtmlColsBetween);
+		
+		if(!node.isLeaf()) {
+			for(HHTNode child:node.getChildren()) {
+				computeHTMLColSpan(child, ccMap, cspanmap);
+			}
+		}
+	}
+	
+	public void computeHTMLColSpanUsingLeafColumnIndices(ColumnCoordinateSet ccMap, LeafColumnIndexMap indexMap) {
+		for(HHTNode root:rootNodes) {
+			computeHTMLColSpanUsingLeafColumnIndices(root, ccMap, indexMap);
+		}
+	}
+	
+	private int computeHTMLColSpanUsingLeafColumnIndices(HHTNode node, ColumnCoordinateSet ccMap, LeafColumnIndexMap indexMap) {
+		if(node.isLeaf()) {
+			TNode tNode = node.gettNode();
+			if(tNode instanceof AlignmentNode) {
+				AlignmentNode aNode = (AlignmentNode) tNode;
+				String hNodeId = aNode.getSemanticTypeHNodeId();
+				int colIndex = indexMap.getColumnIndex(hNodeId);
+				int htmlColSpan = ccMap.getCoordinatesCountForIndex(colIndex);
+				node.setHtmlColSpan(htmlColSpan);
+				return htmlColSpan;
+			} else 
+				return 0;
+		} else {
+			int htmlColSpan = 0;
+			List<HHTNode> children = node.getChildren();
+			for(HHTNode child:children) {
+				int c = computeHTMLColSpanUsingLeafColumnIndices(child, ccMap, indexMap);
+				htmlColSpan += c;
+			}
+			node.setHtmlColSpan(htmlColSpan);
+			return htmlColSpan;
+		}
 	}
 }

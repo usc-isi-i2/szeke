@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 /**
  * 
  */
@@ -17,6 +37,12 @@ public class Row extends RepEntity {
 	// to Node.
 	private final Map<String, Node> nodes = new HashMap<String, Node>();
 
+	//mariam
+	/**
+	 * The table that this row belongs to 
+	 */
+	private Table belongsToTable;
+	
 	Row(String id) {
 		super(id);
 	}
@@ -29,8 +55,26 @@ public class Row extends RepEntity {
 		return nodes.values();
 	}
 
+	//mariam
+	/** Returns all nodes and associated HNodeIds.
+	 * @return
+	 * 		all nodes and associated HNodeIds.
+	 */
+	public Map<String, Node> getNodesMap() {
+		return nodes;
+	}
+	public void setBelongsToTable(Table t){
+		belongsToTable=t;
+	}
+	public Table getBelongsToTable(){
+		return belongsToTable;
+	}
+	/////////////////
+	
 	void addNode(Node node) {
 		nodes.put(node.getHNodeId(), node);
+		//mariam
+		node.setBelongsToRow(this);
 	}
 
 	/**
@@ -79,6 +123,15 @@ public class Row extends RepEntity {
 		}
 	}
 
+	//mariam
+	public String toString(){
+		String s = "ROW:\n";
+		for (Node n : nodes.values()) {
+			s +=n.toString();
+		}
+		return s;
+	}
+	
 	void addNodeToDataTable(HNode newHNode, Table table, RepFactory factory) {
 		HTable ht = factory.getHTable(table.getHTableId());
 		if (ht.contains(newHNode)) {

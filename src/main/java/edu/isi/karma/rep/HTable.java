@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.rep;
 
 import java.io.PrintWriter;
@@ -21,6 +41,12 @@ public class HTable extends RepEntity {
 
 	private ArrayList<String> orderedNodeIds = new ArrayList<String>();
 
+	//mariam
+	/**
+	 * the HNode that contains this table (useful for backwards traversing)
+	 */
+	private HNode parentHNode=null;
+	
 	public HTable(String id, String tableName) {
 		super(id);
 		this.tableName = tableName;
@@ -58,7 +84,47 @@ public class HTable extends RepEntity {
 		}
 		return null;
 	}
+	
+	//mariam
+	/**
+	 * Returns the HNode that contains this table.
+	 * @return
+	 * 		the HNode that contains this table.
+	 */
+	public HNode getParentHNode(){
+		return parentHNode;
+	}
 
+	/**
+	 * Returns the HNodeId for the first HNode with the given columnName.
+	 * @param columnName
+	 * @return
+	 * 		the HNodeId given a columnName.
+	 * Should be used only with worksheets that do not contain nested tables.
+	 */
+	public String getHNodeIdFromColumnName(String columnName) {
+		for (Map.Entry<String, HNode> n : nodes.entrySet()) {
+			if (columnName.equals(n.getValue().getColumnName())) {
+				return n.getKey();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns true if this table contains nested tables, false otherwise.
+	 * @return
+	 * 		true if this table contains nested tables, false otherwise.
+	 */
+	public boolean hasNestedTables(){
+		for(HNode n: getHNodes()){
+			if(n.hasNestedTable())
+				return true;
+		}
+		return false;
+	}
+//////////////////////////////////////////////
+	
 	public HNode addHNode(String columnName, Worksheet worksheet,
 			RepFactory factory) {
 		HNode hn = factory.createHNode(id, columnName);
@@ -76,6 +142,47 @@ public class HTable extends RepEntity {
 		return allHNodes;
 	}
 
+	public void getSortedLeafHNodes(List<HNode> sortedLeafHNodes) {
+		for (String hNodeId : orderedNodeIds) {
+			HNode node = nodes.get(hNodeId);
+			if (node.hasNestedTable()) {
+				node.getNestedTable().getSortedLeafHNodes(sortedLeafHNodes);
+			} else {
+				sortedLeafHNodes.add(node);
+			}
+		}
+	}
+	
+	public void addNewHNodeAfter(String hNodeId, RepFactory factory, String columnName, Worksheet worksheet) {
+		HNode hNode = getHNode(hNodeId);
+		if(hNode == null) {
+			for(HNode node : nodes.values()) {
+				if(node.hasNestedTable()) {
+					node.getNestedTable().addNewHNodeAfter(hNodeId, factory, columnName, worksheet);
+				}
+			}
+		} else {
+			HNode newNode = factory.createHNode(getId(), columnName);
+			nodes.put(newNode.getId(), newNode);
+			int index = orderedNodeIds.indexOf(hNodeId);
+			
+			if(index == orderedNodeIds.size()-1)
+				orderedNodeIds.add(newNode.getId());
+			else
+				orderedNodeIds.add(index+1, newNode.getId());
+			worksheet.addNodeToDataTable(newNode, factory);
+		}
+	}
+
+	/** Returns ordered nodeIds.
+	 * @return
+	 * 		ordered nodeIds.
+	 * @author mariam
+	 */
+	public ArrayList<String> getOrderedNodeIds(){
+		return orderedNodeIds;
+	}
+	
 	@Override
 	public void prettyPrint(String prefix, PrintWriter pw, RepFactory factory) {
 		pw.print(prefix);
@@ -108,5 +215,14 @@ public class HTable extends RepEntity {
 			}
 		}
 		return x;
+	}
+
+	/**
+	 * Sets the parent HNode.
+	 * @param hNode
+	 * @author mariam
+	 */
+	public void setParentHNode(HNode hNode) {
+		parentHNode = hNode;
 	}
 }

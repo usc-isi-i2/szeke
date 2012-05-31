@@ -1,528 +1,229 @@
-function attachOntologyOptionsRadioButtonHandlers() {
-	$("select#toggleOntologyHierarchy").change(function(){
-		if($("select#toggleOntologyHierarchy").val() == "class"){
-			$("td#firstColumnLabel").text("Class");
-			$("td#secondColumnLabel").text("Data Property").hide();
-		} else {
-			$("td#firstColumnLabel").text("Data Property");
-			$("td#secondColumnLabel").text("Domain (Class)").hide();
-		}
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
+
+function styleAndAssignHandlersToWorksheetOptionButtons() {
+	var optionsDiv = $("div#WorksheetOptionsDiv");
+	// Styling the elements
+	optionsDiv.addClass("ui-corner-all");
+	$("button", optionsDiv).button();
+	
+	// Adding mouse handlers to the div
+	optionsDiv.mouseenter(function() {
+		$(this).show();
+	});
+	optionsDiv.mouseleave(function() {
+		$(this).hide();
+	});
+	
+	// Adding handlers to the buttons
+	$("button#showModel").click(function(){
+		optionsDiv.hide();
 		
-		populatefirstColumnOntologyBox();
-		$("div#secondColumnOntologyBox").hide();
-	});
-
-	$("div#secondColumnOntologyBox").hide();
-	
-	// Add handler for the search button
-	$("#firstColumnKeyword").keyup(function(event) {
-		if(event.keyCode == 13){
-    		$("#submitFirstColumnSearch").click();
-  		}
-	});
-	$("#secondColumnKeyword").keyup(function(event) {
-		if(event.keyCode == 13){
-    		$("#submitSecondColumnSearch").click();
-  		}
-	});
-	$("#submitFirstColumnSearch").click(function(){
-		$("div#firstColumnTree").jstree("search", $("#firstColumnKeyword").val());
-	});
-	$("#submitSecondColumnSearch").click(function(){
-		$("div#secondColumnTree").jstree("search", $("#secondColumnKeyword").val());
-	});
-	
-	// Assign empty domain to the Unassigned radio button
-	$("input#UnassignTypeButton").data("Domain", "");
-}
-
-function changeSemanticType(event) {
-	var optionsDiv = $("#ChangeSemanticTypesDialogBox");
-	
-	optionsDiv.data("currentNodeId",$(this).data("hNodeId"));
-	$("table#CRFSuggestedLabelsTable tr",optionsDiv).remove();
-	$("#firstColumnKeyword").val("");
-	$("#secondColumnKeyword").val("");
-	$("div#secondColumnOntologyBox").hide();
-	//$("div#ontologyOptionsTable", optionsDiv).hide();
-	
-	var positionArray = [event.clientX+20		// distance from left
-					, event.clientY+10];	// distance from top
-	
-	// Populate with possible labels that CRF Model suggested
-	var labelsTable = $("table#CRFSuggestedLabelsTable");
-	var labelsElem = $(this).data("crfInfo");
-	var fullType = $(this).data("fullType");
-	var domain = $(this).data("domain");
-	var origin = $(this).data("origin");
-	
-	if(labelsElem != null){
-		$("span", labelsTable).remove();
-		$.each(labelsElem["Labels"], function(index, label) {
-			// Turning the probability into percentage
-			var prob = label["Probability"];
-			var percentage = Math.floor(prob*100);
-			var trTag = $("<tr>");
-			var radioButton = $("<input>")
-							.attr("type", "radio")
-							.attr("id", label["Type"] + "|" + label["Domain"])
-							.attr("name", "semanticTypeGroup")
-							.attr("value", label["Type"])
-							.val(label["Type"]);
-				
-			if(label["Domain"] != null)
-				radioButton.data("domain", label["Domain"]);
-				
-			var selectedFlag = false;
-			if(fullType == label["Type"]) {
-				if(domain == "") {
-					radioButton.attr('checked',true);
-					selectedFlag = true;
-				} else {
-					if(label["Domain"] != null) {
-						if(domain == label["Domain"]){
-							radioButton.attr('checked',true);
-							selectedFlag = true;
-						}
-					}
-				}
-			}
-				
-				
-			var typeLabel = $("<label>").attr("for",label["Type"] + "|" + label["Domain"]);
+		// console.log("Showing model for table with ID: " +optionsDiv.data("worksheetId"));
+		var info = new Object();
+		info["vWorksheetId"] = optionsDiv.data("worksheetId");
+		info["workspaceId"] = $.workspaceGlobalInformation.id;
+		info["command"] = "ShowModelCommand";
 			
-			// Check if the domain needs to be displayed
-			if($.trim(label["DisplayDomainLabel"]) == "")
-				typeLabel.text(label["DisplayLabel"]);
-			else
-				typeLabel.text(label["DisplayLabel"] + " of " + label['DisplayDomainLabel']);
-				
-			// Check if the label was assigned by the user
-			var score = "";
-			if(selectedFlag && origin == "User")
-				score = "Probability: " + percentage+"% (User Assigned)"
-			else
-				score = "Probability: " + percentage+"%";
-				
-			trTag.append($("<td>").append(radioButton))
-				.append($("<td>").append(typeLabel))
-				.append($("<td>").text(score));
-			labelsTable.prepend(trTag);
+		showLoading(info["vWorksheetId"]);
+		var returned = $.ajax({
+		   	url: "/RequestController", 
+		   	type: "POST",
+		   	data : info,
+		   	dataType : "json",
+		   	complete : 
+		   		function (xhr, textStatus) {
+		   			//alert(xhr.responseText);
+		    		var json = $.parseJSON(xhr.responseText);
+		    		parse(json);
+		    		hideLoading(info["vWorksheetId"]);
+			   	},
+			error :
+				function (xhr, textStatus) {
+		   			alert("Error occured while generating semantic types!" + textStatus);
+		   			hideLoading(info["vWorksheetId"]);
+			   	}		   
 		});
-	} else {
-		labelsTable.html("<span class='smallSizedFont'><i>&nbsp;&nbsp;none</i></span>");
-	}
-	
-	if(fullType == "Unassigned") {
-		$("input#UnassignTypeButton").attr("checked", true);
-	}
-	
-	// Adding the handlers to the radio buttons
-	$("input:radio[@name='semanticTypeGroup']").change(function(){
-		optionsDiv.data("type", $(this).val());
-		if($(this).data("domain") != null)
-			optionsDiv.data("domain", $(this).data("domain"));
-		optionsDiv.data("source", "RadioButtonList");
-		$("div#firstColumnTree").jstree("deselect_all");
-		$("div#secondColumnTree").jstree("deselect_all");
 	});
 	
-	// Populate the class tree
-	$("#toggleOntologyHierarchy").val("class");
-	$("td#firstColumnLabel").text("Class");
-	$("td#secondColumnLabel").text("Data Property").hide();
-	// Send a request to get the JSON for displaying the list of classes
-	optionsDiv.data("secondColumnSelection","");
-	optionsDiv.data("firstColumnSelection","");
-	populatefirstColumnOntologyBox();
-	
-	
-	// Show the dialog box
-	optionsDiv.dialog({width: 400, height: 650, position: positionArray
-		, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit":submitSemanticTypeChange }});
-}
-
-function populatefirstColumnOntologyBox(){
-	var info = new Object();
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	
-	if($("#toggleOntologyHierarchy").val() == "class")
-		info["command"] = "GetOntologyClassHierarchyCommand";
-	else 
-		info["command"] = "GetDataPropertyHierarchyCommand";
-		
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : info,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	   			//alert(xhr.responseText);
-	    		var json = $.parseJSON(xhr.responseText);
-	    		var dataArray = json["elements"][0]["data"];
-	    		
-	    		var listDiv = $("div#firstColumnTree");
-	    		
-	    		if(dataArray.length == 0) {
-	    			$(listDiv).html("<i>none</i>")
-	    		} else {
-	    			$(listDiv).jstree({ 
-						"json_data" : {
-							"data" : dataArray
-						},
-						"themes" : {
-							"theme" : "apple",
-							"url": "css/jstree-themes/apple/style.css",
-							"dots" : true,
-							"icons" : false
-						},
-						
-						"plugins" : [ "themes", "json_data", "ui" ,"sort", "search"]
-					}).bind("select_node.jstree", function (e, data) { 
-						$("#ChangeSemanticTypesDialogBox").data("source","OntologyHierarchy");
-						$("#ChangeSemanticTypesDialogBox").data("firstColumnSelection",data.rslt.obj.data("URI"));
-						$("input:radio[@name='semanticTypeGroup']").attr("checked", false);
-						$("#UnassignTypeButton").attr('checked',false);
-						populateSecondColumnOntologyBox();
-					});
-	    		} 
-		   	},
-		error :
-			function (xhr, textStatus) {
-	   			alert("Error occured while fetching ontology data!" + textStatus);
-		   	}		   
+	$("button#hideModel").click(function(){
+		optionsDiv.hide();
+		var table = $("table#" + optionsDiv.data("worksheetId"));
+		$("tr.AlignmentRow", table).remove();
+		$("div.semanticTypeDiv", table).remove();
 	});
-}
-
-function populateSecondColumnOntologyBox() {
-	var info = new Object();
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	info["URI"] = $("#ChangeSemanticTypesDialogBox").data("firstColumnSelection");
 	
-	if($("#toggleOntologyHierarchy").val() == "class")
-		info["command"] = "GetDataPropertiesForClassCommand";
-	else 
-		info["command"] = "GetDomainsForDataPropertyCommand";
+	$("button#resetModel").click(function(){
+		optionsDiv.hide();
 		
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : info,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	   			//alert(xhr.responseText);
-	    		var json = $.parseJSON(xhr.responseText);
-	    		var dataArray = json["elements"][0]["data"];
-	    		var listDiv = $("div#secondColumnTree");
-	    		
-	    		if(dataArray.length == 0) {
-	    			$(listDiv).html("<i>none</i>")
-	    		} else {
-	    			$(listDiv).jstree({ 
-						"json_data" : {
-							"data" : dataArray
-						},
-						"themes" : {
-							"theme" : "apple",
-							"url": "css/jstree-themes/apple/style.css",
-							"dots" : true,
-							"icons" : false
-						},
-						
-						"plugins" : [ "themes", "json_data", "ui" ,"sort", "search"]
-					}).bind("select_node.jstree", function (e, data) { 
-						$("#ChangeSemanticTypesDialogBox").data("secondColumnSelection",data.rslt.obj.data("URI"));
-					});
-	    		}
-	    		
-				$("div#secondColumnOntologyBox").show();
-				$("td#secondColumnLabel").show();
-		   	},
-		error :
-			function (xhr, textStatus) {
-	   			alert("Error occured while fetching ontology data!" + textStatus);
-		   	}		   
-	});
-}
-
-function submitSemanticTypeChange() {
-	var optionsDiv = $("#ChangeSemanticTypesDialogBox");
-	if($("#toggleOntologyHierarchy").val() == "dataProperty" 
-		&& optionsDiv.data("secondColumnSelection") == "") {
-		alert("Please specify the domain for the data property!");
-		return;
-	}
-	
-	var info = new Object();
-	var hNodeId = optionsDiv.data("currentNodeId");
-	info["command"] = "SetSemanticTypeCommand";
-	info["vWorksheetId"] = $("td.columnHeadingCell#" + hNodeId).parents("table.WorksheetTable").attr("id");
-	info["hNodeId"] = hNodeId;
-	
-	if(optionsDiv.data("source") == "RadioButtonList") {
-		info["type"] = optionsDiv.data("type");
-		if(optionsDiv.data("domain") != null)
-			info["domain"] = optionsDiv.data("domain");
-		else
-			info["domain"] = "";
-		
-		// Check if the user selected the unassigned  option
-		if(info["type"] == "UnassignType") {
-			info["command"] = "UnassignSemanticTypeCommand";
-		}
-		
-		if(info["domain"] == "")
-			info["resourceType"] = "Class";
-		else
-			info["resourceType"] = "DataProperty";
+		var info = new Object();
+		info["vWorksheetId"] = optionsDiv.data("worksheetId");
+		info["workspaceId"] = $.workspaceGlobalInformation.id;
+		info["command"] = "ResetModelCommand";
 			
-	} else if (optionsDiv.data("source") == "OntologyHierarchy") {
-		if($("#toggleOntologyHierarchy").val() == "class") {
-			if(optionsDiv.data("secondColumnSelection") == "") {
-				info["resourceType"] = "Class";
-				info["type"] = optionsDiv.data("firstColumnSelection");
-			} else {
-				info["resourceType"] = "DataProperty";
-				info["domain"] = optionsDiv.data("firstColumnSelection");
-				info["type"] = optionsDiv.data("secondColumnSelection");
-			}
-		} else {
-			info["resourceType"] = "DataProperty";
-			info["type"] = optionsDiv.data("firstColumnSelection");
-			info["domain"] = optionsDiv.data("secondColumnSelection");
-		}
-	}
-	
-	
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : info,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	    		var json = $.parseJSON(xhr.responseText);
-	    		parse(json);
-		   	},
-		error :
-			function (xhr, textStatus) {
-	   			alert("Error occured with fetching new rows! " + textStatus);
-		   	}
-	});
-	
-	optionsDiv.dialog("close");
-}
-
-function handlePrevNextLink() {
-	if($(this).hasClass("inactiveLink"))
-		return;
-	// Prepare the data to be sent to the server	
-	var info = new Object();
-	var worksheetId = $(this).data("vWorksheetId");
-	info["tableId"] = $(this).parents("div.pager").data("tableId");
-	info["direction"] = $(this).data("direction");
-	info["vWorksheetId"] = worksheetId;
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	info["command"] = "TablePagerCommand";
-		
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : info,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	   			//alert(xhr.responseText);
-	    		var json = $.parseJSON(xhr.responseText);
-	    		parse(json);
-		   	},
-		error :
-			function (xhr, textStatus) {
-	   			alert("Error occured with fetching new rows! " + textStatus);
-		   	}		   
-	});
-	return false;
-	$(this).preventDefault();
-}
-
-function handlePagerResize() {
-	if($(this).hasClass("pagerSizeSelected"))
-		return;
-		
-	// $(this).siblings().removeClass("pagerSizeSelected");	
-	// $(this).addClass("pagerSizeSelected");	
-	
-	// Prepare the data to be sent to the server	
-	var info = new Object();
-	
-	var worksheetId = $(this).data("vWorksheetId");
-	info["newPageSize"] = $(this).data("rowCount");
-	info["tableId"] = $(this).parents("div.pager").data("tableId");
-	info["vWorksheetId"] = worksheetId;
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	info["command"] = "TablePagerResizeCommand";
-		
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : info,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	   			//alert(xhr.responseText);
-	    		var json = $.parseJSON(xhr.responseText);
-	    		parse(json);
-		   	},
-		error :
-			function (xhr, textStatus) {
-	   			alert("Error occured with fetching new rows! " + textStatus);
-	   			
-		   	}		   
-	});
-	return false;
-	$(this).preventDefault();
-}
-
-function showCSVImportOptions(response) {
-	// TODO Reset the CSV import options
-	$("#CSVPreviewTable tr").remove();
-	$("#CSVPreviewTable").append($("<tr>").append($("<td>").addClass("rowIndexCell").text("File Row Number")));
-	
-	var responseJSON = $.parseJSON(response);
-	var headers = responseJSON["elements"][0]["headers"];
-	
-	//Change the source name
-	$("#CSVSourceName").text(responseJSON["elements"][0]["fileName"]);
-	
-	// Populate the headers
-	if(headers != null)  {
-		var trTag = $("<tr>");
-		$.each(headers, function(index, val) {
-			if(index == 0){
-				trTag.append($("<td>").addClass("rowIndexCell").text(val));
-			} else {
-				trTag.append($("<th>").text(val));
-			}
+		showLoading(info["vWorksheetId"]);
+		var returned = $.ajax({
+		   	url: "/RequestController", 
+		   	type: "POST",
+		   	data : info,
+		   	dataType : "json",
+		   	complete : 
+		   		function (xhr, textStatus) {
+		   			//alert(xhr.responseText);
+		    		var json = $.parseJSON(xhr.responseText);
+		    		parse(json);
+		    		hideLoading(info["vWorksheetId"]);
+			   	},
+			error :
+				function (xhr, textStatus) {
+		   			alert("Error occured while removing semantic types!" + textStatus);
+		   			hideLoading(info["vWorksheetId"]);
+			   	}		   
 		});
-		$("#CSVPreviewTable").append(trTag);
-	} else {
-		// Put empty column names
-		var trTag = $("<tr>");
-		$.each(responseJSON["elements"][0]["rows"][0], function(index, val) {
-			if(index == 0){
-				trTag.append($("<td>").addClass("rowIndexCell").text("-"));
-			} else {
-				trTag.append($("<th>").text("Column_" + index).addClass("ItalicColumnNames"));
-			}
+	});
+
+	$("button#publishRDF").click(function(){
+		optionsDiv.hide();
+		showHideRdfInfo();
+		getRDFPreferences();
+		var rdfDialogBox = $("div#PublishRDFDialogBox");
+		// Show the dialog box
+		rdfDialogBox.dialog({width: 300
+			, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": publishRDFFunction }});
+
+	});
+
+	$("button#publishDatabase").click(function(){
+		optionsDiv.hide();
+		getDatabasePreferences();
+		var dbDialogBox = $("div#PublishDatabaseDialogBox");
+		// Show the dialog box
+		dbDialogBox.dialog({width: 300
+			, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": publishDatabaseFunction }});
+	});
+
+	$("button#splitByComma").click(function(){
+		optionsDiv.hide();
+		
+		// console.log("Splitting by comma for table: " + optionsDiv.data("worksheetId"));
+		var table = $("table#" + optionsDiv.data("worksheetId"));
+		var cols = $('td.columnHeadingCell[colspan="1"]', table);
+		
+		var columnListDiv = $("div#SplitByCommaColumnListPanel");
+		var columnList = $("select#splitByCommaColumnList", columnListDiv);
+		
+		// Remove any existing option from the list
+		$("option", columnList).remove();
+		
+		$.each(cols, function(index, col){
+			if($("div.ColumnHeadingNameDiv",col).length != 0)
+				columnList.append($("<option>").val($(col).attr("id")).text($("div.ColumnHeadingNameDiv",col).text()));
+		});
+		
+		// Show the dialog box
+		columnListDiv.dialog({width: 300, height: 150
+			, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": splitColumnByComma }});
+	});
+	
+	$("button#populateSource").click(function(){
+        optionsDiv.hide();
+        
+        var info = new Object();
+        info["vWorksheetId"] = optionsDiv.data("worksheetId");
+        info["workspaceId"] = $.workspaceGlobalInformation.id;
+        info["command"] = "PopulateCommand";
+            
+        showLoading(info["vWorksheetId"]);
+        var returned = $.ajax({
+            url: "/RequestController", 
+            type: "POST",
+            data : info,
+            dataType : "json",
+            complete : 
+                function (xhr, textStatus) {
+                    //alert(xhr.responseText);
+                    var json = $.parseJSON(xhr.responseText);
+                    parse(json);
+                    hideLoading(info["vWorksheetId"]);
+                },
+            error :
+                function (xhr, textStatus) {
+                    alert("Error occured while populating source!" + textStatus);
+                    hideLoading(info["vWorksheetId"]);
+                }          
+        });
+        
+    });
+    
+    $("button#publishServiceModel").click(function(){
+        optionsDiv.hide();
+        
+        var info = new Object();
+        info["vWorksheetId"] = optionsDiv.data("worksheetId");
+        info["workspaceId"] = $.workspaceGlobalInformation.id;
+        info["command"] = "PublishModelCommand";
+            
+        showLoading(info["vWorksheetId"]);
+        var returned = $.ajax({
+            url: "/RequestController", 
+            type: "POST",
+            data : info,
+            dataType : "json",
+            complete : 
+                function (xhr, textStatus) {
+                    //alert(xhr.responseText);
+                    var json = $.parseJSON(xhr.responseText);
+                    parse(json);
+                    hideLoading(info["vWorksheetId"]);
+                },
+            error :
+                function (xhr, textStatus) {
+                    alert("Error occured while publishing service model!" + textStatus);
+                    hideLoading(info["vWorksheetId"]);
+                }          
+        });
+        
+    });
+	
+	
+}
+
+function openWorksheetOptions(event) {
+	$("div#WorksheetOptionsDiv")
+			.css({'position':'fixed', 'left':(event.clientX - 75) + 'px', 'top':(event.clientY+4)+'px'})
+			.data("worksheetId", $(this).parents("div.Worksheet").attr("id"))
+			.show();
+}
+
+function splitColumnByComma() {
+	$("div#SplitByCommaColumnListPanel").dialog("close");
+	var selectedHNodeId = $("select#splitByCommaColumnList option:selected").val();
+	
+	var info = new Object();
+	info["vWorksheetId"] = $("div#WorksheetOptionsDiv").data("worksheetId");
+	info["workspaceId"] = $.workspaceGlobalInformation.id;
+	info["hNodeId"] = selectedHNodeId;
+	info["command"] = "SplitByCommaCommand";
 			
-		});
-		$("#CSVPreviewTable").append(trTag);
-	}
-	
-	// Populate the data
-	var rows = responseJSON["elements"][0]["rows"];
-	$.each(rows, function(index, row) {
-		var trTag = $("<tr>");
-		$.each(row, function(index2, val) {
-			var displayVal = val;
-			if(displayVal.length > 20) {
-				displayVal = displayVal.substring(0,20) + "...";
-			}
-			if(index2 == 0) {
-				trTag.append($("<td>").addClass("rowIndexCell").text(displayVal));
-			} else {
-				trTag.append($("<td>").text(displayVal));
-			}
-		});
-		$("#CSVPreviewTable").append(trTag);
-	});
-	
-	// Attach the command ID
-	$("#CSVImportDiv").data("commandId", responseJSON["elements"][0]["commandId"]);
-	
-	// Open the dialog
-	$("#CSVImportDiv").dialog({ modal: true , width: 820, title: 'Import CSV File Options',
-		buttons: { "Cancel": function() { $(this).dialog("close"); }, "Import":CSVImportOptionsChanged}});
-}
-
-function CSVImportOptionsChanged(flag) {
-	
-	var options = new Object();
-	options["command"] = "ImportCSVFileCommand";
-	options["commandId"] = $("#CSVImportDiv").data("commandId");
-	options["delimiter"] = $("#delimiterSelector").val();
-	options["CSVHeaderLineIndex"] = $("#CSVHeaderLineIndex").val();
-	options["startRowIndex"] = $("#startRowIndex").val();
-	options["textQualifier"] = $("#textQualifier").val();
-	options["workspaceId"] = $.workspaceGlobalInformation.id;
-	options["interactionType"] = "generatePreview";
-	
-	// Import the CSV if Import button invoked this function
-	if(typeof(flag) == "object") {
-		options["execute"] = true;
-		options["interactionType"] = "importTable";
-	}
-		
-
-	var returned = $.ajax({
-	   	url: "/RequestController", 
-	   	type: "POST",
-	   	data : options,
-	   	dataType : "json",
-	   	complete : 
-	   		function (xhr, textStatus) {
-	   			if(!options["execute"])
-	    			showCSVImportOptions(xhr.responseText);
-	    		else{
-	    			$("#CSVImportDiv").dialog("close");
-	    			parse($.parseJSON(xhr.responseText));
-	    		}		
-		   	}
-		});	
-}
-
-function resetCSVDialogOptions() {
-	$("#delimiterSelector :nth-child(1)").attr('selected', 'selected');
-	$("#CSVHeaderLineIndex").val("1");
-	$("#startRowIndex").val("2");
-	$("#textQualifier").val("\"");
-}
-
-function handleTableCellEditButton(event) {
-	var tdTagId = $("#tableCellToolBarMenu").data("parentCellId");
-	$("#tableCellEditDiv #editCellTextArea").remove();
-	
-	if($("#"+tdTagId).hasClass("expandValueCell")) {
-		$("#tableCellEditDiv").append($("<textarea>")
-						.attr("id", "editCellTextArea")
-						.text($("#"+tdTagId).data("fullValue")));
-	} else {
-		$("#tableCellEditDiv").append($("<textarea>")
-						.attr("id", "editCellTextArea")
-						.text($("#"+tdTagId + " div.cellValue").text()));
-	}
-	
-	var positionArray = [event.clientX-150		// distance from left
-					, event.clientY-10];	// distance from top
-	
-	$("#tableCellEditDiv").dialog({ title: 'Edit Cell Value',
-			buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit":submitEdit }, width: 300, height: 150, position: positionArray});
-	// console.log(tdTagId);
-	$("#tableCellEditDiv").data("tdTagId", tdTagId);
-}
-
-function showAlternativeParents(event) {
-	var info = new Object();
-	info["workspaceId"] = $.workspaceGlobalInformation.id;
-	info["nodeId"] = $(this).parents("td.columnHeadingCell").data("jsonElement")["contentCell"]["id"];
-	info["command"] = "GetAlternativeLinksCommand";
-	info["alignmentId"] = $(this).parents("table.WorksheetTable").data("alignmentId");
-	info["worksheetId"] = $(this).parents("table.WorksheetTable").attr("id");
-		
+	showLoading(info["vWorksheetId"]);
 	var returned = $.ajax({
 	   	url: "/RequestController", 
 	   	type: "POST",
@@ -532,61 +233,90 @@ function showAlternativeParents(event) {
 	   		function (xhr, textStatus) {
 	   			// alert(xhr.responseText);
 	    		var json = $.parseJSON(xhr.responseText);
-	    		$.each(json["elements"], function(index, element) {
-	    			if(element["updateType"] == "GetAlternativeLinks") {
-	    				var optionsDiv = $("div#OntologyAlternativeLinksPanel");
-	    				var table = $("table", optionsDiv);
-	    				$("tr", table).remove();
-	    				var positionArray = [event.clientX+20		// distance from left
-									, event.clientY+10];	// distance from top
-						
-						$.each(element["Edges"], function(index2, edge) {
-							var trTag = $("<tr>");
-							
-							var radioButton = $("<input>")
-								.attr("type", "radio")
-								.attr("id", edge["edgeId"])
-								.attr("name", "AlternativeLinksGroup")
-								.attr("value", edge["edgeId"])
-								.val(edge["edgeLabel"]);
-								
-							var linkLabel = $("<label>").attr("for",edge["edgeId"]).text(edge["edgeSource"] + " " + edge["edgeLabel"]);
-							
-							trTag.append($("<td>").append(radioButton))
-								.append($("<td>").append(linkLabel));
-								
-							table.append(trTag);
-						});
-						// Show the dialog box
-						optionsDiv.dialog({width: 300, height: 300, position: positionArray
-							, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit":submitAlignmentLinkChange }});
-							
-						$("input:radio[@name='AlternativeLinksGroup']").change(function(){
-							optionsDiv.data("currentSelection", $(this).attr("id"));
-							optionsDiv.data("alignmentId", info["alignmentId"]);
-							optionsDiv.data("worksheetId", info["worksheetId"]);
-						});
-	    			}
-	    		});
+	    		parse(json);
+	    		hideLoading(info["vWorksheetId"]);
 		   	},
 		error :
 			function (xhr, textStatus) {
-	   			alert("Error occured while getting alternative links!" + textStatus);
+	   			alert("Error occured while splitting a column by comma! " + textStatus);
+	   			hideLoading(info["vWorksheetId"]);
 		   	}		   
 	});
 }
 
-function submitAlignmentLinkChange() {
-	var optionsDiv = $("div#OntologyAlternativeLinksPanel");
+function showSemanticTypeInfo() {
+	// var crfData = $(this).data("crfInfo");
+	// var table = $("div#ColumnCRFModelInfoBox table");
+	// $("tr", table).remove();
+// 	
+	// $.each(crfData["Labels"], function(index, label) {
+		// var trTag = $("<tr>");
+		// trTag.append($("<td>").text(label["Type"]))
+			// .append($("<td>").text(label["Probability"]));
+	// });
+}
+
+function hideSemanticTypeInfo() {
 	
+}
+
+function styleAndAssignHandlersToTableCellMenu() {
+	var optionsDiv = $("div#tableCellMenuButtonDiv");
+	var tableCellMenu = $("div#tableCellToolBarMenu");
+	
+	// Stylize the buttons
+	$("button", tableCellMenu).button();
+	
+	// Assign handlers
+	optionsDiv.click(openTableCellOptions)
+		.button({
+			icons: {
+				primary: 'ui-icon-triangle-1-s'
+		    },
+			text: false
+			})
+		.mouseenter(function(){
+			$(this).show();
+		})	
+		.mouseleave(function(){
+			tableCellMenu.hide();
+	})
+	
+	$("button#editCellButton").click(function(event){
+		handleTableCellEditButton(event);
+	});
+	
+	$("button#expandValueButton" ).click(function(event){
+		handleEableCellExpandButton(event);
+	});
+	
+	// Hide the option button when mouse leaves the menu
+	tableCellMenu.mouseenter(function(){
+		$(this).show();
+	})
+	.mouseleave(function() {
+		optionsDiv.hide();
+		$(this).hide();
+	});
+}
+
+function handleEableCellExpandButton(event) {
+	var tdTagId = $("#tableCellToolBarMenu").data("parentCellId");
+	// Get the full expanded value
+	var value = ""
+	var tdTag = $("td#"+tdTagId);
+	if(tdTag.hasClass("hasTruncatedValue")) {
+		value = tdTag.data("fullValue");
+	} else {
+		value = $("span.cellValue", tdTag).text();
+	}
+	
+	// Get the RDF text (if it exists)
 	var info = new Object();
-	info["command"] = "AddUserLinkToAlignmentCommand";
-	info["vWorksheetId"] = optionsDiv.data("worksheetId");
-	info["alignmentId"] = optionsDiv.data("alignmentId");
-	info["edgeId"] = optionsDiv.data("currentSelection");
-	
-	
+	info["nodeId"] = tdTagId;
+	info["vWorksheetId"] = tdTag.parents("div.Worksheet").attr("id");
 	info["workspaceId"] = $.workspaceGlobalInformation.id;
+	info["command"] = "PublishRDFCellCommand";
 	
 	var returned = $.ajax({
 	   	url: "/RequestController", 
@@ -595,128 +325,149 @@ function submitAlignmentLinkChange() {
 	   	dataType : "json",
 	   	complete : 
 	   		function (xhr, textStatus) {
-	   			var json = $.parseJSON(xhr.responseText);
-	    		parse(json);
+	    		var json = $.parseJSON(xhr.responseText);
+	    		if(json["elements"][0]["updateType"] == "PublishCellRDFUpdate") {
+	    			var rdfText = json["elements"][0]["cellRdf"];
+	    			$("div#rdfValue", expandDiv).html(rdfText);
+	    		} else if (json["elements"][0]["updateType"] == "KarmaError") {
+	    			var rdfText = "<i>" + json["elements"][0]["Error"] + "<i>";
+	    			$("div#rdfValue", expandDiv).html(rdfText);
+	    		}
 		   	},
 		error :
 			function (xhr, textStatus) {
-	   			alert("Error occured with fetching new rows! " + textStatus);
-		   	}
+	   			$.sticky("Error occured while getting RDF triples for the cell! " + textStatus);
+		   	}		   
 	});
 	
-	optionsDiv.dialog("close");
+	
+	var expandDiv = $("div#ExpandCellValueDialog");
+	// Add the cell value
+	$("div#cellExpandedValue", expandDiv).text(value);
+	
+	var positionArray = [event.clientX-150		// distance from left
+					, event.clientY-10];	// distance from top
+	expandDiv.show().dialog({height: 300, width: 500, show:'blind', position: positionArray});
 }
 
-function openWorksheetOptions(event) {
-	$("#WorksheetOptionsDiv").css({'position':'fixed', 
-			'left':(event.clientX - 75) + 'px', 'top':(event.clientY+4)+'px'});
-	$("#WorksheetOptionsDiv").show();
-	
-	$("#WorksheetOptionsDiv").data("worksheetId", $(this).parents("div.Worksheet").attr("id"));
+function openTableCellOptions() {
+	var tableCellMenu = $("div#tableCellToolBarMenu");
+	tableCellMenu.data("parentCellId", $(this).data("parentCellId"));
+	tableCellMenu.css({"position":"absolute",
+		"top":$(this).offset().top + 15, 
+		"left": $(this).offset().left + $(this).width()/2 - $(tableCellMenu).width()/2}).show();
 }
 
-function styleAndAssignHandlersToWorksheetOptionButtons() {
-	// Styling the elements
-	$("#WorksheetOptionsDiv").hide().addClass("ui-corner-all");
-	$("#WorksheetOptionsDiv button").button();
+function showTableCellMenuButton() {
+	// Get the parent table
+	var tdTag = $(this);
+	var optionsDiv = $("div#tableCellMenuButtonDiv");
+	optionsDiv.data("parentCellId", tdTag.attr("id"));
 	
-	// Adding mouse handlers to the div
-	$("#WorksheetOptionsDiv").mouseenter(function() {
+	// Show it at the right place
+	var top = $(tdTag).offset().top + $(tdTag).height()-18;
+	var left = $(tdTag).offset().left + $(tdTag).width()-25;
+	optionsDiv.css({"position":"absolute",
+		"top":top, 
+		"left": left}).show();
+}
+
+function hideTableCellMenuButton() {
+	$("div#tableCellMenuButtonDiv").hide();
+}
+
+function styleAndAssignHandlersToColumnHeadingMenu() {
+	var optionsDiv = $("div#columnHeadingMenuButtonDiv");
+	var columnHeadingMenu = $("div#columnHeadingDropDownMenu");
+	
+	$("button", columnHeadingMenu).button();
+	
+	optionsDiv.click(openColumnHeadingOptions)
+		.button({
+			icons: {
+				primary: 'ui-icon-triangle-1-s'
+		    },
+			text: false
+			})
+		.mouseenter(function(){
+			$(this).show();
+		})	
+		.mouseleave(function(){
+			columnHeadingMenu.hide();
+	})
+	// Hide the option button when mouse leaves the menu
+	columnHeadingMenu.mouseleave(function() {
+		optionsDiv.hide();
+		columnHeadingMenu.hide();
+	}).mouseenter(function(){
 		$(this).show();
 	});
-	$("#WorksheetOptionsDiv").mouseleave(function() {
-		$(this).hide();
-	});
 	
-	// Adding handlers to the buttons
-	$("#generateSemanticTypesButton").click(function(){
-		$("#WorksheetOptionsDiv").hide();
-		
-		console.log("Generating semantic types for table with ID: " + $("#WorksheetOptionsDiv").data("worksheetId"));
-		var info = new Object();
-		info["vWorksheetId"] = $("#WorksheetOptionsDiv").data("worksheetId");
-		info["workspaceId"] = $.workspaceGlobalInformation.id;
-		info["command"] = "GenerateSemanticTypesCommand";
-			
-		var returned = $.ajax({
-		   	url: "/RequestController", 
-		   	type: "POST",
-		   	data : info,
-		   	dataType : "json",
-		   	complete : 
-		   		function (xhr, textStatus) {
-		   			//alert(xhr.responseText);
-		    		var json = $.parseJSON(xhr.responseText);
-		    		parse(json);
-			   	},
-			error :
-				function (xhr, textStatus) {
-		   			alert("Error occured while generating semantic types!" + textStatus);
-			   	}		   
-		});
-	});
-	
-	$("button#showModel").click(function(){
-		$("#WorksheetOptionsDiv").hide();
-		
-		console.log("Showing model for table with ID: " + $("#WorksheetOptionsDiv").data("worksheetId"));
-		var info = new Object();
-		info["vWorksheetId"] = $("#WorksheetOptionsDiv").data("worksheetId");
-		info["workspaceId"] = $.workspaceGlobalInformation.id;
-		info["command"] = "ShowModelCommand";
-			
-		var returned = $.ajax({
-		   	url: "/RequestController", 
-		   	type: "POST",
-		   	data : info,
-		   	dataType : "json",
-		   	complete : 
-		   		function (xhr, textStatus) {
-		   			//alert(xhr.responseText);
-		    		var json = $.parseJSON(xhr.responseText);
-		    		parse(json);
-			   	},
-			error :
-				function (xhr, textStatus) {
-		   			alert("Error occured while generating semantic types!" + textStatus);
-			   	}		   
-		});
-	});
-	
-	$("button#hideModel").click(function(){
-		$("#WorksheetOptionsDiv").hide();
-		var table = $("table#" + $("#WorksheetOptionsDiv").data("worksheetId"));
-		$("tr.AlignmentRow", table).remove();
-		$("div.semanticTypeDiv", table).remove();
-	});
-	
-	$("#alignToOntologyButton").click(function(){
-		$("#WorksheetOptionsDiv").hide();
-		
-		console.log("Aligning the table with ID: " + $("#WorksheetOptionsDiv").data("worksheetId"));
-		var info = new Object();
-		info["vWorksheetId"] = $("#WorksheetOptionsDiv").data("worksheetId");
-		info["workspaceId"] = $.workspaceGlobalInformation.id;
-		info["command"] = "AlignToOntologyCommand";
-			
-		var returned = $.ajax({
-		   	url: "/RequestController", 
-		   	type: "POST",
-		   	data : info,
-		   	dataType : "json",
-		   	complete : 
-		   		function (xhr, textStatus) {
-		   			//alert(xhr.responseText);
-		    		var json = $.parseJSON(xhr.responseText);
-		    		parse(json);
-			   	},
-			error :
-				function (xhr, textStatus) {
-		   			//alert("Error occured while generating semantic types!" + textStatus);
-			   	}		   
-		});
-	});
+	// Assign handler to column clean button (in cleaning.js)
+    assignHandlersToCleaningPanelObjects();
+    
+    // Assign handler to service invocation button (in services.js)
+    assignHandlersToServiceInvocationObjects();
 }
+
+function openColumnHeadingOptions() {
+	var columnHeadingMenu = $("div#columnHeadingDropDownMenu");
+	columnHeadingMenu.data("parentCellId", $(this).data("parentCellId"));
+	columnHeadingMenu.css({"position":"absolute",
+		"top":$(this).offset().top + 15, 
+		"left": $(this).offset().left + $(this).width()/2 - $(columnHeadingMenu).width()/2}).show();
+}
+
+function showColumnOptionButton(event) {
+	var tdTag = $(this);
+	var optionsDiv = $("div#columnHeadingMenuButtonDiv");
+	optionsDiv.data("parentCellId", tdTag.attr("id"));
+    
+    // Show it at the right place
+	var top = $(tdTag).offset().top + $(tdTag).height()-18;
+	var left = $(tdTag).offset().left + $(tdTag).width()-25;
+	optionsDiv.css({"position":"absolute",
+		"top":top, 
+		"left": left}).show();
+}
+
+function hideColumnOptionButton() {    
+	$("div#columnHeadingMenuButtonDiv").hide();    
+}
+
+function showLoading(worksheetId) {
+    var coverDiv = $("<div>").attr("id","WaitingDiv_"+worksheetId).addClass('waitingDiv')
+        .append($("<div>").html('<b>Please wait</b>')
+            .append($('<img>').attr("src","images/ajax-loader.gif"))
+    );
+     
+    var spaceToCoverDiv = $("div#"+worksheetId);
+    spaceToCoverDiv.append(coverDiv.css({"position":"absolute", "height":spaceToCoverDiv.height(), 
+        "width": spaceToCoverDiv.width(), "top":spaceToCoverDiv.position().top, "left":spaceToCoverDiv.position().left}).show());
+}
+
+function hideLoading(worksheetId) {
+	$("div#WaitingDiv_"+worksheetId).hide();
+}
+
+function showWaitingSignOnScreen() {
+    var coverDiv = $("<div>").attr("id","WaitingDiv").addClass('waitingDiv')
+        .append($("<div>").html('<b>Please wait</b>')
+            .append($('<img>').attr("src","images/ajax-loader.gif"))
+    );
+     
+    var spaceToCoverDiv = $('body');
+    spaceToCoverDiv.append(coverDiv.css({"position":"fixed", "height":$(document).height(), 
+        "width": $(document).width(), "zIndex":100,"top":spaceToCoverDiv.position().top, "left":spaceToCoverDiv.position().left}).show());
+}
+
+function hideWaitingSignOnScreen() {
+    $("div#WaitingDiv").hide();
+}
+
+
+
+
 
 
 

@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.view.alignmentHeadings;
 
 import java.util.ArrayList;
@@ -58,6 +78,7 @@ public class AlignmentForest implements TForest {
 		sortedHeaders.addAll(finalOrder);
 		// Add the unaligned columns
 		sortedHeaders.addAll(unalignedColumns);
+
 		return forest;
 	}
 
@@ -87,13 +108,15 @@ public class AlignmentForest implements TForest {
 		HashMap<TNode, Integer> nodeIndexMap = new HashMap<TNode, Integer>();
 		int counter = 0;
 		for (HNode hNode : sortedHeaders) {
+			// logger.info("Checking for HNODE: " + hNode.getColumnName() + " "
+			// + hNode.getId());
 			String id = hNode.getId();
 			TNode node = getAlignmentNodeWithHNodeId(roots, id);
 
 			// For the columns that did not have a semantic type defined
 			// For e.g. the ones that do not have data
 			if (node == null) {
-				//System.out.println("Alignment node returned null!");
+				logger.debug("Alignment node returned null!");
 				continue;
 			}
 
@@ -218,7 +241,9 @@ public class AlignmentForest implements TForest {
 		for (TNode node : nodes) {
 			AlignmentNode alNode = (AlignmentNode) node;
 			if (alNode.hasSemanticType()) {
-//				System.out.println("Cheking on sem type: " + alNode.getType().getType());
+				logger.debug("Cheking on sem type: "
+						+ alNode.getType().getType() + " ID: "
+						+ alNode.getSemanticTypeHNodeId());
 				if (alNode.getSemanticTypeHNodeId().equals(hNodeId)) {
 					return alNode;
 				}
@@ -237,11 +262,11 @@ public class AlignmentForest implements TForest {
 	private TNode populateWithVertex(Vertex vertex,
 			DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree,
 			LabeledWeightedEdge parentEdge) {
-		// Add the debugrmation about the parent link
+		// Add the information about the parent link
 		AlignmentLink parentLink = null;
 		if (parentEdge != null) {
 			parentLink = new AlignmentLink(parentEdge.getID(),
-					parentEdge.getLabel());
+					parentEdge.getUriString());
 		}
 
 		// Add the children
@@ -252,12 +277,12 @@ public class AlignmentForest implements TForest {
 		if (vertex.getSemanticType() != null
 				&& tree.outgoingEdgesOf(vertex).size() != 0) {
 			logger.debug("Intermediate Node with column attached to it: "
-					+ vertex.getLabel());
+					+ vertex.getUriString());
 			AlignmentLink link = new AlignmentLink(vertex.getSemanticType()
 					.getHNodeId() + "BlankLink", "BlankNode");
 			TNode node = new AlignmentNode(vertex.getID() + "BlankNodeId",
 					null, link, "BlankNode", vertex.getSemanticType());
-//			System.out.println("Created blank node: " + node.getId());
+			 logger.debug("Created blank node: " + node.getId());
 			children.add(node);
 		}
 
@@ -269,8 +294,8 @@ public class AlignmentForest implements TForest {
 		}
 
 		AlignmentNode node = new AlignmentNode(vertex.getID(), children,
-				parentLink, vertex.getLabel(), vertex.getSemanticType());
-//		System.out.println("Created node: " + node.getId());
+				parentLink, vertex.getUriString(), vertex.getSemanticType());
+		logger.debug("Created node: " + node.getId());
 		return node;
 	}
 }

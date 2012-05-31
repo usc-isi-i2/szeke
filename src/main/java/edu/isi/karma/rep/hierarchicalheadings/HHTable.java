@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.rep.hierarchicalheadings;
 
 import java.io.PrintWriter;
@@ -32,8 +52,8 @@ public class HHTable {
 		int rootNodesCount = hHtree.countRootNodes();
 		int maxDepth = hHtree.getMaxDepth();
 
-		System.out.println("Constructing matrix of height: " + (maxDepth + 1)
-				+ " and width: " + rootNodesCount);
+//		System.out.println("Constructing matrix of height: " + (maxDepth + 1)
+//				+ " and width: " + rootNodesCount);
 		cells = new HHCell[maxDepth + 1][rootNodesCount];
 
 		/*** Create HHCells using the HHTNode traversing HHTree top down ***/
@@ -188,11 +208,11 @@ public class HHTable {
 						+ translator.getCssTag("", cell.getDepth()));
 			}
 
-			if(!NO_SEPARATORS_FLAG)
+			// if(!NO_SEPARATORS_FLAG)
 				cellObj.put(CellJsonKeys.colSpan.name(), cell.getHtmlTableColSpan());
-			else {
-				cellObj.put(CellJsonKeys.colSpan.name(), cell.getColspan());
-			}
+//			else {
+//				cellObj.put(CellJsonKeys.colSpan.name(), cell.getColspan());
+//			}
 			
 			cellObj.put(CellJsonKeys.fillId.name(),
 					translator.getCssTag("", cell.getDepth()));

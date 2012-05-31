@@ -1,6 +1,24 @@
-/**
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
  * 
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
+
 package edu.isi.karma.rep;
 
 import java.io.PrintWriter;
@@ -51,6 +69,12 @@ public class Worksheet extends RepEntity {
 	public SemanticTypes getSemanticTypes() {
 		return semanticTypes;
 	}
+	public void clearSemanticTypes() {
+		semanticTypes=new SemanticTypes();
+	}
+	public void setSemanticTypes(SemanticTypes t){
+		semanticTypes=t;
+	}
 
 	public FullCRFModel getCrfModel() {
 		return crfModel;
@@ -58,6 +82,10 @@ public class Worksheet extends RepEntity {
 
 	public MetadataContainer getMetadataContainer() {
 		return metadataContainer;
+	}
+
+	public void setMetadataContainer(MetadataContainer metadataContainer) {
+		this.metadataContainer = metadataContainer;
 	}
 
 	/**
@@ -101,5 +129,25 @@ public class Worksheet extends RepEntity {
 	 */
 	public void addNestedTableToDataTable(HNode hNode, RepFactory factory) {
 		dataTable.addNestedTableToDataTable(hNode, factory);
+	}
+	
+	public boolean containService() {
+		if (this.getMetadataContainer() == null)
+			return false;
+		
+		if (this.getMetadataContainer().getService() == null)
+			return false;
+		
+		return true;
+	}
+	
+	public boolean containSource() {
+		if (this.getMetadataContainer() == null)
+			return false;
+		
+		if (this.getMetadataContainer().getSource() == null)
+			return false;
+		
+		return true;
 	}
 }

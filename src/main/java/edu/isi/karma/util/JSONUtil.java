@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 package edu.isi.karma.util;
 
 import java.io.BufferedReader;
@@ -72,6 +92,14 @@ public class JSONUtil {
 		}
 	}
 
+	public static String truncateCellValue(String x, int maxChars) {
+		if (x.length() > maxChars) {
+			return x.substring(0, Math.max(3, maxChars)) + " ...";
+		} else {
+			return x;
+		}
+	}
+
 	private static String readerToString(Reader reader) {
 		StringBuffer fileData = new StringBuffer(1000);
 		BufferedReader bufferedReader = new BufferedReader(reader);
@@ -128,7 +156,7 @@ public class JSONUtil {
 		String x = readerToString(reader);
 		return createJson(x);
 	}
-	
+
 	public static String prettyPrintJson(String jsonString) {
 		try {
 			Object o = createJson(jsonString);
@@ -152,7 +180,7 @@ public class JSONUtil {
 			if (o instanceof JSONObject) {
 				JSONObject x = (JSONObject) o;
 				pw.println(x.toString(2));
-			} else if (o instanceof JSONArray){
+			} else if (o instanceof JSONArray) {
 				JSONArray x = (JSONArray) o;
 				pw.println(x.toString(2));
 			}
@@ -161,6 +189,6 @@ public class JSONUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 	}
 }

@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 /**
  * 
  */
@@ -31,18 +51,19 @@ public class ViewPreferences {
 	/**
 	 * Id of the workspace. Each workspace has its own view preference object.
 	 */
-	private String workspaceId;
+	private String preferencesId;
 	
 	private JSONObject json;
 	
 	private static Logger logger = LoggerFactory.getLogger(ViewPreferences.class.getSimpleName());
 	
 	public enum ViewPreference {
-		maxCharactersInHeader, maxRowsToShowInNestedTables, defaultRowsToShowInTopTables;
+		maxCharactersInHeader, maxCharactersInCell, maxRowsToShowInNestedTables, defaultRowsToShowInTopTables;
 		
 		public int getIntDefaultValue() {
 			switch(this) {
 			case maxCharactersInHeader: return 10;
+			case maxCharactersInCell: return 100;
 			case maxRowsToShowInNestedTables: return 5;
 			case defaultRowsToShowInTopTables: return 10;
 			}
@@ -50,30 +71,39 @@ public class ViewPreferences {
 		}
 	}
 
-	public ViewPreferences(String workspaceId) {
-		this.workspaceId = workspaceId;
+	public ViewPreferences(String preferencesId) {
+		this.preferencesId = preferencesId;
 		populatePreferences();
 	}
 	
 	private void populatePreferences() {
 		try {
 			// TODO Make this path to user preferences configurable through web.xml
-			jsonFile = new File("./UserPrefs/" + workspaceId + ".json");
+			jsonFile = new File("./UserPrefs/" + preferencesId + ".json");
 			if(jsonFile.exists()){
 				// Populate from the existing preferences JSON file
 				json = (JSONObject) JSONUtil.createJson(new FileReader(jsonFile));
+				if(json == null) {
+					// If error occurred with preferences file, create a new one
+					logger.error("Preferences file corrupt! Creating new from template.");
+					createNewPreferencesFileFromTemplate();
+				}
 			} else {
 				// Create a new JSON preference file using the template preferences file
-				jsonFile.createNewFile();
-				File template_file = new File("./UserPrefs/WorkspacePref.template");
-				FileUtil.copyFiles(jsonFile, template_file);
-				json = (JSONObject) JSONUtil.createJson(new FileReader(jsonFile));
+				createNewPreferencesFileFromTemplate();
 			} 
 		} catch(FileNotFoundException f) {
 			logger.error("Preferences file not found! ", f);
 		} catch (IOException e) {
 			logger.error("Error occured while creating preferences file!", e);
 		}
+	}
+	
+	private void createNewPreferencesFileFromTemplate() throws IOException {
+		jsonFile.createNewFile();
+		File template_file = new File("./UserPrefs/WorkspacePref.template");
+		FileUtil.copyFiles(jsonFile, template_file);
+		json = (JSONObject) JSONUtil.createJson(new FileReader(jsonFile));
 	}
 
 	public int getIntViewPreferenceValue(ViewPreference pref) {
@@ -117,12 +147,9 @@ public class ViewPreferences {
 			JSONArray commArray = null;
 			
 			// Check if the Commands element exists
-			try{
-				commArray = json.getJSONArray("Commands");
-			} catch (JSONException e) {
+			commArray = json.optJSONArray("Commands");
+			if(commArray==null)	
 				commArray = new JSONArray();
-				e.printStackTrace();
-			}
 			
 			// Check if the command already exists. In that case, we overwrite the values
 			for(int i=0; i<commArray.length(); i++) {

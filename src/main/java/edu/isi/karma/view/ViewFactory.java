@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright 2012 University of Southern California
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This code was developed by the Information Integration Group as part 
+ * of the Karma project at the Information Sciences Institute of the 
+ * University of Southern California.  For more information, publications, 
+ * and related projects, please see: http://www.isi.edu/integration
+ ******************************************************************************/
 /**
  * 
  */
@@ -11,6 +31,10 @@ import edu.isi.karma.rep.HNode;
 import edu.isi.karma.rep.HNodePath;
 import edu.isi.karma.rep.Row;
 import edu.isi.karma.rep.Worksheet;
+import edu.isi.karma.rep.hierarchicalheadings.ColspanMap;
+import edu.isi.karma.rep.hierarchicalheadings.ColumnCoordinateSet;
+import edu.isi.karma.rep.hierarchicalheadings.HHTree;
+import edu.isi.karma.rep.hierarchicalheadings.LeafColumnIndexMap;
 import edu.isi.karma.util.JSONUtil;
 import edu.isi.karma.view.ViewPreferences.ViewPreference;
 import edu.isi.karma.view.tableheadings.VColumnHeader;
@@ -74,6 +98,12 @@ public class ViewFactory {
 			VWorkspace vWorkspace) {
 		VWorksheet vw = new VWorksheet(vWorksheetId, worksheet, columns, vWorkspace);
 		vWorksheets.put(vWorksheetId, vw);
+		
+		// Update the coordinate set
+		HHTree hHtree = new HHTree();
+		hHtree.constructHHTree(vw.getvHeaderForest());
+		vw.setColumnCoordinatesSet(new ColumnCoordinateSet(hHtree, new ColspanMap(hHtree)));
+		vw.setLeafColIndexMap(new LeafColumnIndexMap(hHtree));
 	}
 
 	public VWorksheet getVWorksheet(String vWorksheetId) {
