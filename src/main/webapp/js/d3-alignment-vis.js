@@ -128,7 +128,7 @@ function displayAlignmentTree_ForceKarmaLayout(json) {
         })
         .attr("class", function(d) {
             if(d.id != "FakeRootLink")
-                return "LinkLabel "+vworksheetId;
+                return "LinkLabel "+vworksheetId + " " + d.linkStatus;
             else
                 return "LinkLabel FakeRootLink "+vworksheetId;
         })
@@ -161,7 +161,7 @@ function displayAlignmentTree_ForceKarmaLayout(json) {
                 if(d2 == d.source) {
                     var newRect = $(this).clone();
                     newRect.attr("class","Class highlightOverlay");
-                    $("svg").append(newRect);
+                    $("div#svgDiv_" + json["worksheetId"] + " svg").append(newRect);
                     return false;
                 }
             });
@@ -268,14 +268,17 @@ function displayAlignmentTree_ForceKarmaLayout(json) {
                 var y2 = d2.py + this.getBBox().y;
                 var width2 = this.getBBox().width;
                 var height2 = this.getBBox().height;
+                // console.log("D2 width: " + d2["width"]);
                 
                 // Check if they overlap on y axis
                 if((y2<y1 && y1<y2+height2 ) || (y1<y2 && y2<y1+height1 && y1+height1<y2+height2)) {
                     // console.log("Collision detected on Y axis");
+                    // console.log("Rect- X2: " + x2 + " Y2: " + y2 + " width: " + width2 + " height " + height2);
+                    // console.log("Text- X1: " + x1 + " Y1: " + y1 + " width " + width1 + " height " + height1);
                     // Check overlap on X axis
-                    if(x2<x1 && x2+width2>x1) {
-                        // console.log("Rect: " + x2 + " " + y2 + " " + width2 + " " + height2);
-                        // console.log("Text: " + x1 + " " + y1 + " " + width1 + " " + height1);
+                    if(x1>x2 && x2+width2>x1) {
+                        // console.log("Rect- X2: " + x2 + " Y2: " + y2 + " width: " + width2 + " height " + height2);
+                        // console.log("Text- X1: " + x1 + " Y1: " + y1 + " width " + width1 + " height " + height1);
                         // console.log("Collision detected!")
                         // console.log(d1);
                         // console.log(d2);
@@ -431,7 +434,8 @@ function changeSemanticType_d3(d, vis, event) {
                 // Special case when no training has been done to CRF model
                 // Shows an empty semantic type
                 if((!CRFInfo && existingTypes.length == 0) || 
-                    ((existingTypes && existingTypes.length == 0) && (CRFInfo && CRFInfo.length == 0))) {
+                    ((existingTypes && existingTypes.length == 0) && (CRFInfo && CRFInfo.length == 0)) ||
+                    ((existingTypes && existingTypes.length == 0) && (CRFInfo && CRFInfo["Labels"].length == 0))) {
                     addEmptySemanticType();
                     $("table#currentSemanticTypesTable input").prop("checked", true);
                     $("table#currentSemanticTypesTable tr.semTypeRow").addClass("selected");
@@ -446,12 +450,11 @@ function changeSemanticType_d3(d, vis, event) {
     });
     
     // Get the column name to show in dalog box
-    var td = $(this).parents("td");
-    var columnName = $("div.ColumnHeadingNameDiv", td).text();
+    var columnName = $("div.ColumnHeadingNameDiv", tdTag).text();
     
     // Show the dialog box
     var positionArray = [event.clientX+20, event.clientY+10];
-    optionsDiv.dialog({width: 350, position: positionArray, title:columnName
+    optionsDiv.dialog({width: 450, position: positionArray, title:columnName
         , buttons: { 
             "Cancel": function() { $(this).dialog("close"); }, 
             "Submit":submitSemanticTypeChange }
@@ -466,6 +469,7 @@ function showAlternativeParents_d3(d, vis, event) {
     info["command"] = "GetAlternativeLinksCommand";
     info["alignmentId"] = $(vis).data("alignmentId");
     info["worksheetId"] = $(vis).data("worksheetId");
+    $("#alternativeParentsTableFilter").val("");
         
     var returned = $.ajax({
         url: "/RequestController", 
@@ -515,7 +519,8 @@ function showAlternativeParents_d3(d, vis, event) {
                             var linkLabelTd = $("<td>").append(linkLabel); 
                             
                             trTag.append($("<td>").append(radioButton))
-                                .append(linkLabelTd);
+                                .append(linkLabelTd)
+                                .data("edgeLabel", linkLabel.text());
                                 
                             if(edge["selected"]) {
                                 radioButton.attr("checked", true);
@@ -528,7 +533,7 @@ function showAlternativeParents_d3(d, vis, event) {
                             table.append(trTag);
                         });
                         // Show the dialog box
-                        optionsDiv.dialog({width: 300, height: 300, position: positionArray
+                        optionsDiv.dialog({width: 300, height: 400, position: positionArray
                             , buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit":submitAlignmentLinkChange }});
                             
                         $("input:radio[@name='AlternativeLinksGroup']").change(function(){

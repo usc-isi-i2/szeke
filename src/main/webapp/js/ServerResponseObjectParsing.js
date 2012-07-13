@@ -208,7 +208,6 @@ function parse(data) {
 		
 		else if(element["updateType"] == "WorksheetHierarchicalHeadersUpdate") {
 			var table = $("table#" + element["worksheetId"]);
-			
 			var thead = $("thead", table);
 			
 			if(thead.length == 0) {
@@ -245,7 +244,6 @@ function parse(data) {
 						
 						// Store the node ID
 						tdTag.attr("id", cell["contentCell"]["id"]);
-						
 						//Add the name
 						tdTag.append($("<div>").addClass("ColumnHeadingNameDiv")
 							.text(cell["contentCell"]["label"]))
@@ -256,7 +254,6 @@ function parse(data) {
 						tdTag.attr("colspan", cell["colSpan"]);
 					}
 					tdTag.data("jsonElement", cell).hover(showConsoleInfo);
-					
 					trTag.append(tdTag);
 				});
 				thead.append(trTag);
@@ -771,9 +768,18 @@ function parse(data) {
 			// Remove existing link if any
 			$("a.RdfDownloadLink", titleDiv).remove();
 			
-			var downloadLink = $("<a>").attr("href",element["fileUrl"]).text("RDF").addClass("RdfDownloadLink").attr("target","_blank");
+			var downloadLink = $("<a>").attr("href",element["fileUrl"]).text("RDF").addClass("RdfDownloadLink  DownloadLink").attr("target","_blank");
 			$("div.tableTitleTextDiv", titleDiv).after(downloadLink);
-		} 
+		}
+		
+		else if(element["updateType"] == "PublishWorksheetHistoryUpdate") {
+            var titleDiv = $("div#" + element["vWorksheetId"] +" div.WorksheetTitleDiv");
+            // Remove existing link if any
+            $("a.HistoryDownloadLink", titleDiv).remove();
+            
+            var downloadLink = $("<a>").attr("href",element["fileUrl"]).text("History").addClass("HistoryDownloadLink DownloadLink").attr("target","_blank");
+            $("div.tableTitleTextDiv", titleDiv).after(downloadLink);
+        } 
 
 		else if(element["updateType"] == "PublishDatabaseUpdate") {
 			if(element["numRowsNotInserted"]==0){
@@ -787,11 +793,15 @@ function parse(data) {
 		else if(element["updateType"] == "CleaningResultUpdate") {
             if(element["result"] != null) {
             		//var pdata = getVaritions(element["result"]);
+            		if(element["result"].length==0)
+            		{
+            			alert("Cannot find any transformations! Please check your examples!");
+            		}
             		var topCol = element["result"][0];
 				populateResult(topCol);
 				var pdata = getVaritions(element["result"]);
 				populateVariations(pdata);
-				return pdata;
+				$("div#columnHeadingDropDownMenu").data("results", element["result"]);
             }
         }
         

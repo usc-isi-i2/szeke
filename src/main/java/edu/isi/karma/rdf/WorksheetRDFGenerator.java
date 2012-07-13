@@ -29,10 +29,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 
-import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
-import edu.isi.karma.modeling.alignment.Vertex;
+import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.rep.Node;
 import edu.isi.karma.rep.RepFactory;
 import edu.isi.karma.rep.Row;
@@ -137,6 +135,43 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		//all triples written, so close the writer
 		closeWriter();
 	}
+
+	/** Generates RDF for the given worksheet by invoking the RDF generator row by row.
+	 * <br>Only for tables WITHOUT nested tables.
+	 * <br>The source description for the entire table is used.
+	 * @param w
+	 * 		a worksheet
+	 * @param useInternalColumnNames
+	 * 		true if the SD uses HPath as column names (HN6/HN8/ColumnName)
+	 * 		false if SD uses actual column names
+	 * @param appendToWriter
+	 * 		false: close this writer after RDF is generated
+	 * 		true: don't close the writer; additional calls to generateTriplesRow() with the same writer will append data to the writer
+	 * @throws MediatorException
+	 * @throws IOException
+	 */
+	public void generateTriplesRow(Worksheet w, boolean useInternalColumnNames, boolean appendToWriter) throws MediatorException, IOException{
+		//generate all triples for this worksheet (row by row)
+		//the RuleRDFGenerator for SD is rdfGenerator (from the superclass)
+
+		//for each row
+		//logger.debug("Number of rows="+w.getDataTable().getNumRows());
+		ArrayList<Row> rows = w.getDataTable().getRows(0, w.getDataTable().getNumRows());
+		for(Row r:rows){
+			//construct the values map
+			Map<String,String> values;
+			if(useInternalColumnNames)
+				values = getValueMap(r);
+			else
+				values = getValueMapColumnName(r);
+			logger.debug("Values=" + values);
+			generateTriples(values);
+		}
+		//all triples written, so close the writer
+		if(!appendToWriter)
+			closeWriter();
+	}
+	
 	//used for testing
 	public void generateTriplesRowLimit(Worksheet w) throws MediatorException, IOException{
 		logger.info("Generate RDF row by row ...");
@@ -171,6 +206,25 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		//all triples written, so close the writer
 		closeWriter();		
 	}
+	/** Generates RDF for the given worksheet by invoking the RDF generator cell by cell.
+	 * @param w
+	 * 		a worksheet
+	 * @param useInternalColumnNames
+	 * 		true if the SD uses HPath as column names (HN6/HN8/ColumnName)
+	 * 		false if SD uses actual column names
+	 * @param appendToWriter
+	 * 		false: close this writer after RDF is generated
+	 * 		true: don't close the writer; additional calls to generateTriplesCell() with the same writer will append data to the writer
+	 * @throws MediatorException
+	 * @throws IOException
+	 * @throws KarmaException 
+	 */
+	public void generateTriplesCell(Worksheet w, boolean useInternalColumnNames, boolean appendToWriter) throws MediatorException, IOException, KarmaException{
+		generateTriplesCell(w.getDataTable(), useInternalColumnNames);
+		//all triples written, so close the writer
+		if(!appendToWriter)
+			closeWriter();		
+	}
 	//used for testing; generate only for first 3 rows
 	public void generateTriplesCellLimit(Worksheet w) throws MediatorException, IOException, KarmaException{
 		logger.info("Generate RDF cell by cell ...");
@@ -195,6 +249,7 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 	public void generateTriplesCell(Table dataTable, boolean useInternalColumnNames) throws MediatorException, IOException, KarmaException{
 		//generate all triples cell by cell
 		//for each row
+		//logger.info("Generate triples for table:" + dataTable);
 		ArrayList<Row> rows = dataTable.getRows(0, dataTable.getNumRows());
 		//int i=0;
 		for(Row r:rows){
@@ -256,7 +311,7 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 	 */
 	public void generateTriplesCell(String nodeId, boolean useInternalColumnNames) throws MediatorException, IOException, KarmaException{
 		Node n = factory.getNode(nodeId);
-		logger.debug("Generate triples for node:"+n);
+		//logger.info("Generate triples for node:"+n);
 		if(n.hasNestedTable()){
 			//This should not happen
 			throw new KarmaException("Node " + n.getHNodeId() + " contains a nested table. " +
@@ -267,7 +322,7 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		//the value for this node
 		String val = n.getValue().asString();
 		//get the column name of this node
-		String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNames();
+		String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNamePath();
 		if(!useInternalColumnNames)
 			columnName = factory.getHNode(n.getHNodeId()).getColumnName();
 		//logger.info("Generate triples for node:"+columnName +" with value=" + val);
@@ -293,6 +348,11 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 				//that are in the same row as this nested table
 				//for ex: person name that has multiple phone numbers
 				//if I look at phone number node, the value for person name is in the parent row
+				//logger.info("Parent table" + n.getParentTable());
+				if(n.getParentTable().getNestedTableInNode()==null){
+					//this is not a nested table, so I can't go to the parent Row
+					throw new KarmaException("No value was found for node:" + var + ". Alignment of table is not correct!");
+				}
 				Row parentRow = n.getParentTable().getNestedTableInNode().getBelongsToRow();
 				varValue = getValueInRow(var,parentRow,useInternalColumnNames);
 				if(varValue==null){
@@ -304,11 +364,14 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		logger.debug("Value Map:"+values);
 		//a gensym may be needed to generate the tuples. In order to have the same gensym for the same nodes
 		//we will use the HNodePath up to the last node (removing the last node)
+		//there is no reason to not use the hpath for gensym, so I just leave it like this
 		String gensym = "";
 		String hNodePath = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toString();
 		int index = hNodePath.lastIndexOf("/");
 		if(index>0){
 			gensym = hNodePath.substring(0, index);
+			//replace all "/" with "_"
+			gensym = gensym.replaceAll("/", "_");
 		}
 		//else this is a top level node, so the gensym is just ""
 		generateTriples(columnName,values,gensym);
@@ -333,15 +396,16 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 	 * 		if the node contains a nested table.
 	 */
 	private String getValueInRow(String nodePath, Row r, boolean useInternalColumnNames) throws KarmaException {
-		//logger.debug("Row="+r.hashCode());
+		//logger.info("Row="+r.hashCode() + " node path=" + nodePath);
 		//for each node in the row
 		for (Node n : r.getNodes()) {
 			//get HNodePtah for this node
-			String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNames();
+			//logger.info("hnodepath="+factory.getHNode(n.getHNodeId()).getHNodePath(factory));
+			String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNamePath();
 			if(!useInternalColumnNames)
 				columnName = factory.getHNode(n.getHNodeId()).getColumnName();
-			//logger.debug("Path="+path);
-			//logger.debug("Row for this node="+n.getBelongsToRow().hashCode());			
+			//logger.info("Path="+nodePath + "col name:" + columnName);
+			//logger.info("Row for this node="+n.getBelongsToRow().hashCode());			
 			if(columnName.equals(nodePath)){
 				//this is the node
 				if(n.hasNestedTable()){
@@ -351,7 +415,7 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 				}
 				else{
 					//contains a value
-					//logger.debug("Value for:"+path + "=" + n.getValue().asString());
+					//logger.info("Value for:"+nodePath + "=" + n.getValue().asString());
 					return n.getValue().asString();
 				}
 			}
@@ -377,7 +441,7 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		for(Map.Entry<String, Node> node: r.getNodesMap().entrySet()){
 			String val = node.getValue().getValue().asString();
 			//the HNodePath for this node is used in the SD
-			String columnName = factory.getHNode(node.getKey()).getHNodePath(factory).toColumnNames();
+			String columnName = factory.getHNode(node.getKey()).getHNodePath(factory).toColumnNamePath();
 			//System.out.println("val for " + columnName + "=" + val + " is it null?" + (val==null));
 			//transform the null to "", so that I can handle it as ""; basically it will not be added as a triple to RDF
 			if(val==null) val="";
@@ -413,14 +477,13 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 	}	
 
 	//test the RDF generation
-	static public void testRDFGeneration(Workspace workspace, Worksheet worksheet, DirectedWeightedMultigraph<Vertex, 
-			LabeledWeightedEdge> tree, Vertex root) throws KarmaException{
+	static public void testRDFGeneration(Workspace workspace, Worksheet worksheet, Alignment alignment) throws KarmaException{
 		try{
 			// Write the source description
 			//use true to generate a SD with column names (for use "outside" of Karma)
 			//use false for internal use
 
-			SourceDescription desc = new SourceDescription(workspace, tree, root, worksheet,
+			SourceDescription desc = new SourceDescription(workspace, alignment, worksheet,
 					"http://localhost/source/",true,false);
 			String descString = desc.generateSourceDescription();
 			System.out.println("SD="+ descString);

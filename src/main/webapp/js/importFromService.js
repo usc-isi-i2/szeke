@@ -53,7 +53,7 @@ function styleAndAssignHandlerstoServiceImportObjects(){
     	// fire the above change event after every letter
     	
     	//if esc is pressed or nothing is entered  
-	    if (event.keyCode == 27 || $(this).val() == '') {  
+	    if (event.keyCode == 27 || $(this).val() == '') {
 	      //if esc is pressed we want to clear the value of search box  
 	      $(this).val('');  
 	  
@@ -64,20 +64,9 @@ function styleAndAssignHandlerstoServiceImportObjects(){
 	  
 	    //if there is text, lets filter
 	    else {  
-	      filter('#ServiceTablesList tr', $(this).val());  
+	      filter('#ServiceSourceList tr', $(this).val(), "sourceName");  
 	    }
   	});
-}
-
-//filter results
-function filter(selector, query) {
-	  query	= $.trim(query); //trim white space
-	  query = query.replace(/ /gi, '|'); //add OR for regex query
-	
-	  $(selector).each(function() {
-	    ($(this).data("sourceName").search(new RegExp(query, "i")) < 0) 
-	    	? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
-	  });
 }
 
 function populateSourceList(element) {
@@ -184,7 +173,7 @@ function sendImportSourceRequest() {
 	info["ServiceUrl"] = $.trim($("#ServiceUrl").val());
 	info["sourceName"] = $(this).parents("tr").data("sourceName");
 	info["commandType"] = "ImportSource";
-		
+    showWaitingSignOnScreen();
 	var returned = $.ajax({
 	   	url: "/RequestController", 
 	   	type: "POST",
@@ -204,6 +193,7 @@ function sendImportSourceRequest() {
 				
 				if(flag != -1) {
 					parse(json);
+					hideWaitingSignOnScreen();
     				alert("Source imported in workspace!");
 				}
     			
@@ -211,6 +201,7 @@ function sendImportSourceRequest() {
 		error :
 			function (xhr, textStatus) {
 	   			alert("Error occured with fetching new rows! " + textStatus);
+	   			hideWaitingSignOnScreen();
 		   	}		   
 	});
 }

@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,7 +36,6 @@ import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
-import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.Vertex;
 import edu.isi.karma.rdf.SourceDescription;
 import edu.isi.karma.rdf.WorksheetRDFGenerator;
@@ -103,8 +101,6 @@ public class PublishRDFCellCommand extends Command {
 					new ErrorUpdate("Worksheet not modeled!"));
 		}
 
-		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree = alignment
-				.getSteinerTree();
 		Vertex root = alignment.GetTreeRoot();
 
 		try {
@@ -114,7 +110,7 @@ public class PublishRDFCellCommand extends Command {
 				// "outside" of Karma)
 				// use false for internal use
 				SourceDescription desc = new SourceDescription(
-						vWorkspace.getWorkspace(), tree, root, worksheet,
+						vWorkspace.getWorkspace(), alignment, worksheet,
 						rdfSourcePrefix, true, false);
 				String descString = desc.generateSourceDescription();
 				logger.info("SD=" + descString);

@@ -22,11 +22,19 @@ package edu.isi.karma.cleaning;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 public class Alignment {
+	//generate preprcessing editsteps before generating rules
+	public static Vector<EditOper> getPreprocessingEditOpers(Vector<TNode> a,Vector<TNode> b)
+	{
+		Vector<EditOper> inss = Alignment.insopers(a,b);
+		return inss;
+	}
 	//follow the framework of INS MOV DEL
 	//generat all possible edit operations
 	//a target token sequence b orginal token sequence
@@ -34,28 +42,26 @@ public class Alignment {
 	{
 		Alignment.paths.clear();
 		//generate INS operation (only need to record the content)
-		Vector<EditOper> inss = Alignment.insopers(a,b);
-		//apply the learned insert operation
-		Vector<TNode> clonea = (Vector<TNode>)a.clone();
+		/*Vector<EditOper> inss = Alignment.insopers(a,b);
 		for(EditOper eo:inss)
 		{
 			NonterminalValidator.applyins(eo, clonea);
 			eo.before = a;
 			eo.after = clonea;
-		}
+		}*/
+		Vector<TNode> clonea = (Vector<TNode>)a.clone();
 		//generate MOV and DEL operation
-		Alignment.movopers(clonea,b);
-		Vector<Vector<EditOper>> movdels = Alignment.paths;
+		Vector<Vector<EditOper>> movdels = Alignment.movopers(clonea,b);
 		//generate all combination of the two set of operation sequence
 		Vector<Vector<EditOper>> res = new Vector<Vector<EditOper>>();
 		for(Vector<EditOper> v:movdels)
 		{
 			Vector<EditOper> z = new Vector<EditOper>();
-			z.addAll(inss);
 			z.addAll(v);
 			res.add(z);
 			System.out.println(""+z.toString());
 		}
+		Alignment.paths.clear();
 		return res;
 	}
 	public static Vector<Integer> delopers(Vector<int[]> a,Vector<TNode> before)
@@ -81,6 +87,8 @@ public class Alignment {
 	}
 	public static boolean isAdjacent(int a,int b, Vector<Integer> sortedmks)
 	{
+		if(a==b)
+			return true; // <S> <E> token
 		int index = sortedmks.indexOf(a); 
 		if(a<=b && index<sortedmks.size()-1)
 		{
@@ -140,17 +148,24 @@ public class Alignment {
 		segments.add(b);
 		return segments;
 	}
-	public static void movopers(Vector<TNode> a, Vector<TNode> b)
+	public static Vector<Vector<EditOper>> movopers(Vector<TNode> a, Vector<TNode> b)
 	{
+		int stoken = 0;
+		for(TNode t:a){
+			if(t.type == TNode.STARTTYP)
+			{
+				break;
+			}
+			stoken ++;
+		}
+		int etoken = a.size()-1;
 		Vector<Vector<int[]>> mapping = map(a,b);
+		Vector<Vector<EditOper>> paths = new Vector<Vector<EditOper>>();
 		for(int i= 0; i< mapping.size();i++)
 		{
 			Vector<EditOper> ev = new Vector<EditOper>();
 			Vector<int[]> tmapping = mapping.get(i);
-			//detect deleted part
-			//Vector<Integer> dels= delopers(tmapping,b);
 			Vector<Integer> positions =  new Vector<Integer>();
-			//record the positions showed be moved
 			//record the original order
 			Vector<Integer> mks = new Vector<Integer>(b.size());
 			for(int  n = 0;n<b.size();n++)
@@ -200,15 +215,22 @@ public class Alignment {
 					}
 				}				
 			}
-			//set the s/e token's position value the same as its adjacent token's position value
-			positions.set(0,positions.get(1));
-			positions.set(positions.size()-1,positions.get(positions.size()-2));
+			/*set the s/e token's position value the same as its adjacent token's position value
+			in order to make them move with the adjacent token*/
+			positions.set(stoken,positions.get(stoken+1));
+			positions.set(etoken,positions.get(etoken-1));
 			//detect the continous segments
 			Vector<int[]> segments =  deterContinus(positions,mks);
 			Vector<EditOper> xx = new Vector<EditOper>();
 			Vector<Vector<Integer>> history = new Vector<Vector<Integer>>();
-			transMOVDEL(segments,positions,mks,xx,history,a);
+			try 
+			{
+				transMOVDEL(segments,positions,mks,xx,history,a,paths);
+			} catch (Exception e) {
+				System.out.println("transMOVDEL error"+e.toString());
+			}
 		}		
+		return paths;
 	}
 	//
 	public static int getReverseOrderNum(Vector<Integer> position)
@@ -238,7 +260,7 @@ public class Alignment {
 	 * eo: for record the path for one move and delete sequence
 	 * history is used to store all previous state to prevent visit some visited state dead loop
 	 */
-	public static void transMOVDEL(Vector<int[]> segments,Vector<Integer> positon,Vector<Integer> x,Vector<EditOper> eo,Vector<Vector<Integer>> history,Vector<TNode> a)
+	public static void transMOVDEL(Vector<int[]> segments,Vector<Integer> positon,Vector<Integer> x,Vector<EditOper> eo,Vector<Vector<Integer>> history,Vector<TNode> a,Vector<Vector<EditOper>> paths)
 	{
 		if(eo.size()>positon.size()-1)//prune, the number of mov should be less than total size -1 
 			return;
@@ -263,35 +285,40 @@ public class Alignment {
 			EditOper eox = new EditOper();
 			Vector<Integer> positonx = new Vector<Integer>();
 			//move to the back
+			EditOper eo2 = new EditOper();
 			for(int k=i+1;k<segments.size();k++)
 			{
 				if(positon.get(segments.get(i)[0])>positon.get(segments.get(k)[0]))
 				{
 					localcontrary = true;
 					globalcontrary = true;
-					//swamp the pair two directions
-					EditOper eo2 = new EditOper();
 					eo2.starPos = segments.get(i)[0];
 					eo2.endPos = segments.get(i)[1];
 					eo2.oper = "mov";
 					eo2.dest = segments.get(k)[1]+1;//after the first segment
-					Vector<Integer> positon2 = (Vector<Integer>)positon.clone();
-					//update the position2
-					List<Integer> tmp2 = positon.subList(eo2.starPos, eo2.endPos+1);
-					positon2.removeAll(tmp2);
-					//insert first then delete
-					positon2.addAll(eo2.dest-tmp2.size(), tmp2);
-					int score = Alignment.getReverseOrderNum(positon2);
-					if(score <minNum)
-					{
-						minNum = score;
-						eox = eo2;
-						positonx = positon2;
-					}
 				}
-			}	
+				
+			}
+			if(localcontrary)
+			{
+				Vector<Integer> positon2 = (Vector<Integer>)positon.clone();
+				//update the position2
+				List<Integer> tmp2 = positon.subList(eo2.starPos, eo2.endPos+1);
+				positon2.removeAll(tmp2);
+				//insert first then delete
+				if((eo2.dest-tmp2.size())>=positon2.size())
+				{
+					positon2.addAll(tmp2);
+				}
+				else {
+					positon2.addAll(eo2.dest-tmp2.size(), tmp2);
+				}
+				positonx = positon2;
+				eox = eo2;
+			}
+			
 			//move to the front
-			for(int k=0;k<i;k++)
+			/*for(int k=0;k<i;k++)
 			{
 				if(positon.get(segments.get(i)[0])<positon.get(segments.get(k)[0]))
 				{
@@ -317,13 +344,13 @@ public class Alignment {
 						positonx = positon1;
 					}
 				}
-			}
+			}*/
 			if(localcontrary)
 			{
 				Vector<EditOper> seqx = (Vector<EditOper>)eo.clone();
 				seqx.add(eox);			
 				Vector<int[]> newsegments1 = deterContinus(positonx,x);
-				transMOVDEL(newsegments1,positonx,x,seqx,history1,a);
+				transMOVDEL(newsegments1,positonx,x,seqx,history1,a,paths);
 			}
 		}
 		if(!globalcontrary)
@@ -394,6 +421,7 @@ public class Alignment {
 				EditOper eox= new EditOper();
 				eox.oper = "ins";
 				eox.dest = 0;
+				b.get(i).setColor(TNode.INSCOLOR);//set color for inserted tnodes.
 				eox.tar.add(b.get(i));
 				eo.add(eox);
 			}
@@ -405,25 +433,78 @@ public class Alignment {
 	{
 		return null;
 	}
+	public static void alignment(Vector<AlignObj> a,Vector<AlignObj> b,boolean[] aind,boolean[] bind,String path,HashSet<String> res)
+	{
+		boolean isend = true;
+		for(int i = 0; i< a.size(); i++)
+		{
+			for(int j = 0; j<b.size(); j++)
+			{
+				if(aind[i]&&bind[j]&&a.get(i).tNode.sameNode(b.get(j).tNode))
+				{
+					isend = false;
+					String xString = path;
+					String subs = "#"+a.get(i).index+","+b.get(j).index;
+					int xind = xString.indexOf("#");
+					//to remove rudun like 1,1 0,0 and 0,0 1,1
+					while(xind!= -1 && a.get(i).index>Integer.parseInt(xString.substring(xind+1,xind+2)))
+					{
+						xind = xString.indexOf("#", xind+1);
+					}
+					if(xind == -1)
+					{
+						xString +=subs;
+					}
+					else 
+					{
+						xString = xString.substring(0, xind)+subs+xString.substring(xind);
+					}
+					System.out.println(""+xString);
+					aind[i]=false;
+					bind[j]=false;
+					alignment(a, b, aind, bind, xString,res);
+					aind[i]=true;
+					bind[j]=true;
+				}
+			}	
+		}
+		if(isend)
+		{
+			//handle the rest blank spaces
+			if(!res.contains(path))
+			{
+				res.add(path);
+			}
+				
+		}
+	}
 	public static Vector<Vector<int[]>> map(Vector<TNode> a,Vector<TNode> b)
 	{
-		Vector<Vector<int[]>> all = new Vector<Vector<int[]>>();
-		boolean[] pack1 = new boolean[a.size()];
-		for(int i=0;i<pack1.length;i++)
-			pack1[i] = false;
-		boolean[] pack2 = new boolean[b.size()];
-		for(int i=0;i<pack2.length;i++)
-			pack2[i] = false;
-		for(int i=0;i<a.size();i++)
+		Vector<Vector<int[]>> res = new Vector<Vector<int[]>>();
+		HashMap<String, Vector<AlignObj>> dic = new HashMap<String, Vector<AlignObj>>();
+		HashMap<String, Vector<AlignObj>> revdic = new HashMap<String, Vector<AlignObj>>();
+		String blankmapping = "";
+		boolean[] aind = new boolean[a.size()];
+		for(int i=0; i<aind.length;i++)
 		{
-			Vector<int[]> tmp = new Vector<int[]>();
-			for(int j=0; j<b.size(); j++)
+			aind[i] = true;
+		}
+		boolean[] bind = new boolean[b.size()];
+		for(int i =0; i<bind.length; i++)
+		{
+			bind[i] = true;
+		}
+		for(int i = 0; i<a.size(); i++)
+		{
+			for(int j=0;j<b.size();j++)
 			{
-				if(a.get(i).sameNode(b.get(j)))
+				TNode mNode = a.get(i);
+				TNode nNode = b.get(j);
+				if(mNode.sameNode(nNode)&&aind[i]&&bind[j])
 				{
-					//check whether two whitespaces are counterpart
 					if(a.get(i).text.compareTo(" ")==0)
 					{
+						//if left side nodes are same
 						if(i-1>=0 && j-1>=0)
 						{
 							if(!a.get(i-1).sameNode(b.get(j-1)))
@@ -431,86 +512,157 @@ public class Alignment {
 								continue;
 							}
 						}
-						if(i+1<a.size() && j+1<b.size())
+						if(i+1<a.size() && j+1<b.size())//if right side nodes are same.
 						{
 							if(!a.get(i+1).sameNode(b.get(j+1)))
 							{
 								continue;
 							}
 						}
+						blankmapping += "#"+i+","+j;
+						aind[i] = false;
+						bind[j] = false;
 					}
-					int[] x = {i,j};
-					pack1[i] = true;
-					pack2[j] = true;
-					tmp.add(x);
+					else 
+					{
+						
+						String key = mNode.toString();
+						if(dic.containsKey(key))
+						{
+							AlignObj aObj = new AlignObj(nNode, j);
+							Vector<AlignObj> vao = dic.get(key);
+							boolean isrun = false;
+							for(int k = 0; k<vao.size(); k++)
+							{
+								if(vao.get(k).index == j)
+								{
+									isrun = true;
+								}
+							}
+							if(!isrun)
+								dic.get(key).add(aObj);
+						}
+						else {
+							Vector<AlignObj> vec = new Vector<AlignObj>();
+							AlignObj aObj = new AlignObj(nNode, j);
+							vec.add(aObj);
+							dic.put(key, vec);
+						}
+						if(revdic.containsKey(key))
+						{
+							AlignObj aObj = new AlignObj(mNode, i);
+							Vector<AlignObj> vao = revdic.get(key);
+							boolean isrun = false;
+							for(int k = 0; k<vao.size(); k++)
+							{
+								if(vao.get(k).index == i)
+								{
+									isrun = true;
+								}
+							}
+							if(!isrun)
+								revdic.get(key).add(aObj);
+						}
+						else {
+							Vector<AlignObj> vec = new Vector<AlignObj>();
+							AlignObj aObj = new AlignObj(mNode, i);
+							vec.add(aObj);
+							revdic.put(key, vec);
+						}
+					}
 				}
-			}	
-			if(tmp.size()!=0)
-				all.add(tmp);
+			}
 		}
-		/*map the unmapped same node*/
+		//generate non-ambiguious mapping
+		Set<String> keys = dic.keySet();
+		Iterator<String> it = keys.iterator();
+		String mappingprefix = "";
+		while(it.hasNext())
+		{
+			String k = it.next();
+			if(dic.get(k).size()==1&&revdic.get(k).size()==1)
+			{
+				mappingprefix +="#"+revdic.get(k).get(0).index+","+dic.get(k).get(0).index;
+			}
+		}
+		//generate blank space mapping
 		for(int i=0;i<a.size();i++)
 		{
 			Vector<int[]> tmp = new Vector<int[]>();
 			for(int j=0; j<b.size(); j++)
 			{
 				//check whether two whitespaces are counterpart
-				if(a.get(i).text.compareTo(" ")==0&&!pack1[i]&&!pack2[j])
+				if(a.get(i).sameNode(b.get(j))&&a.get(i).text.compareTo(" ")==0&&aind[i]&&bind[j])
 				{
-					int[] x = {i,j};
-					pack1[i] = true;
-					pack2[j] = true;
-					tmp.add(x);
+					blankmapping +="#"+i+","+j;
+					aind[i] = false;
+					bind[j] = false;
 				}
 			}
-			if(tmp.size()!=0)
-				all.add(tmp);
 		}
-		
-		// do cross join 
-		Vector<Vector<int[]>> res = new Vector<Vector<int[]>>();
-		for(int i = 0; i<all.size(); i++)
+		String theprefix = mappingprefix+blankmapping;		
+		//generate ambiguious mapping
+		Vector<String> allpathes=new Vector<String>();
+		allpathes.add(theprefix);
+		Iterator<String> it1 = keys.iterator();
+		while(it1.hasNext())
 		{
-			Vector<Vector<int[]>> res1 = new Vector<Vector<int[]>>();
-			for(int j=0;j<all.get(i).size();j++)
+			String k = it1.next();
+			if((dic.get(k).size()>1||revdic.get(k).size()>1))
 			{
-				Iterator<Vector<int[]>> iter = res.iterator();
-				if(res.size()==0)
+				if(dic.get(k).get(0).tNode.type != TNode.BNKTYP)
 				{
-					Vector<int[]> tmp = new Vector<int[]>();
-					tmp.add(all.get(i).get(j));
-					res1.add(tmp);
-					continue;
-				}
-				while(iter.hasNext())
-				{
-					Vector<int[]> x = iter.next();
-					// there might be redundant destination positions
-					boolean isRedun = false;
-					int index = 0;
-					for(int[] ptr:x)
+					String path = "";
+					Vector<AlignObj> x1= dic.get(k);
+					Vector<AlignObj> y1=revdic.get(k);
+					HashSet<String> pathes = new HashSet<String>();
+					boolean[] xind = new boolean[x1.size()];
+					for(int i = 0; i<xind.length;i++)
 					{
-						if(ptr[1]==all.get(i).get(j)[1])
+						xind[i] = true;
+					}
+					boolean[] yind = new boolean[y1.size()];
+					for(int i = 0; i<yind.length;i++)
+					{
+						yind[i] = true;
+					}
+					alignment(y1,x1,yind,xind, path, pathes);
+								
+					int cnt = allpathes.size();
+					while(cnt>0)
+					{
+						String pString = allpathes.elementAt(0);
+						Iterator<String> ks = pathes.iterator();	
+						while(ks.hasNext())
 						{
-							isRedun = true;
-							break;
+							allpathes.add(pString+ks.next());
 						}
-					}
-					if(isRedun)
-					{
-						//Vector<int[]> tmp = (Vector<int[]>)x.clone();
-						//res1.add(tmp);
-						continue;
-					}
-					Vector<int[]> tmp = (Vector<int[]>)x.clone();
-					tmp.add(all.get(i).get(j));
-					res1.add(tmp);
+						allpathes.remove(0);
+						cnt--;
+					}				
 				}
 			}
-			res = res1;
+			
 		}
-		//number of symbols in original token seq > number of same symbols in target token seq
-		//handle the missing mapping token
+		Iterator<String> iter = allpathes.iterator();
+		while(iter.hasNext())
+		{
+			String p = iter.next().trim();
+			if(p.length()==0)
+				continue;
+			Vector<int[]> line = new Vector<int[]>();
+			String[] mps = p.trim().split("#");
+			for(String str:mps)
+			{
+				String string = str.trim();
+				if(string.length()==0)
+					continue;
+				String[] t = string.split(",");
+				int[] q = {Integer.parseInt(t[0]),Integer.parseInt(t[1])};
+				line.add(q);
+			}
+			res.add(line);
+		}
 		return res;
 	}	
 	/****************************************************************/
@@ -853,22 +1005,14 @@ public class Alignment {
 		return poss;
 	}
 }
-//a Class aims to store the parameter for edit operations
-class EditOper{
-	public String oper="";
-	public int starPos=-1;
-	public int endPos=-1;
-	public int dest = -1;
-	public Vector<TNode> tar = new Vector<TNode>();
-	public Vector<TNode> before = new Vector<TNode>();
-	public Vector<TNode> after = new Vector<TNode>();
-	public EditOper()
+class AlignObj
+{
+	public TNode tNode;
+	public int index;
+	public AlignObj(TNode t,int index)
 	{
-		
-	}
-	public String toString()
-	{
-		return oper+": "+starPos+","+endPos+","+dest+tar.toString();
+		tNode = t;
+		this.index = index;
 	}
 }
 class Comparator1 implements Comparator{

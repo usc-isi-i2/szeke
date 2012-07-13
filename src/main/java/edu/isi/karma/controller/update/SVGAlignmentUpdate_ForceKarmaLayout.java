@@ -15,9 +15,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.NodeType;
-import edu.isi.karma.modeling.alignment.URI;
 import edu.isi.karma.modeling.alignment.Vertex;
 import edu.isi.karma.rep.semantictypes.SemanticType;
 import edu.isi.karma.view.VWorkspace;
@@ -25,6 +25,7 @@ import edu.isi.karma.view.VWorkspace;
 public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 	private final String vWorksheetId;
 	private final String alignmentId;
+	private Alignment alignment;
 	private final DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree;
 	private final Vertex root;
 	private final List<String> hNodeIdList;
@@ -33,7 +34,7 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 			.getLogger(SVGAlignmentUpdate_ForceKarmaLayout.class);
 
 	private enum JsonKeys {
-		worksheetId, alignmentId, label, id, hNodeId, nodeType, source, target, linkType, sourceNodeId, targetNodeId, height, hNodesCovered, nodes, links, maxTreeHeight
+		worksheetId, alignmentId, label, id, hNodeId, nodeType, source, target, linkType, sourceNodeId, targetNodeId, height, hNodesCovered, nodes, links, maxTreeHeight, linkStatus
 	}
 
 	private enum JsonValues {
@@ -42,14 +43,14 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 
 	public SVGAlignmentUpdate_ForceKarmaLayout(String vWorksheetId,
 			String alignmentId,
-			DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree,
-			Vertex root, List<String> hNodeIdList) {
+			Alignment alignment, List<String> hNodeIdList) {
 		super();
 		this.vWorksheetId = vWorksheetId;
 		this.alignmentId = alignmentId;
-		this.tree = tree;
-		this.root = root;
+		this.tree = alignment.getSteinerTree();
+		this.root = alignment.GetTreeRoot();
 		this.hNodeIdList = hNodeIdList;
+		this.alignment=alignment;
 	}
 	
 	@Override
@@ -65,7 +66,7 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 			@SuppressWarnings("unchecked")
 			DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> treeClone = (DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge>) tree.clone();
 			// Reversing the inverse links
-			updateLinksDirections(this.root, null, treeClone);
+			alignment.updateLinksDirections(this.root, null, treeClone);
 
 			/*** Add the nodes and the links from the Steiner tree ***/
 			List<String> hNodeIdsAdded = new ArrayList<String>();
@@ -105,6 +106,10 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 						hNodeIdsAdded.add(type.getHNodeId());
 						
 						if (vertex.getNodeType() == NodeType.Class) {
+							if(type.isPartOfKey()) {
+								vertObj.put(JsonKeys.label.name(), vertex.getLocalID() + "*");
+							}
+							
 							// Add the holder vertex object and the link that attaches nodes to the columns
 							JSONObject vertObj_holder = new JSONObject();
 							vertObj_holder.put(JsonKeys.label.name(), JsonValues.key.name());
@@ -155,16 +160,20 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 					linkObj.put(JsonKeys.targetNodeId.name(), target.getID());
 					linkObj.put(JsonKeys.label.name(), edge.getLocalLabel());
 					linkObj.put(JsonKeys.id.name(), edge.getID()+"");
+					linkObj.put(JsonKeys.linkStatus.name(), edge.getLinkStatus().name());
 					
-					if(target.getSemanticType() != null && outEdges.isEmpty())
+					if(target.getSemanticType() != null && outEdges.isEmpty()) {
 						linkObj.put(JsonKeys.linkType.name(), JsonValues.holderLink.name());
+						if(target.getSemanticType().isPartOfKey())
+							linkObj.put(JsonKeys.label.name(), edge.getLocalLabel()+"*");
+					}
+						
 					linksArr.put(linkObj);
 					
 					if(source.getNodeType() == NodeType.Class && target.getNodeType() == NodeType.Class) {
 						linkObj.put(JsonKeys.linkType.name(), JsonValues.objPropertyLink.name());
 					}
 				}
-				
 			} 
 
 			// Add the vertices for the columns that were not in Steiner tree
@@ -217,39 +226,4 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 		return height;
 	}
 	
-	private void updateLinksDirections(Vertex root, LabeledWeightedEdge e, DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> treeClone) {
-		
-		if (root == null)
-			return;
-		Vertex source, target;
-		LabeledWeightedEdge inLink;
-		
-		LabeledWeightedEdge[] incomingLinks = treeClone.incomingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
-		if (incomingLinks != null && incomingLinks.length != 0) {
-			for (int i = 0; i < incomingLinks.length; i++) {
-				
-				inLink = incomingLinks[i];
-				source = inLink.getSource();
-				target = inLink.getTarget();
-				// don't remove the incoming link from parent to this node
-				if (inLink.getID().equalsIgnoreCase(e.getID()))
-					continue;
-				
-				LabeledWeightedEdge inverseLink = new LabeledWeightedEdge(inLink.getID(), new URI(inLink.getUriString(), inLink.getNs(), inLink.getPrefix()), inLink.getLinkType(), true);
-				treeClone.addEdge(target, source, inverseLink);
-				treeClone.setEdgeWeight(inverseLink, inLink.getWeight());
-				treeClone.removeEdge(inLink);
-			}
-		}
-
-		LabeledWeightedEdge[] outgoingLinks = treeClone.outgoingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
-
-		if (outgoingLinks == null || outgoingLinks.length == 0)
-			return;
-		for (int i = 0; i < outgoingLinks.length; i++) {
-			target = outgoingLinks[i].getTarget();
-			updateLinksDirections(target, outgoingLinks[i], treeClone);
-		}
-	}	
-
 }

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -44,7 +43,6 @@ import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
-import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.Vertex;
 import edu.isi.karma.rdf.SourceDescription;
 import edu.isi.karma.rdf.WorksheetRDFGenerator;
@@ -138,8 +136,6 @@ public class PublishRDFCommand extends Command {
 					"Please align the worksheet before generating RDF!"));
 		}
 
-		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree = alignment
-				.getSteinerTree();
 		Vertex root = alignment.GetTreeRoot();
 
 		try {
@@ -148,7 +144,7 @@ public class PublishRDFCommand extends Command {
 				// use true to generate a SD with column names (for use
 				// "outside" of Karma)
 				// use false for internal use
-				SourceDescription desc = new SourceDescription(vWorkspace.getWorkspace(), tree, root, worksheet,
+				SourceDescription desc = new SourceDescription(vWorkspace.getWorkspace(), alignment, worksheet,
 						rdfSourcePrefix, Boolean.valueOf(addInverseProperties),false);
 				String descString = desc.generateSourceDescription();
 				logger.info("SD=" + descString);

@@ -61,6 +61,26 @@ function attachOntologyOptionsRadioButtonHandlers() {
 	$("input#filterPropertyByDomain").change(handleDataPropertyFilter);
 	$("input#filterClassByDomain").change(handleClassFilter);
 	$("button#addSemanticType").button().click(addEmptySemanticType);
+	
+	// Filter for the alternative object properties list
+    $("#alternativeParentsTableFilter").keyup( function (event) {
+        // fire the above change event after every letter
+        
+        //if esc is pressed or nothing is entered  
+        if (event.keyCode == 27 || $(this).val() == '') {  
+          //if esc is pressed we want to clear the value of search box  
+          $(this).val('');  
+      
+          //we want each row to be visible because if nothing  
+          //is entered then all rows are matched.  
+          $('tr').removeClass('visible').show().addClass('visible');  
+        }  
+      
+        //if there is text, lets filter
+        else {  
+          filter('#AlternativeParentLinksTable tr', $(this).val(), "edgeLabel");  
+        }
+    });
 }
 
 function handleDataPropertyFilter() {
@@ -211,7 +231,7 @@ function changeSemanticType(event) {
     
     // Show the dialog box
     var positionArray = [event.clientX+20, event.clientY+10];
-    optionsDiv.dialog({width: 350, position: positionArray, title:columnName
+    optionsDiv.dialog({width: 450, position: positionArray, title:columnName
         , buttons: { 
             "Cancel": function() { $(this).dialog("close"); }, 
             "Submit":submitSemanticTypeChange }
@@ -297,6 +317,17 @@ function showSemanticTypeEditOptions() {
     
     $(parentTrTag).addClass("currentEditRow");
     
+    
+    // Automatically select the row 
+    if(!$("input[name='currentSemanticTypeCheckBoxGroup']:checkbox", parentTrTag).is(':checked')) {
+        $("input[name='currentSemanticTypeCheckBoxGroup']:checkbox", parentTrTag).prop('checked', true);
+        $(parentTrTag).addClass("selected");
+        
+        if($("tr.selected", table).length == 1)
+            $("input[name='isPrimaryGroup']:radio", parentTrTag).prop('checked',true);
+    }
+    
+    
     if($(optionsDiv).data("classAndPropertyListJson") == null){
         alert("Class and property list not yet loaded from the server!");
         return false;
@@ -342,7 +373,7 @@ function showSemanticTypeEditOptions() {
             validatePropertyInputValue();
     }, source: function( request, response ) {
         var matches = $.map( propertyArray, function(prop) {
-            if ( prop.toUpperCase().indexOf(request.term.toUpperCase()) === 0 ) {
+            if ( prop.toUpperCase().indexOf(request.term.toUpperCase()) != -1 ) {
                 return prop;
             }
         });
@@ -354,7 +385,7 @@ function showSemanticTypeEditOptions() {
         validateClassInputValue();
     }, source: function( request, response ) {
         var matches = $.map( classArray, function(cls) {
-            if ( cls.toUpperCase().indexOf(request.term.toUpperCase()) === 0 ) {
+            if ( cls.toUpperCase().indexOf(request.term.toUpperCase()) != -1 ) {
                 return cls;
             }
         });
@@ -715,6 +746,15 @@ function getCurrentSelectedTypes() {
     return existingTypes;
 }
 
+function getParamObject(name, value, type) {
+    var param = new Object();
+    param["name"] = name;
+    param["value"] = value;
+    param["type"] = type;
+    
+    return param;
+}
+
 function submitSemanticTypeChange() {
 	var optionsDiv = $("#ChangeSemanticTypesDialogBox");
 	
@@ -730,6 +770,14 @@ function submitSemanticTypeChange() {
 	info["isKey"] = $("input#chooseClassKey").is(":checked");
 	info["workspaceId"] = $.workspaceGlobalInformation.id;
 	info["SemanticTypesArray"] = JSON.stringify(semTypesArray);
+	
+	var newInfo = [];
+	newInfo.push(getParamObject("hNodeId", hNodeId,"hNodeId"));
+	newInfo.push(getParamObject("SemanticTypesArray", semTypesArray, "other"));
+	newInfo.push(getParamObject("vWorksheetId", info["vWorksheetId"], "vWorksheetId"));
+	newInfo.push(getParamObject("isKey", $("input#chooseClassKey").is(":checked"), "other"));
+	newInfo.push(getParamObject("trainAndShowUpdates", true, "other"));
+	info["newInfo"] = JSON.stringify(newInfo);
 	
 	if(semTypesArray.length == 0)
 	    info["command"] = "UnassignSemanticTypeCommand";
@@ -828,7 +876,7 @@ function showAlternativeParents(event) {
 							table.append(trTag);
 						});
 						// Show the dialog box
-						optionsDiv.dialog({width: 300, height: 300, position: positionArray
+						optionsDiv.dialog({width: 500, height: 300, position: positionArray
 							, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit":submitAlignmentLinkChange }});
 							
 						$("input:radio[@name='AlternativeLinksGroup']").change(function(){
@@ -890,9 +938,13 @@ function submitAlignmentLinkChange() {
 	info["vWorksheetId"] = optionsDiv.data("worksheetId");
 	info["alignmentId"] = optionsDiv.data("alignmentId");
 	info["edgeId"] = optionsDiv.data("currentSelection");
-	
-	
 	info["workspaceId"] = $.workspaceGlobalInformation.id;
+	
+	var newInfo = [];
+    newInfo.push(getParamObject("edgeId", optionsDiv.data("currentSelection"), "other"));
+    newInfo.push(getParamObject("alignmentId", optionsDiv.data("alignmentId"), "other"));
+    newInfo.push(getParamObject("vWorksheetId", optionsDiv.data("worksheetId"), "vWorksheetId"));
+    info["newInfo"] = JSON.stringify(newInfo);
 	
 	showLoading(info["vWorksheetId"]);
 	var returned = $.ajax({

@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   
   <properties>
-    <jettyVersion>7.2.0.v20101020</jettyVersion>
+    <jettyVersion>8.0.3.v20111011</jettyVersion>
     <project.build.sourceEncoding>
       UTF-8
     </project.build.sourceEncoding>
@@ -218,6 +218,7 @@
   </configuration>
 -->
       </plugin>
+      <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -229,6 +230,7 @@
           <mainClass>edu.isi.karma.webserver.ServerStart</mainClass>
         </configuration>
       </plugin>
+    -->
     </plugins>
   </build>
   

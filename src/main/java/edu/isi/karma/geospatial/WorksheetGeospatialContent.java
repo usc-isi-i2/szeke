@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
+import de.micromata.opengis.kml.v_2_2_0.Style;
 import edu.isi.karma.rep.HNode;
 import edu.isi.karma.rep.Node;
 import edu.isi.karma.rep.Row;
@@ -54,6 +56,8 @@ public class WorksheetGeospatialContent {
 	private enum CoordinateCase {
 		POINT_LAT_LNG, POINT_POS, LINE_POS_LIST, POLYGON_POS_LIST, NOT_PRESENT
 	}
+	
+	private static int randomCounter = 0;
 
 	public WorksheetGeospatialContent(Worksheet worksheet) {
 		this.worksheet = worksheet;
@@ -68,8 +72,8 @@ public class WorksheetGeospatialContent {
 
 		for (SemanticType type : worksheet.getSemanticTypes().getListOfTypes()) {
 			// Latitude of a Point case. E.g. For a column with only latitude
-			if (type.getType().equals(WGS84_LAT_PROPERTY)
-					&& type.getDomain().equals(POINT_CLASS)) {
+			if (type.getType().getUriString().equals(WGS84_LAT_PROPERTY)
+					&& type.getDomain().getUriString().equals(POINT_CLASS)) {
 				// Longitude id is always before the latitude id
 				if (lngFound) {
 					currentCase = CoordinateCase.POINT_LAT_LNG;
@@ -85,8 +89,8 @@ public class WorksheetGeospatialContent {
 				}
 			}
 			// Long of a Point case. E.g. for a column with only longitude
-			else if (type.getType().equals(WGS84_LNG_PROPERTY)
-					&& type.getDomain().equals(POINT_CLASS)) {
+			else if (type.getType().getUriString().equals(WGS84_LNG_PROPERTY)
+					&& type.getDomain().getUriString().equals(POINT_CLASS)) {
 				// Longitude id is always before the latitude id
 				if (latFound) {
 					coordinateHNodeIds.set(0, type.getHNodeId());
@@ -102,8 +106,8 @@ public class WorksheetGeospatialContent {
 			}
 			// Position of a Point case. E.g. for a column containing lat and
 			// long data such as "12.34, 234.2"
-			else if (type.getType().equals(POINT_POS_PROPERTY)
-					&& type.getDomain().equals(POINT_CLASS)) {
+			else if (type.getType().getUriString().equals(POINT_POS_PROPERTY)
+					&& type.getDomain().getUriString().equals(POINT_CLASS)) {
 				coordinateHNodeIds.add(0, type.getHNodeId());
 				currentCase = CoordinateCase.POINT_POS;
 				populatePoints(coordinateHNodeIds, currentCase, getRows(),
@@ -111,8 +115,8 @@ public class WorksheetGeospatialContent {
 			}
 			// PosList of a Line case. E.g. for a column containing list of
 			// coordinates for a line string
-			else if (type.getType().equals(POS_LIST_PROPERTY)
-					&& type.getDomain().equals(LINE_CLASS)) {
+			else if (type.getType().getUriString().equals(POS_LIST_PROPERTY)
+					&& type.getDomain().getUriString().equals(LINE_CLASS)) {
 				coordinateHNodeIds.add(0, type.getHNodeId());
 				currentCase = CoordinateCase.LINE_POS_LIST;
 				populateLines(coordinateHNodeIds, getRows(), getColumnMap());
@@ -190,6 +194,14 @@ public class WorksheetGeospatialContent {
 					}
 					break;
 				}
+				case LINE_POS_LIST:
+					break;
+				case NOT_PRESENT:
+					break;
+				case POLYGON_POS_LIST:
+					break;
+				default:
+					break;
 				}
 
 				if (lng == null || lng.trim().equals("") || lat == null
@@ -235,16 +247,23 @@ public class WorksheetGeospatialContent {
 	}
 
 	public File publishKML() throws FileNotFoundException {
-		File outputFile = new File("./publish/KML/" + worksheet.getTitle()
-				+ ".kml");
+		File outputFile = new File("./src/main/webapp/KML/" + worksheet.getTitle() + ".kml");
 		final Kml kml = KmlFactory.createKml();
 		final Folder folder = kml.createAndSetFolder()
 				.withName(worksheet.getTitle()).withOpen(true);
+
+		Style style = folder.createAndAddStyle().withId("karma");
+		
+		if(randomCounter++%2 == 0)
+			style.createAndSetIconStyle().withScale(1.399999976158142).withIcon(new Icon().withHref("http://maps.google.com/mapfiles/ms/icons/blue-pushpin.png"));
+		else
+			style.createAndSetIconStyle().withScale(1.399999976158142).withIcon(new Icon().withHref("http://maps.google.com/mapfiles/ms/icons/red-pushpin.png"));
 
 		for (Point point : points) {
 			folder.createAndAddPlacemark()
 					.withDescription(point.getHTMLDescription())
 					.withVisibility(true)
+					.withStyleUrl("karma")
 					.createAndSetPoint()
 					.withAltitudeMode(AltitudeMode.CLAMP_TO_GROUND)
 					.addToCoordinates(

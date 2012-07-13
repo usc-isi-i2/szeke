@@ -85,3 +85,11 @@ span#propertyName {
 	font-size: 10px;
 }
 
+text.ForcedByUser {
+	fill: blue;
+}
+
+div#OntologyAlternativeLinksPanel input {
+	font-size: 10px;
+}
+

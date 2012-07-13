@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -225,7 +226,7 @@ public class TableRDFGenerator {
 		for(String v:allVars){
 			rdfVariables.put(MediatorUtil.removeBacktick(v),new HashSet<String>());
 			Rule subRule = generateSubrule(tableRule,v);
-			//logger.info("Rule for "+ MediatorUtil.removeBacktick(v) + ":" + subRule);
+			logger.debug("Rule for "+ MediatorUtil.removeBacktick(v) + ":" + subRule);
         	RuleRDFGenerator rgen = new RuleRDFGenerator(subRule, sourceNamespaces,
         			ontologyNamespaces, outWriter, uniqueId+"");
         	rdfGenerators.put(MediatorUtil.removeBacktick(v),rgen);
@@ -285,7 +286,7 @@ public class TableRDFGenerator {
 	 * @throws MediatorException 
 	 */
 	private Rule generateSubrule(Rule rule, String v) throws MediatorException {
-		logger.debug("Generate subrule for=" + v);		
+		//logger.debug("Generate subrule for=" + v);		
 		LAVRule subrule = new LAVRule();
 		RelationPredicate antecedent = new RelationPredicate("Subrule");
 		ArrayList<Predicate> consequent = new ArrayList<Predicate>();
@@ -299,11 +300,11 @@ public class TableRDFGenerator {
 		if(!binaryP.isEmpty()){
 			for(Predicate p:binaryP){
 				//System.out.println("Binary Pred="+p);
-				//find the varbiable on the first position
-				//this var is needed to construct this rule
-				String firstVar = getFirstVariableName(p);
-				if(firstVar!=null){
-					antecedent.addTermIfUnique(firstVar);
+				//find all varbiables in this pred
+				//they are needed to construct this rule
+				List<String> allVars = getAllVariableNames(p);
+				for(String var: allVars){
+					antecedent.addTermIfUnique(var);
 				}
 				consequent.add(p.clone());
 
@@ -312,7 +313,7 @@ public class TableRDFGenerator {
 				findAllRelatedPredicates(p.getTerms().get(1), preds, antecedent, consequent);
 			}
 		}
-		//see if there are any unary predicates ex: hasName(uri(N))
+		//see if there are any unary predicates ex: Person(uri(N))
 		Predicate p = findUnaryPredicate(v, preds);
 		if(p!=null){
 			if(!consequent.contains(p))
@@ -334,7 +335,7 @@ public class TableRDFGenerator {
 	 * 1. if the term is a function/uri term uri(1) or uri(V) find a unary predicate 
 	 * that has "term" as it's only term. Person(uri(N)) or Activity(uri(1))
 	 * 3. If the uri is NOT a gensym, STOP. This is the end of the rule.
-	 * 4. If the uri is a gensym, find a binary predicate that has the gensym as a second arg.
+	 * 4. If the uri is a gensym, find ALL binary predicates that have the gensym as a second arg.
 	 * 5. If no such predicate exists, STOP.
 	 * 6. If a binary predicate exists, start from 1 with the input term being the first 
 	 * term of the  binary predicate.
@@ -350,6 +351,43 @@ public class TableRDFGenerator {
 	 * 		predicates are being added to this
 	 * @throws MediatorException 
 	 */
+	private void findAllRelatedPredicates(Term term,
+			ArrayList<Predicate> preds, RelationPredicate antecedent,
+			ArrayList<Predicate> consequent) throws MediatorException {
+
+		if(term instanceof VarTerm)
+			return;
+		else if(term instanceof FunctionTerm){
+			//it is a uri();
+			//find the unary predicate for this URI
+			Predicate p2 = findUnaryPredicate(term, preds);
+			//System.out.println("Unary Pred ...="+p2);
+			if(!consequent.contains(p2))
+				consequent.add(p2.clone());
+			if(gensymPredicate(p2)){
+				//if it is a gensym see if you can find other related 
+				ArrayList<Predicate> binaryP = findAllBinaryPredicates(p2.getTerms().get(0),preds);
+				//System.out.println("Binary Pred="+p1);
+				//remove it from the list of predicates so that I don't get into a infinite loop
+				for(Predicate p1: binaryP){
+					preds.remove(p1);
+					if(p1!=null){
+						//find all variables in this pred
+						//they are needed to construct this rule
+						List<String> firstVars = getAllVariableNames(p1);
+						for(String firstVar: firstVars){
+							antecedent.addTermIfUnique(firstVar);
+						}
+						if(!consequent.contains(p1)){
+							consequent.add(p1.clone());
+						}
+						findAllRelatedPredicates(p1.getTerms().get(0),preds,antecedent,consequent);
+					}
+				}
+			}
+		}
+	}
+	/*
 	private void findAllRelatedPredicates(Term term,
 			ArrayList<Predicate> preds, RelationPredicate antecedent,
 			ArrayList<Predicate> consequent) throws MediatorException {
@@ -384,7 +422,7 @@ public class TableRDFGenerator {
 			}
 		}
 	}
-
+*/
 	/**
 	 * Returns the unary predicate that has the term equal to a given term.
 	 * @param term
@@ -419,9 +457,11 @@ public class TableRDFGenerator {
 			if(p.getTerms().size()==1){
 				Term t = p.getTerms().get(0);
 				if(t instanceof FunctionTerm){
-					String var = t.getFunction().getTerms().get(0).getVar();
-					if(var!=null && var.equals(v))
-						return p;
+					for(Term term: t.getFunction().getTerms()){
+						String var = term.getVar();
+						if(var!=null && var.equals(v))
+							return p;
+					}
 				}
 			}
 		}
@@ -449,8 +489,29 @@ public class TableRDFGenerator {
 	}
 
 	/**
+	 * Returns a list of binary predicate that has the SECOND term equal to a given term.
+	 * @param term
+	 * @param preds
+	 * 		a list of unary and binary perdicates
+	 * @return
+	 * 		a list of binary predicate that has the SECOND term equal to a given term.
+	 */
+	private ArrayList<Predicate> findAllBinaryPredicates(Term term,ArrayList<Predicate> preds) {
+		ArrayList<Predicate> binaryP = new ArrayList<Predicate>();
+		for(Predicate p:preds){
+			if(p.getTerms().size()==2){
+				//get second term
+				Term t = p.getTerms().get(1);
+				if(t.equals(term))
+					binaryP.add(p);
+			}
+		}
+		return binaryP;
+	}
+
+	/**
 	 * Returns a list of binary predicates that have the SECOND term equal to a given variable OR
-	 * uri(V).
+	 * uri(V1,V2).
 	 * @param v
 	 * 		a variable name
 	 * @param preds
@@ -468,12 +529,16 @@ public class TableRDFGenerator {
 				String var=null;
 				if(t instanceof VarTerm){
 					var = t.getVar();
+					if(var.equals(v))
+						binaryP.add(p);
 				}
 				else if(t instanceof FunctionTerm){
-					var = t.getFunction().getTerms().get(0).getVar();
+					for(Term term: t.getFunction().getTerms()){
+						String termVar = term.getVar();
+						if(termVar!=null && termVar.equals(v))
+							binaryP.add(p);
+					}
 				}
-				if(var!=null && var.equals(v))
-					binaryP.add(p);
 			}
 		}
 		return binaryP;
@@ -502,19 +567,22 @@ public class TableRDFGenerator {
 	}
 	
 	/**
-	 * Returns the variable belonging to the first term. The first term may be a URI function.
+	 * Returns all variables in this predicate. The terms may be a URI function uri(v1,v2).
 	 * @param p
 	 * 		a Predicate
 	 * @return
-	 * 		the variable belonging to the first term. The first term may be a URI function.
+	 * 		all variables in this predicate. The terms may be a URI function uri(v1,v2).
 	 */
-	private String getFirstVariableName(Predicate p){
-		Term t = p.getTerms().get(0);
-		if(t instanceof VarTerm)
-				return t.getVar();
-		else if(t instanceof FunctionTerm)
-				return t.getFunction().getTerms().get(0).getVar();
-		else return null;
+	private List<String> getAllVariableNames(Predicate p){
+		List<String> vars = new ArrayList<String>();
+		for(Term t: p.getTerms()){
+			if(t instanceof VarTerm)
+				vars.add(t.getVar());
+			else if(t instanceof FunctionTerm){
+				vars.addAll(t.getFunction().getVars());
+			}
+		}
+		return vars;
 	}
 
 	//not used
@@ -551,5 +619,6 @@ public class TableRDFGenerator {
 		outWriter.flush();
 		outWriter.close();
 	}
+	
 
 }

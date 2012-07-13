@@ -34,13 +34,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.isi.karma.controller.command.Command;
-import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.update.AbstractUpdate;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.controller.update.WorksheetListUpdate;
-import edu.isi.karma.imp.database.DatabaseTableImport;
 import edu.isi.karma.imp.json.JsonImport;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.util.JSONUtil;
@@ -163,8 +160,18 @@ public class ImportServiceCommand extends Command {
 				//get data from the URL
 				String wsOutput = getFromUrl(url);
 				
+				//add the source name to the data
+				//it is always an array
+				JSONArray json = (JSONArray)JSONUtil.createJson(wsOutput);
+				for(int i=0; i<json.length(); i++){
+					JSONObject oneRow = (JSONObject)json.get(i);
+					oneRow.put("SourceName", sourceName);
+					oneRow.put("score","0");
+				}
+				
 				//import data in Karma
-				JsonImport imp = new JsonImport(wsOutput, sourceName, vWorkspace.getWorkspace());
+				//JsonImport imp = new JsonImport(wsOutput, sourceName, vWorkspace.getWorkspace());
+				JsonImport imp = new JsonImport(json, sourceName, vWorkspace.getWorkspace());
 				Worksheet wsht = imp.generateWorksheet();
 				vWorkspace.addAllWorksheets();
 				

@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import au.com.bytecode.opencsv.CSVReader;
-
-import edu.isi.karma.cleaning.UtilTools;
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.WorksheetCommand;
 import edu.isi.karma.controller.update.CleaningResultUpdate;
@@ -116,13 +113,13 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		Vector<String> vs = new Vector<String>();
 		//
 		String[] x = (String[])res.toArray(new String[res.size()]);
-		System.out.println(""+x);
+		/*System.out.println(""+x);
 		Vector<Double> scores = UtilTools.getScores(x, trainPath);
 		System.out.println("Scores: "+scores);
 		Vector<Integer> ins =UtilTools.topKindexs(scores, k);
-		System.out.println("Indexs: "+ins);
+		System.out.println("Indexs: "+ins);*/
 		Vector<String> y = new Vector<String>();
-		for(Integer i:ins)
+		for(int i = 0; i<k&&i<x.length;i++)
 		{
 			y.add(x[i]);
 		}
@@ -155,7 +152,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		boolean results = false;
 		int iterNum = 0;
 		RamblerTransformationOutput rtf = null;
-		while(iterNum<3 && !results)
+		while(iterNum<10 && !results) // try to find any rule during 5 times running
 		{
 			rtf = new RamblerTransformationOutput(inputs);
 			if(rtf.getTransformations().keySet().size()>0)
@@ -206,7 +203,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	}
 	public static void main(String[] args)
 	{
-		String dirpath = "/Users/bowu/Research/dataclean/data/RuleData/rawdata/pairs/test";
+		String dirpath = "/Users/bowu/Research/testdata/TestSingleFile";
 		File nf = new File(dirpath);
 		File[] allfiles = nf.listFiles();
 		for(File f:allfiles)
@@ -227,15 +224,14 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 						
 						pair[0] = "<_START>"+pair[0]+"<_END>";
 						tx.put(i+"", pair[0]);
-						if(isadded<40)
+						if(isadded<1)
 						{
 							RamblerTransformationExample tmp = new RamblerTransformationExample(pair[0], pair[1], i+"");
 							vrt.add(tmp);
 							isadded ++;
 						}
 						i++;
-					}
-					
+					}				
 					RamblerValueCollection vc = new RamblerValueCollection(tx);
 					RamblerTransformationInputs inputs = new RamblerTransformationInputs(vrt, vc);
 					//generate the program

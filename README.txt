@@ -1,3 +1,4 @@
+Requirements: Java 1.6, Maven 3.0 and above
 To run the jetty server, execute the following command from webkarma top directory:
 	mvn jetty:run
 Point your browser to http://localhost:8080/web-karma.html
@@ -11,10 +12,7 @@ To start in logging mode (where all the logs are stored in the log folder), use 
 - in /config/jettyrealm.properties change user/password (if you wish)
 - in /src/main/webapp/WEB-INF/web.xml uncomment security section at the end of the file
 - in pom.xml uncomment security section (search for loginServices)
-
-INSTALLATION INSTRUCTIONS FOR KARMA
-
-Requirements: Maven 3.0 and above, Java 1.6
+ements: Maven 3.0 and above, Java 1.6
 
 1. Maven is used as the build system for Karma. It also provides the Jetty server that hosts Karma on a machine. It can be downloaded from http://maven.apache.org/download.html. Clear installation steps for Maven are provided inside its installation zip package. Make sure that the bin directory of Maven is added to your PATH on a Windows machine.
 

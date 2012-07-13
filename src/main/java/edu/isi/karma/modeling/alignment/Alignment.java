@@ -42,9 +42,21 @@ public class Alignment {
 	private class SemanticTypeComparator implements Comparator<SemanticType> {
 	    @Override
 	    public int compare(SemanticType o1, SemanticType o2) {
-	    	String s1 = (o1.getDomain() != null?o1.getDomain().getUriString():"") + o1.getType().getUriString();
-	    	String s2 = (o2.getDomain() != null?o2.getDomain().getUriString():"") + o2.getType().getUriString();
-	        return s1.compareTo(s2);
+//	    	String s1 = (o1.getDomain() != null?o1.getDomain().getUriString():"") + o1.getType().getUriString();
+//	    	String s2 = (o2.getDomain() != null?o2.getDomain().getUriString():"") + o2.getType().getUriString();
+	    	String s1 = o1.getHNodeId();
+	    	String s2 = o2.getHNodeId();
+//	    	return s1.compareTo(s2);
+	    	
+	    	s1 = s1.replaceFirst("HN", "");
+	    	s2 = s2.replaceFirst("HN", "");
+	        
+	    	int i1 = Integer.valueOf(s1).intValue();
+	    	int i2 = Integer.valueOf(s2).intValue();
+
+	    	if (i1 < i2) return -1;
+	    	else if (i1 > i2) return 1;
+	    	else return 0;
 	    }
 	}
 	
@@ -55,6 +67,9 @@ public class Alignment {
 
 	private List<LabeledWeightedEdge> linksForcedByUser;
 	private List<LabeledWeightedEdge> linksPreferredByUI;
+	
+	
+	private List<String> duplicatedLinkIds;
 
 	private DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> steinerTree = null;
 	private Vertex root = null;
@@ -73,11 +88,20 @@ public class Alignment {
 		
 		linksForcedByUser = new ArrayList<LabeledWeightedEdge>();
 		linksPreferredByUI = new ArrayList<LabeledWeightedEdge>();
+		duplicatedLinkIds = new ArrayList<String>();
 		
 		semanticNodes = graphBuilder.getSemanticNodes();
 		
 	}
 	
+	public List<LabeledWeightedEdge> getLinksForcedByUser() {
+		return linksForcedByUser;
+	}
+	
+	public List<String> getDuplicatedLinkIds() {
+		return duplicatedLinkIds;
+	}
+
 	public Alignment(OntologyManager ontologyManager, List<SemanticType> semanticTypes, boolean separateDomainInstancesForSameDataProperties) {
 		this.ontologyManager = ontologyManager;
 		this.separateDomainInstancesForSameDataProperties = separateDomainInstancesForSameDataProperties;
@@ -203,6 +227,7 @@ public class Alignment {
 				
 				logger.info("domain of the link " + linkId + " has been replicated and graph has been changed successfully.");
 				align();
+				duplicatedLinkIds.add(linkId);
 				return;
 				
 			}
@@ -359,7 +384,7 @@ public class Alignment {
 		if (this.steinerTree == null)
 			align();
 		
-		GraphUtil.printGraph(this.steinerTree);
+		// GraphUtil.printGraph(this.steinerTree);
 		return this.steinerTree;
 	}
 
@@ -367,4 +392,43 @@ public class Alignment {
 		return this.graphBuilder.getGraph();
 	}
 	
+	// Reversing the inverse links
+	//THIS IS AN IMPORTANT METHOD. DO NOT REMOVE!!!!! (mariam)
+	public void updateLinksDirections(Vertex root, LabeledWeightedEdge e, DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> treeClone) {
+
+		if (root == null)
+			return;
+		Vertex source, target;
+		LabeledWeightedEdge inLink;
+		
+		LabeledWeightedEdge[] incomingLinks = treeClone.incomingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
+		if (incomingLinks != null && incomingLinks.length != 0) {
+			for (int i = 0; i < incomingLinks.length; i++) {
+				
+				inLink = incomingLinks[i];
+				source = inLink.getSource();
+				target = inLink.getTarget();
+				// don't remove the incoming link from parent to this node
+				if (e != null && inLink.getID().equalsIgnoreCase(e.getID())){
+					continue;
+				}
+				
+				LabeledWeightedEdge inverseLink = new LabeledWeightedEdge(inLink.getID(), new URI(inLink.getUriString(), inLink.getNs(), inLink.getPrefix()), inLink.getLinkType(), true);
+				treeClone.addEdge(target, source, inverseLink);
+				treeClone.setEdgeWeight(inverseLink, inLink.getWeight());
+				treeClone.removeEdge(inLink);
+//				GraphUtil.printGraph(treeClone);
+			}
+		}
+
+		LabeledWeightedEdge[] outgoingLinks = treeClone.outgoingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
+
+		if (outgoingLinks == null || outgoingLinks.length == 0)
+			return;
+		for (int i = 0; i < outgoingLinks.length; i++) {
+			target = outgoingLinks[i].getTarget();
+			updateLinksDirections(target, outgoingLinks[i], treeClone);
+		}
+	}	
+
 }

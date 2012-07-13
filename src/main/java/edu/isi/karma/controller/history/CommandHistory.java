@@ -30,7 +30,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.isi.karma.controller.command.Command;
+import edu.isi.karma.controller.command.Command.CommandTag;
 import edu.isi.karma.controller.command.Command.CommandType;
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.UndoRedoCommand;
@@ -63,6 +68,8 @@ public class CommandHistory {
 	 * through multiple HTTP requests.
 	 */
 	private Command currentCommand;
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 	public CommandHistory() {
 	}
@@ -109,7 +116,7 @@ public class CommandHistory {
 	 * Commands go onto the history when they have all their arguments and are
 	 * ready to be executed. If a command needs multiple user interactions to
 	 * define the parameters, then the command object must be created,
-	 * interacted with and then executed.
+	 * interacted with and then executed. 
 	 * 
 	 * @param command
 	 * @param vWorkspace
@@ -119,6 +126,9 @@ public class CommandHistory {
 	public UpdateContainer doCommand(Command command, VWorkspace vWorkspace)
 			throws CommandException {
 		UpdateContainer effects = new UpdateContainer();
+		effects.append(command.doIt(vWorkspace));
+		command.setExecuted(true);
+		
 		if (command.getCommandType() != CommandType.notInHistory) {
 			redoStack.clear();
 			
@@ -131,8 +141,16 @@ public class CommandHistory {
 			history.add(command);
 			effects.add(new HistoryAddCommandUpdate(command));
 		}
-		effects.append(command.doIt(vWorkspace));
-		command.setExecuted(true);
+		
+		// Save the modeling commands
+		CommandHistoryWriter chWriter = new CommandHistoryWriter(history, vWorkspace);
+		try {
+			chWriter.writeHistoryPerWorksheet();
+		} catch (JSONException e) {
+			logger.error("Error occured while writing history!" , e);
+			e.printStackTrace();
+		}
+		
 		return effects;
 	}
 
@@ -256,5 +274,14 @@ public class CommandHistory {
 			if(i != 0)
 				pw.println(prefix + ",");
 		}
+	}
+
+	public void removeCommands(CommandTag tag) {
+		List<Command> commandsToBeRemoved = new ArrayList<Command>();
+		for(Command command: history) {
+			if(command.hasTag(tag))
+				commandsToBeRemoved.add(command);
+		}
+		history.removeAll(commandsToBeRemoved);
 	}
 }

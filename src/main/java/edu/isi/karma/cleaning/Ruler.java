@@ -37,7 +37,7 @@ public class Ruler {
 	String Trgt = "";
 	StringTokenizer st = null;
 	String[] seperator = {" ",","};
-	Vector<TNode> vec;
+	public Vector<TNode> vec;
 	int curPos = 0;
 	Vector<Object[]> operators = new Vector<Object[]>();
 	Vector<Integer> positions;
@@ -607,6 +607,7 @@ public class Ruler {
 		{
 			//this.collectPoss(pos);
 			TNode tn = l.next();
+			tn.setColor(TNode.MOVCOLOR); // set color for moving.
 			x.add(tn);
 			//this.whats.add(tn);
 			l.remove();

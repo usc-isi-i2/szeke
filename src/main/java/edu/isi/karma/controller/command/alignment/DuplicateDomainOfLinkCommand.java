@@ -24,29 +24,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.isi.karma.controller.command.Command;
 import edu.isi.karma.controller.command.CommandException;
+import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.SVGAlignmentUpdate_ForceKarmaLayout;
 import edu.isi.karma.controller.update.SemanticTypesUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
+import edu.isi.karma.modeling.alignment.AlignToOntology;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
 import edu.isi.karma.modeling.alignment.GraphUtil;
 import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.Vertex;
-import edu.isi.karma.rdf.WorksheetRDFGenerator;
 import edu.isi.karma.rep.HNodePath;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.view.VWorksheet;
 import edu.isi.karma.view.VWorkspace;
-import edu.isi.karma.webserver.KarmaException;
 
 public class DuplicateDomainOfLinkCommand extends Command {
 
 	private final String vWorksheetId;
 	private final String edgeId;
 	private final String alignmentId;
+	
+	private static Logger logger = LoggerFactory.getLogger(DuplicateDomainOfLinkCommand.class);
 
 	protected DuplicateDomainOfLinkCommand(String id, String edgeId,
 			String alignmentId, String vWorksheetId) {
@@ -54,6 +58,8 @@ public class DuplicateDomainOfLinkCommand extends Command {
 		this.edgeId = edgeId;
 		this.alignmentId = alignmentId;
 		this.vWorksheetId = vWorksheetId;
+		
+		addTag(CommandTag.Modeling);
 	}
 
 	@Override
@@ -78,10 +84,20 @@ public class DuplicateDomainOfLinkCommand extends Command {
 
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
-		Alignment alignment = AlignmentManager.Instance().getAlignment(
-				alignmentId);
-		Worksheet worksheet = vWorkspace.getViewFactory()
-				.getVWorksheet(vWorksheetId).getWorksheet();
+		Alignment alignment = AlignmentManager.Instance().getAlignment(alignmentId);
+		
+		Worksheet worksheet = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId).getWorksheet();
+		if(alignment == null) {
+			AlignToOntology align = new AlignToOntology(worksheet, vWorkspace, vWorksheetId);
+			try {
+				align.align(false);
+			} catch (Exception e) {
+				logger.error("Error occured while generating the model Reason:.", e);
+				return new UpdateContainer(new ErrorUpdate("Error occured while generating the model for the source."));
+			}
+			alignment = AlignmentManager.Instance().getAlignment(alignmentId);
+		}
+		
 		// Duplicate the domain of the edge
 		alignment.duplicateDomainOfLink(edgeId);
 
@@ -97,8 +113,7 @@ public class DuplicateDomainOfLinkCommand extends Command {
 			Worksheet worksheet, VWorkspace vWorkspace){
 		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> tree = alignment
 				.getSteinerTree();
-		Vertex root = alignment.GetTreeRoot();
-		GraphUtil.printGraph(tree);
+//		GraphUtil.printGraph(tree);
 
 		List<String> hNodeIdList = new ArrayList<String>();
 		VWorksheet vw = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId);
@@ -106,15 +121,16 @@ public class DuplicateDomainOfLinkCommand extends Command {
 		for(HNodePath path:columns)
 			hNodeIdList.add(path.getLeaf().getId());
 		
-		SVGAlignmentUpdate_ForceKarmaLayout svgUpdate = new SVGAlignmentUpdate_ForceKarmaLayout(vWorksheetId, alignmentId, tree, root, hNodeIdList);
+		SVGAlignmentUpdate_ForceKarmaLayout svgUpdate = new SVGAlignmentUpdate_ForceKarmaLayout(vWorksheetId, alignmentId, alignment, hNodeIdList);
 		
 		//mariam
+		/*
 		try{
-			WorksheetRDFGenerator.testRDFGeneration(vWorkspace.getWorkspace(), worksheet, tree, root);
+			WorksheetRDFGenerator.testRDFGeneration(vWorkspace.getWorkspace(), worksheet, alignment);
 		}catch(KarmaException e){
 			e.printStackTrace();
 		}
-
+*/
 		UpdateContainer c = new UpdateContainer();
 		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId));
 		c.add(svgUpdate);

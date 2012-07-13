@@ -21,7 +21,7 @@
 
 package edu.isi.karma.rdf;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +36,8 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 
+import edu.isi.karma.modeling.alignment.Alignment;
+import edu.isi.karma.modeling.alignment.GraphUtil;
 import edu.isi.karma.modeling.alignment.LabeledWeightedEdge;
 import edu.isi.karma.modeling.alignment.LinkType;
 import edu.isi.karma.modeling.alignment.NodeType;
@@ -156,12 +158,20 @@ public class SourceDescription {
 	 * datasource to be modeled.
 	 * <br>useColumnNames=false if the SD is used internally.
 	 */
-	public SourceDescription(Workspace workspace, DirectedWeightedMultigraph<Vertex, 
-			LabeledWeightedEdge> steinerTree, Vertex root, Worksheet worksheet, String sourcePrefix, boolean generateInverse, 
+	public SourceDescription(Workspace workspace, Alignment alignment, Worksheet worksheet, String sourcePrefix, boolean generateInverse, 
 			boolean useColumnNames){
+		
+		//the tree is not directed anymore, so we have to transform it before we can use it
+		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> sTree = alignment.getSteinerTree();
+		@SuppressWarnings("unchecked")
+		DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> treeClone = (DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge>) sTree.clone();
+		// Reversing the inverse links
+		alignment.updateLinksDirections(alignment.GetTreeRoot(), null, treeClone);
+
+		
 		this.factory=workspace.getFactory();
-		this.steinerTree = steinerTree;
-		this.root=root;
+		this.steinerTree = treeClone;
+		this.root=alignment.GetTreeRoot();
 		this.useColumnNames = useColumnNames;
 		this.rdfSourcePrefix=sourcePrefix;
 		this.generateInverse = generateInverse;
@@ -184,9 +194,9 @@ public class SourceDescription {
 	 * 		a source description.
 	 * @throws KarmaException
 	 * For a table without nested tables the source description contains column names.
-	 * SD(ColumnName1, ColumnName2)
-	 * For a table with nested tables the source description contains HNodePaths.
-	 * SD(HN1/HN2/HN3, HN1/HN2/HN4) - the ids of the HNodes.
+	 * SD(ColumnName2, ColumnName3)
+	 * For a table with nested tables the source description contains HNodePaths (transformed in ColumnNames)
+	 * SD(ColumnName1/ColumnName2, ColumnName1/ColumnName3) - the ids of the HNodes.
 	 */
 	public String generateSourceDescription() throws KarmaException{
 		//System.out.println("THE TREE******************");
@@ -331,7 +341,7 @@ public class SourceDescription {
 		
 		String dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getColumnName();
 		if(!useColumnNames){
-			dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNames();
+			dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNamePath();
 		}
 		ruleAttributes.add(dataAttribute);
 		String propertyName = getPrefix(e.getPrefix(), e.getNs()) + ":" + e.getLocalLabel();
@@ -461,7 +471,7 @@ public class SourceDescription {
 			
 			String dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getColumnName();
 			if(!useColumnNames){
-				dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNames();
+				dataAttribute = factory.getHNode(child.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNamePath();
 			}
 			ruleAttributes.add(dataAttribute);
 			String propertyName = getPropertyWithPrefix(model.getOntProperty(st.getType().getUriString()));
@@ -530,6 +540,8 @@ public class SourceDescription {
 	 * <br> If node is associated with a column, that column is the key (the column was mapped to a Class)
 	 * <br> Else, look at all this node's children, and see which one is a key. If
 	 * <br> no key is found generate a gensym URI (return a uri index for this class)
+	 * <br> A key can also be a combination of several columns (compound key). In this case we generate a 
+	 * <br> concat("_",col1,col2,...), so the uri will be uri(concat("_",col1,col2,...))
 	 * @param v
 	 * 		the node
 	 * @return
@@ -542,6 +554,7 @@ public class SourceDescription {
 		//class, so we have to distinguish between the key for these classes
 		//logger.info("Get Key for " + v.getUri() + " with ID=" + v.getID());
 		boolean isGensym=false;
+		boolean isCompoundKey=false;
 		String key = uriMap.get(v.getID());
 		if(key!=null){
 			//logger.info("Key for " + v.getID() + " is " + key);
@@ -553,6 +566,8 @@ public class SourceDescription {
 			//this node is not associated with a column
 			//look in the child nodes to find the key to be used when generating the URI
 			Set<LabeledWeightedEdge> edges = steinerTree.outgoingEdgesOf(v);
+			//I could have more than 1 key
+			List<String> keys = new ArrayList<String>();
 			for(LabeledWeightedEdge e:edges){
 				//get the child node
 				Vertex n = steinerTree.getEdgeTarget(e);
@@ -564,18 +579,31 @@ public class SourceDescription {
 						if(useColumnNames){
 							key = factory.getHNode(n.getSemanticType().getHNodeId()).getColumnName();
 						}else{
-							key=factory.getHNode(n.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNames();
+							key=factory.getHNode(n.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNamePath();
 						}
 						ruleAttributes.add(key);
-						break;
+						keys.add(key);
 					}
 				}
 			}
-			if(key==null){
+			if(keys.isEmpty()){
 				//I looked at all children and I did not find a key
 				//generate gensym index
 				key = String.valueOf(uriIndex++);
 				isGensym=true;
+			}
+			else if(keys.size()==1){
+				//I only have 1 key
+				key=keys.get(0);
+			}
+			else{
+				//I have more than 1 key, so I have to construct a concat statement that will be the key
+				key = "";
+				for(int i=0; i<keys.size();i++){
+					if(i>0) key+=",";
+					key += addBacktick(keys.get(i));
+				}
+				isCompoundKey=true;
 			}
 		}
 		else{
@@ -583,12 +611,12 @@ public class SourceDescription {
 			if(useColumnNames){
 				key = factory.getHNode(v.getSemanticType().getHNodeId()).getColumnName();
 			}else{
-				key=factory.getHNode(v.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNames();				
+				key=factory.getHNode(v.getSemanticType().getHNodeId()).getHNodePath(factory).toColumnNamePath();				
 			}
 			ruleAttributes.add(key);
 		}
 		//I have to do it here because I don't want backticks for the gensyms
-		if(!isGensym)
+		if(!isGensym && !isCompoundKey)
 			key = addBacktick(key);
 		
 		classNameToId.put(v.getUriString(), v.getID());
@@ -673,4 +701,5 @@ public class SourceDescription {
 			return MediatorUtil.addBacktick(s);
 		else return s;
 	}
+	
 }

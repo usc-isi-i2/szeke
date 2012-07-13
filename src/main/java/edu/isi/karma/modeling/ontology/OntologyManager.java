@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -106,8 +108,8 @@ public class OntologyManager {
 
 	public URI getURIFromString(String uri) {
 		Resource r = ontModel.getResource(uri);
-		if (r == null) {
-			logger.error("Could not find the resource " + uri + " in the ontology model.");
+		if (r == null || !ontModel.containsResource(r)) {
+			logger.debug("Could not find the resource " + uri + " in the ontology model.");
 			return null;
 		}
 		String ns = r.getNameSpace();
@@ -611,5 +613,15 @@ public class OntologyManager {
 		
 		return results;
 	}
-
+	
+	public Map<String, String> getPrefixMap () {
+		Map<String, String> nsMap = ontModel.getNsPrefixMap();
+		Map<String, String> prefixMap = new HashMap<String, String>();
+		
+		for(String ns: nsMap.keySet()) {
+			if (!ns.equals("") && !prefixMap.containsKey(nsMap.get(ns)))
+				prefixMap.put(nsMap.get(ns), ns);
+		}
+		return prefixMap;
+	}
 }
