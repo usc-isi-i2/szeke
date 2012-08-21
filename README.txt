@@ -1,4 +1,23 @@
-Requirements: Java 1.6, Maven 3.0 and above
+INSTALLATION INSTRUCTIONS FOR KARMA
+
+Requirements: Maven 3.0 and above, Java 1.6
+
+1. Maven is used as the build system for Karma. It also provides the Jetty server that hosts Karma on a machine. It can be downloaded from http://maven.apache.org/download.html. Clear installation steps for Maven are provided inside its installation zip package. Make sure that the bin directory of Maven is added to your PATH on a Windows machine.
+
+2. Open the command line and run "mvn --version" to verify that Maven is correctly installed.
+
+3. On command line, change your current directory to the directory in which Karma is installed. 
+
+4. Compile the Java code by running "mvn compile" on command line inside the top level directory of Karma installation. If you get Java compilation errors related to annotations such as "@override", that means you probably have Java 1.5 (You need Java 1.6 for Karma). When the command is run for the first time on a machine, it might take some time as it downloads all the required Java dependencies from Internet.
+
+5. Run "mvn jetty:run" command inside the same directory to start the Jetty server. Again, when the command is run for the first time, it might take some time to download the required Jetty server files from Internet.
+
+6. Once the server has started successfully, point your browser to http://localhost:8080/web-karma.html to start using Karma. 
+
+7. Press Ctrl+C to stop the server when required, and "mvn jetty:run" to start the server again (inside the installation directory).
+
+****************************************************************************************************
+
 To run the jetty server, execute the following command from webkarma top directory:
 	mvn jetty:run
 Point your browser to http://localhost:8080/web-karma.html
