@@ -64,7 +64,7 @@ function styleAndAssignHandlerstoServiceImportObjects(){
 	  
 	    //if there is text, lets filter
 	    else {  
-	      filter('#ServiceSourceList tr', $(this).val(), "sourceName");  
+	      filter('#ServiceSourceList tr', $(this).val(), "sourceName");  // present in databasImportDialog.js
 	    }
   	});
 }
@@ -109,7 +109,7 @@ function getServicePreferences() {
 	info["command"] = "FetchPreferencesCommand";
 	info["preferenceCommand"] = "ImportServiceCommand";
 	var returned = $.ajax({
-	   	url: "/RequestController", 
+	   	url: "RequestController", 
 	   	type: "POST",
 	   	data : info,
 	   	dataType : "json",
@@ -143,7 +143,7 @@ function sendGenerateSourceListRequest() {
 	info["commandType"] = "GetSources";
 		
 	var returned = $.ajax({
-	   	url: "/RequestController", 
+	   	url: "RequestController", 
 	   	type: "POST",
 	   	data : info,
 	   	dataType : "json",
@@ -175,7 +175,7 @@ function sendImportSourceRequest() {
 	info["commandType"] = "ImportSource";
     showWaitingSignOnScreen();
 	var returned = $.ajax({
-	   	url: "/RequestController", 
+	   	url: "RequestController", 
 	   	type: "POST",
 	   	data : info,
 	   	dataType : "json",

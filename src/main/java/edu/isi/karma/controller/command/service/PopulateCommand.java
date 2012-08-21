@@ -48,7 +48,6 @@ import edu.isi.karma.rep.Row;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.rep.Workspace;
 import edu.isi.karma.service.Attribute;
-import edu.isi.karma.service.IOType;
 import edu.isi.karma.service.InvocationManager;
 import edu.isi.karma.service.Service;
 import edu.isi.karma.service.ServiceLoader;
@@ -125,7 +124,7 @@ public class PopulateCommand extends WorksheetCommand{
 		Source source = new Source(wk.getTitle(), tree);
 		
 		Map<Service, Map<String, String>> servicesAndMappings = 
-			ServiceLoader.getServicesContainedInModel(source.getModel(), IOType.INPUT, null);
+			ServiceLoader.getServicesWithInputContainedInModel(source.getModel(), null);
 		
 		if (servicesAndMappings == null) {
 			logger.error("Cannot find any services to be invoked according to this source model.");
@@ -161,7 +160,7 @@ public class PopulateCommand extends WorksheetCommand{
 			invocatioManager = new InvocationManager(requestIds, requestURLStrings);
 			logger.info("Requesting data with includeURL=" + true + ",includeInput=" + true + ",includeOutput=" + true);
 			Table serviceTable = invocatioManager.getServiceData(false, false, true);
-			logger.debug(serviceTable.getPrintInfo());
+//			logger.debug(serviceTable.getPrintInfo());
 			ServiceTableUtil.populateWorksheet(serviceTable, wk, ws.getFactory());
 			logger.info("The service " + service.getUri() + " has been invoked successfully.");
 
@@ -221,10 +220,10 @@ public class PopulateCommand extends WorksheetCommand{
 				attIdToValue.put(serviceAttId, value);
 				
 			}
-			String urlString = service.getPopulatedAddress(attIdToValue);
+			String urlString = service.getPopulatedAddress(attIdToValue, null);
 			
 			//FIXME
-			urlString = urlString.replaceAll("\\{p3\\}", "taheriyan");
+			urlString = urlString.replaceAll("\\{p3\\}", "karma");
 			
 			requestIds.add(rows.get(i).getId());
 			requestURLStrings.add(urlString);

@@ -33,8 +33,36 @@ function handleCleanColumnButton() {
 	var selectedHNodeId = columnHeadingMenu.data("parentCellId");
 	var tdTag = $("td#" + selectedHNodeId);
 	var table = tdTag.parents("table.WorksheetTable");
-	var lastRow = $("thead tr:last", table);
-	var index = $("td", lastRow).index(tdTag);
+	var rows = $("thead tr", table);
+	var index = -1;
+	$.each(rows, function(ind, row) {
+	  var cells = $('td',row);
+	  if (cells.index(tdTag) == -1)
+	  {
+	  	return;
+	  }
+	  index = 0;
+	  for(var k = 0; k<cells.length; k++)
+	  { 
+	  	cell = cells.get(k);
+	  	if($(tdTag).text() != $(cell).text())
+	  	{
+	  		if(cell.attributes["colspan"]!=undefined)
+	  		{
+	  			index = index + parseInt($(cell).attr("colspan"));
+	  		}
+	  		else
+	  		{
+	  			index = index +1;
+	  		}
+	  	}
+	  	else
+	  	{
+	  		break;
+	  	}
+	  }
+	  return index;
+	});
 	var values = [];
 	$('tbody>tr>td:nth-child(' + (index + 1) + ')', table).each(function() {
 		if($(this).attr("id"))
@@ -236,7 +264,7 @@ function handleGenerateCleaningRulesButton() {
 	info["examples"] = JSON.stringify(examples);
 
 	var returned = $.ajax({
-		url : "/RequestController",
+		url : "RequestController",
 		type : "POST",
 		data : info,
 		dataType : "json",
@@ -301,7 +329,7 @@ function submit() {
 	info["result"] = JSON.stringify(transformedRes);
 
 	var returned = $.ajax({
-		url : "/RequestController",
+		url : "RequestController",
 		type : "POST",
 		data : info,
 		dataType : "json",

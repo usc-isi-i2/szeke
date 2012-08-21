@@ -30,6 +30,8 @@ import edu.isi.karma.rep.Row;
 import edu.isi.karma.rep.Table;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.rep.Workspace;
+import edu.isi.karma.rep.metadata.SourceInformation;
+import edu.isi.karma.rep.metadata.SourceInformation.InfoAttribute;
 import edu.isi.karma.util.AbstractJDBCUtil;
 import edu.isi.karma.util.AbstractJDBCUtil.DBType;
 import edu.isi.karma.util.JDBCUtilFactory;
@@ -66,8 +68,9 @@ public class DatabaseTableImport {
 	public Worksheet generateWorksheet() throws SQLException, ClassNotFoundException {
 		/** Get the data from the database table **/
 		AbstractJDBCUtil dbUtil = JDBCUtilFactory.getInstance(dbType);
-		ArrayList<ArrayList<String>> data = dbUtil.getDataForTable(dbType, hostname, 
-				portnumber, username, password, tableName, dBorSIDName);
+		// TODO Limiting the number of rows to 1000 for now to avoid all data in memory
+		ArrayList<ArrayList<String>> data = dbUtil.getDataForLimitedRows(dbType, hostname, 
+				portnumber, username, password, tableName, dBorSIDName, 1000);
 		
 		/** Add the headers **/
 		HTable headers = worksheet.getHeaders();
@@ -87,6 +90,16 @@ public class DatabaseTableImport {
 				row.setValue(headersList.get(j), rowData.get(j));
 			}
         }
+        
+        /** Save the db info in the source information part of worksheet's metadata **/
+        SourceInformation srcInfo = new SourceInformation();
+        srcInfo.setAttributeValue(InfoAttribute.dbType, dbType.name());
+        srcInfo.setAttributeValue(InfoAttribute.hostname, hostname);
+        srcInfo.setAttributeValue(InfoAttribute.portnumber, String.valueOf(portnumber));
+        srcInfo.setAttributeValue(InfoAttribute.username, username);
+        srcInfo.setAttributeValue(InfoAttribute.dBorSIDName, dBorSIDName);
+        srcInfo.setAttributeValue(InfoAttribute.tableName, tableName);
+        worksheet.getMetadataContainer().setSourceInformation(srcInfo);
 		
 		return worksheet;
 	}

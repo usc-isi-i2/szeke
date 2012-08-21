@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import edu.isi.karma.rep.RepFactory;
+import edu.isi.karma.rep.metadata.SourceInformation;
+import edu.isi.karma.rep.metadata.SourceInformation.InfoAttribute;
 
 public class SourcePublisher {
 
@@ -44,15 +47,17 @@ public class SourcePublisher {
 	private String sourceDescription;
 	private RepFactory factory;
 	private List<String> transformationCommandsJSON;
+	private SourceInformation sourceInfo;
 	
 	//MARIAM
 	//I had to add factory, so that I can get to the columnName
 	//I tried to do it in a nicer way but couldn't figure out how to add it to the Attribute
-	public SourcePublisher(Source source, String sourceDescription, RepFactory factory, List<String> transformationCommandJSON) {
+	public SourcePublisher(Source source, String sourceDescription, RepFactory factory, List<String> transformationCommandJSON, SourceInformation sourceInfo) {
 		this.source = source;
 		this.sourceDescription=sourceDescription;
 		this.factory=factory;
 		this.transformationCommandsJSON = transformationCommandJSON;
+		this.sourceInfo = sourceInfo;
 	}
 	
 	public Model generateModel() {
@@ -123,17 +128,21 @@ public class SourcePublisher {
 		Property has_attribute = model.createProperty(Namespaces.KARMA, "hasAttribute");
 		Property has_name = model.createProperty(Namespaces.KARMA, "hasName");
 		Property has_columnName = model.createProperty(Namespaces.KARMA, "hasColumnName");
-		
+		Property has_variable = model.createProperty(Namespaces.KARMA, "hasVariable");
+
 		Resource my_source = model.createResource(baseNS + "");
 		my_source.addProperty(rdf_type, source_resource);
 		if (this.source.getName().length() > 0)
 			my_source.addProperty(has_name, this.source.getName());
-		
+
+		if (this.source.getVariables() != null)
+		for (int i = 0; i < this.source.getVariables().size(); i++) {
+			Resource my_variable = model.createResource(baseNS + this.source.getVariables().get(i).toString());
+			my_variable.addProperty(rdf_type, variavle_resource);
+			my_source.addProperty(has_variable, my_variable);
+		}
+
 		if (this.source.getAttributes() != null) {
-			for (int i = 0; i < this.source.getVariables().size(); i++) {
-				Resource my_variable = model.createResource(baseNS + this.source.getVariables().get(i).toString());
-				my_variable.addProperty(rdf_type, variavle_resource);
-			}
 			for (int i = 0; i < this.source.getAttributes().size(); i++) {
 				
 				Attribute att = this.source.getAttributes().get(i);
@@ -156,6 +165,16 @@ public class SourcePublisher {
 		Property has_columnTransformation = model.createProperty(Namespaces.KARMA, "hasColumnTransformation");
 		for(String commJson : transformationCommandsJSON)
 			my_source.addProperty(has_columnTransformation, commJson);
+		
+		// Add source information if any present
+		if(sourceInfo != null) {
+			Map<InfoAttribute, String> attributeValueMap = sourceInfo.getAttributeValueMap();
+			for (InfoAttribute attr : attributeValueMap.keySet()) {
+				Property attrProp = model.createProperty(Namespaces.KARMA, "hasSourceInfo_" + attr.name());
+				my_source.addProperty(attrProp, attributeValueMap.get(attr));
+			}
+		}
+		
 	}
 	
 	private void addTransformationCommandsHistory(Model model2) {

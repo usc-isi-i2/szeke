@@ -53,6 +53,7 @@ public class Service {
 	private URL urlExample;
 	private String description;
 	private String operationName;
+	private String sourceDescription;
 
 	private List<Attribute> inputAttributes;
 	private List<Attribute> outputAttributes;
@@ -70,39 +71,43 @@ public class Service {
 		this.id = id;
 		this.urlExample= urlExample;
 		this.name = getOperationName();
-		hNodeIdToAttribute = new HashMap<String, Attribute>();
-		variables = new ArrayList<String>();
-		inputAttributes = new ArrayList<Attribute>();
-		outputAttributes = new ArrayList<Attribute>();
-		attIdToAttMap = new HashMap<String, Attribute>();
+		this.sourceDescription = "";
+		this.hNodeIdToAttribute = new HashMap<String, Attribute>();
+		this.variables = new ArrayList<String>();
+		this.inputAttributes = new ArrayList<Attribute>();
+		this.outputAttributes = new ArrayList<Attribute>();
+		this.attIdToAttMap = new HashMap<String, Attribute>();
 	}
 	
 	public Service(String id, String name, URL urlExample) {
 		this.id = id;
 		this.setName(name);
 		this.urlExample= urlExample;
+		this.sourceDescription = "";
 		this.setMethod(HttpMethods.GET);
 		this.urlExample = urlExample;
-		inputAttributes = new ArrayList<Attribute>();
-		outputAttributes = new ArrayList<Attribute>();
-		attIdToAttMap = new HashMap<String, Attribute>();
+		this.inputAttributes = new ArrayList<Attribute>();
+		this.outputAttributes = new ArrayList<Attribute>();
+		this.attIdToAttMap = new HashMap<String, Attribute>();
 	}
 	
 	public Service(String id, String addressTemplate) {
 		this.id = id;
 		this.address= addressTemplate;
-		inputAttributes = new ArrayList<Attribute>();
-		outputAttributes = new ArrayList<Attribute>();
-		attIdToAttMap = new HashMap<String, Attribute>();
+		this.inputAttributes = new ArrayList<Attribute>();
+		this.outputAttributes = new ArrayList<Attribute>();
+		this.attIdToAttMap = new HashMap<String, Attribute>();
+		this.sourceDescription = "";
 	}
 	
 	public Service(String id, String name, String addressTemplate) {
 		this.id = id;
 		this.setName(name);
 		this.address= addressTemplate;
-		inputAttributes = new ArrayList<Attribute>();
-		outputAttributes = new ArrayList<Attribute>();
-		attIdToAttMap = new HashMap<String, Attribute>();
+		this.inputAttributes = new ArrayList<Attribute>();
+		this.outputAttributes = new ArrayList<Attribute>();
+		this.attIdToAttMap = new HashMap<String, Attribute>();
+		this.sourceDescription = "";
 	}
 
 	public Service(String id, String name, URL urlExample, String method) {
@@ -110,9 +115,10 @@ public class Service {
 		this.setName(name);
 		this.urlExample = urlExample;
 		this.setMethod(method);
-		inputAttributes = new ArrayList<Attribute>();
-		outputAttributes = new ArrayList<Attribute>();
-		attIdToAttMap = new HashMap<String, Attribute>();
+		this.inputAttributes = new ArrayList<Attribute>();
+		this.outputAttributes = new ArrayList<Attribute>();
+		this.attIdToAttMap = new HashMap<String, Attribute>();
+		this.sourceDescription = "";
 	}
 
 	public String getUri() {
@@ -126,40 +132,72 @@ public class Service {
 		return operationName;
 	}
 
-	public String getPopulatedAddress(Map<String, String> attIdToValue) {
+	
+	public void setVariables(List<String> variables) {
+		this.variables = variables;
+	}
+
+	public String getSourceDescription() {
+		return sourceDescription;
+	}
+
+	public void setSourceDescription(String serviceDescription) {
+		this.sourceDescription = serviceDescription;
+	}
+
+	/**
+	 * This method takes a map of attribute Ids and their values and return the invocation URL. 
+	 * If there are some mandatory attributes that are not provided in the input map, this function returns 
+	 * them in missingAttributes.
+	 * @param attIdToValue
+	 * @param requiredAttributes
+	 * @return
+	 */
+	public String getPopulatedAddress(Map<String, String> attIdToValue, List<Attribute> missingAttributes) {
 		String address = this.getAddress();
 		String populatedAddress = address;
 		
-		for (String attId : attIdToValue.keySet()) {
-			Attribute att = this.attIdToAttMap.get(attId);
-			if (att == null) {
-				logger.debug("Cannot find the attribute " + attId + " in this service.");
-				return null;
-			}
-			if (!att.getIOType().equalsIgnoreCase(IOType.INPUT)) {
-				logger.debug("The type of the attribute " + attId + " is not INPUT.");
-				return null;
-			}
+		if (missingAttributes == null)
+			missingAttributes = new ArrayList<Attribute>();
+		
+		for (Attribute att : this.inputAttributes) {
 			
+			String attId = att.getId();
+			
+			String value = attIdToValue.get(att.getId());
 			String groundedIn = att.getGroundedIn();
+
+			// the input attribute is not in the url.
 			if (groundedIn == null || groundedIn.trim().length() == 0) {
 				logger.debug("The attribute " + attId + " grounding parameter is not specified.");
-				return null;
+				continue;
 			}
 			
-			String value = attIdToValue.get(attId);
-			if (value == null) {// || value.trim().length() == 0) {
-				logger.debug("No value is given for attribute " + attId);
-				return null;
+			if (value == null) { // input attribute is not in the input map
+				
+				if (att.getRequirement() == AttributeRequirement.MANDATORY ||
+						// FIXME: later when we are able to model the attribute mandatory/optional,
+						// we have to remove the next line. currently we consider every 
+						// input attribute is a necessary
+						att.getRequirement() == AttributeRequirement.NONE) {
+					logger.debug("No value is given for the mandatory attribute " + attId);
+					missingAttributes.add(att);
+				} else {
+					// remove the attribute from the url if it exists there.
+					populatedAddress = populatedAddress.replaceAll("&" + att.getName() + "=", "");
+					populatedAddress = populatedAddress.replaceAll(att.getName() + "=", "");
+					populatedAddress = populatedAddress.replaceAll("\\{" + groundedIn.trim() + "\\}", "");
+				}
+			} else {
+
+				logger.debug("att: " + attId);
+				logger.debug("grounded in: " + groundedIn.trim());
+				logger.debug("value: " + value.trim());
+
+				populatedAddress = populatedAddress.replaceAll("\\{" + groundedIn.trim() + "\\}", value);
 			}
 			
-			logger.debug("att: " + attId);
-			logger.debug("grounded in: " + groundedIn.trim());
-			logger.debug("value: " + value.trim());
-			
-			populatedAddress = populatedAddress.replaceAll("\\{" + groundedIn.trim() + "\\}", value);
 		}
-		
 		return populatedAddress;
 	}
 
@@ -258,6 +296,28 @@ public class Service {
 		return variables;
 	}
 
+	public Attribute getInputAttributeByName(String name) {
+		if (this.inputAttributes == null)
+			return null;
+		
+		for (Attribute att : this.inputAttributes)
+			if (att.getName().equalsIgnoreCase(name))
+				return att;
+		
+		return null;
+	}
+	
+	public Attribute getOutputAttributeByName(String name) {
+		if (this.outputAttributes == null)
+			return null;
+		
+		for (Attribute att : this.outputAttributes)
+			if (att.getName().equalsIgnoreCase(name))
+				return att;
+		
+		return null;
+	}
+	
 	public HashMap<String, Attribute> gethNodeIdToAttribute() {
 		return hNodeIdToAttribute;
 	}
@@ -480,6 +540,13 @@ public class Service {
 	public void print() {
 		System.out.println("********************************************");
 		System.out.println("Service: " + getInfo());
+		System.out.println("********************************************");
+		System.out.println("Variables: ");
+		if (this.variables != null) {
+			for (String v : this.variables)
+				System.out.print(v + ", ");
+			System.out.println();
+		}
 		System.out.println("********************************************");
 		System.out.println("Input Attributes: ");
 		if (this.inputAttributes != null)
