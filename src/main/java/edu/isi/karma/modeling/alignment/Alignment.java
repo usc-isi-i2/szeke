@@ -40,7 +40,6 @@ public class Alignment {
 	static Logger logger = Logger.getLogger(Alignment.class);
 
 	private class SemanticTypeComparator implements Comparator<SemanticType> {
-	    @Override
 	    public int compare(SemanticType o1, SemanticType o2) {
 //	    	String s1 = (o1.getDomain() != null?o1.getDomain().getUriString():"") + o1.getType().getUriString();
 //	    	String s2 = (o2.getDomain() != null?o2.getDomain().getUriString():"") + o2.getType().getUriString();
@@ -392,43 +391,5 @@ public class Alignment {
 		return this.graphBuilder.getGraph();
 	}
 	
-	// Reversing the inverse links
-	//THIS IS AN IMPORTANT METHOD. DO NOT REMOVE!!!!! (mariam)
-	public void updateLinksDirections(Vertex root, LabeledWeightedEdge e, DirectedWeightedMultigraph<Vertex, LabeledWeightedEdge> treeClone) {
-
-		if (root == null)
-			return;
-		Vertex source, target;
-		LabeledWeightedEdge inLink;
-		
-		LabeledWeightedEdge[] incomingLinks = treeClone.incomingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
-		if (incomingLinks != null && incomingLinks.length != 0) {
-			for (int i = 0; i < incomingLinks.length; i++) {
-				
-				inLink = incomingLinks[i];
-				source = inLink.getSource();
-				target = inLink.getTarget();
-				// don't remove the incoming link from parent to this node
-				if (e != null && inLink.getID().equalsIgnoreCase(e.getID())){
-					continue;
-				}
-				
-				LabeledWeightedEdge inverseLink = new LabeledWeightedEdge(inLink.getID(), new URI(inLink.getUriString(), inLink.getNs(), inLink.getPrefix()), inLink.getLinkType(), true);
-				treeClone.addEdge(target, source, inverseLink);
-				treeClone.setEdgeWeight(inverseLink, inLink.getWeight());
-				treeClone.removeEdge(inLink);
-//				GraphUtil.printGraph(treeClone);
-			}
-		}
-
-		LabeledWeightedEdge[] outgoingLinks = treeClone.outgoingEdgesOf(root).toArray(new LabeledWeightedEdge[0]);
-
-		if (outgoingLinks == null || outgoingLinks.length == 0)
-			return;
-		for (int i = 0; i < outgoingLinks.length; i++) {
-			target = outgoingLinks[i].getTarget();
-			updateLinksDirections(target, outgoingLinks[i], treeClone);
-		}
-	}	
 
 }

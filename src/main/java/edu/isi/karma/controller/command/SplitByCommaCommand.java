@@ -27,6 +27,9 @@ import java.util.List;
 
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
+import edu.isi.karma.modeling.alignment.AlignToOntology;
+import edu.isi.karma.modeling.ontology.OntologyManager;
+import edu.isi.karma.modeling.semantictypes.SemanticTypeUtil;
 import edu.isi.karma.rep.CellValue;
 import edu.isi.karma.rep.HNode;
 import edu.isi.karma.rep.HNodePath;
@@ -104,6 +107,23 @@ public class SplitByCommaCommand extends WorksheetCommand {
 		vw = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId);
 
 		vw.update(c);
+		// c.add(new SemanticTypesUpdate(wk, vWorksheetId));
+		
+		// Get the alignment update if any
+		if (!wk.getSemanticTypes().getListOfTypes().isEmpty()) {
+			OntologyManager ontMgr = vWorkspace.getWorkspace().getOntologyManager();
+			SemanticTypeUtil.computeSemanticTypesSuggestion(wk, vWorkspace.getWorkspace().getCrfModelHandler(), ontMgr);
+			
+			AlignToOntology align = new AlignToOntology(wk, vWorkspace, vWorksheetId);
+			try {
+				align.alignAndUpdate(c, true);
+			} catch (Exception e) {
+				return new UpdateContainer(new ErrorUpdate(
+						"Error occured while generating the model for the source."));
+			}
+		}
+		
+		
 		return c;
 	}
 
@@ -139,8 +159,9 @@ public class SplitByCommaCommand extends WorksheetCommand {
 		wk.getDataTable().collectNodes(selectedPath, nodes);
 
 		for (Node node : nodes) {
-			node.setNestedTable(null);
-			node.setValue(oldNodeValueMap.get(node), oldNodeStatusMap.get(node));
+			//pedro 2012-09-15 this does not look correct.
+			node.setNestedTable(null, vWorkspace.getRepFactory());
+			node.setValue(oldNodeValueMap.get(node), oldNodeStatusMap.get(node), vWorkspace.getRepFactory());
 		}
 
 		vWorkspace.getViewFactory().updateWorksheet(vWorksheetId, wk,

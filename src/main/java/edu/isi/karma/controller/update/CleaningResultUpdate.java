@@ -2,6 +2,8 @@ package edu.isi.karma.controller.update;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.json.JSONArray;
@@ -17,20 +19,22 @@ public class CleaningResultUpdate extends AbstractUpdate {
 	private Vector<String> jsons;
 	private HashMap<String,Vector<String>> js2tps;
 	private String hNodeId = "";
-
+	private String bestRes;
+	private String varString;
+	private Set<String> topkey = new HashSet<String>();
 	public enum JsonKeys {
 		worksheetId, hNodeId, result
 	}
-
 	private static Logger logger = LoggerFactory
 			.getLogger(CleaningResultUpdate.class);
-
-	public CleaningResultUpdate(String hNodeId, Vector<String> js,HashMap<String,Vector<String>> jstp) {
+	public CleaningResultUpdate(String hNodeId, Vector<String> js,HashMap<String,Vector<String>> jstp,String bestRes,String vars,Set<String> keys) {
 		this.hNodeId = hNodeId;
 		jsons = js;
 		js2tps = jstp;
+		this.bestRes = bestRes; 
+		topkey = keys;
+		varString = vars;
 	}
-
 	@Override
 	public void generateJson(String prefix, PrintWriter pw,
 			VWorkspace vWorkspace) {
@@ -55,6 +59,30 @@ public class CleaningResultUpdate extends AbstractUpdate {
 				pac.put("tps", tpsjo);
 				jsa.put(pac);
 			}
+			if(bestRes.compareTo("")!=0)
+			{
+				JSONObject jsBest = new JSONObject(bestRes);
+				JSONObject bestpac = new JSONObject();
+				JSONArray jba = new JSONArray();
+				for(String key:topkey)
+				{
+					jba.put(key);
+				}
+				bestpac.put("data", jsBest);
+				bestpac.put("tps",new JSONObject());
+				bestpac.put("top", jba);
+				jsa.put(0,bestpac);//put the best one as the first
+			}
+			if(varString.compareTo("")!=0)
+			{
+				JSONObject jsBest = new JSONObject(varString);
+				JSONObject varpac = new JSONObject();
+				JSONArray jba = new JSONArray();
+				varpac.put("data", jsBest);
+				varpac.put("tps",new JSONObject());
+				jsa.put(1,varpac);//put the var as the second
+			}
+			
 			obj.put(JsonKeys.result.name(), jsa);
 			pw.print(obj.toString(4));
 		} catch (JSONException e) {

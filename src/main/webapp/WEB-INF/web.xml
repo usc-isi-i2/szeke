@@ -48,6 +48,11 @@
 		<param-name>USER_DIRECTORY_PATH</param-name>
 		<param-value>src/main/webapp/</param-value>
   </context-param>
+  <context-param>
+		<param-name>MSFT</param-name>
+		<param-value>False</param-value>
+  </context-param>
+
   
   	<servlet>
     	<servlet-name>ServletStart</servlet-name>
@@ -87,7 +92,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>LinkedAPIServiceHandler</servlet-name>
-    <url-pattern>/karma/services</url-pattern>
+    <url-pattern>/linkedservices/*</url-pattern>
   </servlet-mapping>
 
 <!-- uncomment for password protection; change user/pwd in config/jettyrealm.properties -->

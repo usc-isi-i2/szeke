@@ -19,6 +19,9 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 package edu.isi.karma.cleaning;
+
+import org.python.antlr.PythonParser.return_stmt_return;
+
 //type
 public class TNode{
 	public int color = -1;
@@ -29,9 +32,11 @@ public class TNode{
 	public static final int NUMTYP = 1;
 	public static final int SYBSTYP = 2;
 	public static final int BNKTYP = 3;
-	public static final int WRDTYP = 4;
+	public static final int UWRDTYP = 4;
 	public static final int STARTTYP = 5;
 	public static final int ENDTYP = 6;
+	public static final int LWRDTYP = 7;
+	public static final int WORD = 8;
 	public static final String ANYTOK = "ANYTOK";
 	public static final int ANYNUM = Integer.MAX_VALUE;
 	public int type;
@@ -60,13 +65,13 @@ public class TNode{
 		{
 			return "ANYTYP";
 		}
+		else if (type == TNode.WORD)
+		{
+			return "Word";
+		}
 		else if(type == TNode.NUMTYP)
 		{
 			return "Number";
-		}
-		else if(type == TNode.WRDTYP)
-		{
-			return "Word";
 		}
 		else if(type == TNode.SYBSTYP)
 		{
@@ -98,10 +103,6 @@ public class TNode{
 		else if(stype.compareTo("Number")==0)
 		{
 			type = TNode.NUMTYP;
-		}
-		else if(stype.compareTo("Word")==0)
-		{
-			type = TNode.WRDTYP;
 		}
 		else if(stype.compareTo("Symbol")==0)
 		{
@@ -150,5 +151,17 @@ public class TNode{
 		if(this.type == t.type)
 			return true;
 		return false;
+	}
+	public int mergableType(TNode t)
+	{
+		 
+		boolean res = this.sameType(t);
+		if(res)
+			return this.type;
+		if((this.type == TNode.UWRDTYP && t.type == TNode.LWRDTYP) ||(this.type == TNode.LWRDTYP && t.type == TNode.UWRDTYP))
+		{
+			return this.WORD;
+		}
+		return -1;
 	}
 }

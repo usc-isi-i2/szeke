@@ -41,12 +41,13 @@ public class SplitColumnByDelimiter {
 		this.delimiter = delimiter;
 		this.workspace = workspace;
 	}
-	
+
 	public String getSplitValueHNodeID() {
 		return splitValueHNodeID;
 	}
 
-	public void split(HashMap<Node, CellValue> oldNodeValueMap, HashMap<Node, NodeStatus> oldNodeStatusMap) {
+	public void split(HashMap<Node, CellValue> oldNodeValueMap,
+			HashMap<Node, NodeStatus> oldNodeStatusMap) {
 		RepFactory factory = workspace.getFactory();
 		HNode hNode = factory.getHNode(hNodeId);
 
@@ -65,7 +66,7 @@ public class SplitColumnByDelimiter {
 				break;
 			}
 		}
-		
+
 		// Convert the delimiter into character primitive type
 		char delimiterChar = ',';
 		if (delimiter.equalsIgnoreCase("space"))
@@ -76,22 +77,34 @@ public class SplitColumnByDelimiter {
 			delimiterChar = new Character(delimiter.charAt(0));
 		}
 
-		// Add the nested new HTable to the hNode
-		HTable newTable = hNode.addNestedTable("Comma Split Values", worksheet,
-				factory);
-		splitValueHNodeID = newTable.addHNode("Values", worksheet,
-				factory).getId();
-
 		Collection<Node> nodes = new ArrayList<Node>();
 		worksheet.getDataTable().collectNodes(selectedPath, nodes);
 
+		//pedro: 2012-10-09
+		// Need to save and clear the values before adding the nested table.
+		// Otherwise we have both a value and a nested table, which is not legal.
 		for (Node node : nodes) {
-			String originalVal = node.getValue().asString();
-			if(oldNodeValueMap != null)
+			if (oldNodeValueMap != null)
 				oldNodeValueMap.put(node, node.getValue());
-			if(oldNodeStatusMap != null)
+			if (oldNodeStatusMap != null)
 				oldNodeStatusMap.put(node, node.getStatus());
-
+			
+			node.clearValue(NodeStatus.edited);
+		}
+		
+		//pedro: 2012-10-09
+		// Now that we cleared the values it is safe to add the nested table.
+		//
+		// Add the nested new HTable to the hNode
+		HTable newTable = hNode.addNestedTable("Comma Split Values", worksheet,
+				factory);
+		splitValueHNodeID = newTable.addHNode("Values", worksheet, factory)
+				.getId();
+		
+		for (Node node : nodes) {
+			//String originalVal = node.getValue().asString();
+			String originalVal = oldNodeValueMap.get(node).asString();
+				
 			if (originalVal != null && !originalVal.equals("")) {
 				// Split the values
 				CSVReader reader = new CSVReader(new StringReader(originalVal),
@@ -110,7 +123,7 @@ public class SplitColumnByDelimiter {
 						if (!rowVal.trim().equals("")) {
 							Row row = table.addRow(factory);
 							row.setValue(splitValueHNodeID, rowVal,
-									NodeStatus.edited);
+									NodeStatus.edited, factory);
 						}
 					}
 				} catch (IOException e) {

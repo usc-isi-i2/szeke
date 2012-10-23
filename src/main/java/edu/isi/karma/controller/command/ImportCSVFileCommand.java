@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.isi.karma.cleaning.MyLogger;
 import edu.isi.karma.controller.update.CSVImportPreviewUpdate;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
@@ -130,6 +131,11 @@ public class ImportCSVFileCommand extends CommandWithPreview {
 			c.add(new WorksheetListUpdate(vWorkspace.getVWorksheetList()));
 			VWorksheet vw = vWorkspace.getVWorksheet(wsht.getId());
 			vw.update(c);
+			/************collect info************/
+			String id = vw.getWorksheetId();
+			MyLogger.setTime(id, System.currentTimeMillis());
+			MyLogger.logsth(">>>>>>>>user "+MyLogger.user_id+" Load worksheet: "+id);
+			/*************************************/
 		} catch (Exception e) {
 			logger.error("Error occured while importing CSV file.", e);
 			return new UpdateContainer(new ErrorUpdate(

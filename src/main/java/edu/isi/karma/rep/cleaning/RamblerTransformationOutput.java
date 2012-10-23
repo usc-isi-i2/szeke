@@ -22,17 +22,17 @@ package edu.isi.karma.rep.cleaning;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import edu.isi.karma.cleaning.EditOper;
-import edu.isi.karma.cleaning.RuleUtil;
+import edu.isi.karma.cleaning.ProgSynthesis;
+
 
 public class RamblerTransformationOutput implements TransformationOutput {
 
 	private RamblerTransformationInputs input;
 	private HashMap<String,Transformation> transformations; 
-	private Vector<EditOper> preEditOpers;
 	public RamblerTransformationOutput(RamblerTransformationInputs input)
 	{
 		this.input = input;
@@ -40,7 +40,7 @@ public class RamblerTransformationOutput implements TransformationOutput {
 		try {		
 			this.learnTransformation();
 		} catch (Exception e) {
-			System.out.println("Exception in learning transformations");
+			System.out.println(e.toString());
 		}
 	}
 	private void learnTransformation() throws Exception
@@ -54,32 +54,30 @@ public class RamblerTransformationOutput implements TransformationOutput {
 			String[] tmp = {t.getBefore(),t.getAfter()};
 			exps.add(tmp);
 		}
-		Vector<String> trans = RuleUtil.genRule(exps);
-		if(trans == null)
+		ProgSynthesis psProgSynthesis = new ProgSynthesis();
+		psProgSynthesis.inite(exps);
+		HashSet<String> rules = psProgSynthesis.run_main();
+		if(rules.size() == 0)
 		{
 			return;
 		}
-		for(int i = 0; i<trans.size(); i++)
-		{
-			String[] rules = trans.get(i).split("<RULESEP>");
-			//System.out.println(""+s1);
-			Vector<String> xr = new Vector<String>();
-			for(int t = 0; t< rules.length; t++)
+		Iterator<String> iterator = rules.iterator();
+		while(iterator.hasNext())
+		{	
+			RamblerTransformation r = new RamblerTransformation(iterator.next());
+			if(!transformations.containsKey(r.signature))
 			{
-				if(rules[t].length()!=0)
-					xr.add(rules[t]);
+				transformations.put(r.signature, r);
 			}
-			RamblerTransformation r = new RamblerTransformation(xr);
-			transformations.put(r.signature, r);
 		}
+		//RamblerTransformation r = new RamblerTransformation(psProgSynthesis.getBestRule());
+		//transformations.put("BESTRULE",r);
 	}
-	@Override
 	public HashMap<String,Transformation> getTransformations() {
 		// TODO Auto-generated method stub
 		return transformations;
 	}
 
-	@Override
 	public ValueCollection getTransformedValues(String TransformatinId) {
 		// TODO Auto-generated method stub
 		Transformation t = transformations.get(TransformatinId);
@@ -98,7 +96,6 @@ public class RamblerTransformationOutput implements TransformationOutput {
 		return vo;
 	}
 
-	@Override
 	public Collection<String> getRecommandedNextExample() {
 		// TODO Auto-generated method stub
 		return null;
