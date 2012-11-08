@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import edu.isi.karma.er.compare.StringComparator;
+import edu.isi.karma.er.helper.entity.Ontology;
 import edu.isi.karma.er.helper.entity.SaamPerson;
 import edu.isi.karma.er.helper.entity.Score;
 import edu.isi.karma.er.helper.entity.ScoreType;
@@ -33,9 +34,13 @@ public class StringSetMatcher implements Matcher {
 		}
 	}
 
-	public Score match(String pred, SaamPerson v, SaamPerson w) {
+	public Score match(String pred, Ontology o1, Ontology o2) {
+		SaamPerson v = (SaamPerson) o1;
+		SaamPerson w = (SaamPerson) o2;
+		
 		Score s = new Score();
 		s.setPredicate(pred);
+		
 		s.setScoreType(ScoreType.INVALID);
 		if (v == null || w == null || v.getProperty(pred) == null || w.getProperty(pred) == null) {
 			return s;
@@ -58,7 +63,7 @@ public class StringSetMatcher implements Matcher {
 		// get all elements of the result set of querying property value from specified subject.
 		for (String strV : listV) {
 			
-			
+			s.setSrcObj(strV);
 			// find the most appropriate matched pair in target set
 			for (String strW : listW) {
 				
@@ -69,7 +74,6 @@ public class StringSetMatcher implements Matcher {
 				s.setScoreType(ScoreType.NORMAL);
 				similarity = comp.getSimilarity(strV, strW);
 				if (similarity > maxSimilarity) {
-					s.setSrcObj(strV);
 					s.setDstObj(strW);
 					if (1 - similarity< 1e-5) {
 						s.setSimilarity(similarity);

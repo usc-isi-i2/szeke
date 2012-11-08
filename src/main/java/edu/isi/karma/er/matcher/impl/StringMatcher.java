@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import edu.isi.karma.er.compare.StringComparator;
+import edu.isi.karma.er.helper.entity.Ontology;
 import edu.isi.karma.er.helper.entity.SaamPerson;
 import edu.isi.karma.er.helper.entity.Score;
 import edu.isi.karma.er.helper.entity.ScoreType;
@@ -32,7 +33,10 @@ public class StringMatcher implements Matcher {
 		
 	}
 
-	public Score match(String pred, SaamPerson v, SaamPerson w) {
+	public Score match(String pred, Ontology o1, Ontology o2) {
+		SaamPerson v = (SaamPerson) o1;
+		SaamPerson w = (SaamPerson) o2;
+		
 		Score s = new Score();
 		s.setScoreType(ScoreType.INVALID);
 		
@@ -46,11 +50,11 @@ public class StringMatcher implements Matcher {
 		if (listV == null || listV.size() <= 0 || listW == null || listW.size() <= 0) {
 			return s;
 		}
-		
 		String strV = listV.get(0);
 		String strW = listW.get(0);
 		
-		
+		s.setSrcObj(strV);
+		s.setDstObj(strW);
 		
 		if (strV.equals(strW)) {
 			s.setSimilarity(1);
