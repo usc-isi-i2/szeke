@@ -338,7 +338,7 @@ public class SemanticTypeUtil {
 			if (labels.size() == 0) {
 				continue;
 			}
-
+			
 			CRFColumnModel columnModel = new CRFColumnModel(labels, scores);
 			worksheet.getCrfModel().addColumnModel(path.getLeaf().getId(), columnModel);
 		}

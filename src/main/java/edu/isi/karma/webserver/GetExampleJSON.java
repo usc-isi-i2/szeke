@@ -97,10 +97,13 @@ public class GetExampleJSON extends HttpServlet {
 			File[] ontologies = ontDir.listFiles();
 			OntologyManager mgr = workspace.getOntologyManager();
 			for (File ontology: ontologies) {
-				try {
-					mgr.doImport(ontology);
-				} catch (Exception t) {
-					logger.error ("Error loading ontology: " + ontology.getAbsolutePath(), t);
+				if (ontology.getName().endsWith(".owl") || ontology.getName().endsWith(".rdf")) {
+					logger.info("Loading ontology file: " + ontology.getAbsolutePath());
+					try {
+						mgr.doImport(ontology);
+					} catch (Exception t) {
+						logger.error ("Error loading ontology: " + ontology.getAbsolutePath(), t);
+					}
 				}
 			}
 		} else {
@@ -110,14 +113,14 @@ public class GetExampleJSON extends HttpServlet {
 		//mariam
 		//File file = new File("../demofiles/usc_faculty.csv");
 		
-//		File file = new File("./SampleData/CSV/wells-large.csv");
+//		File file = new File("./exper.csv");
 //		CSVFileImport imp = new CSVFileImport(1, 2, ',', '"', file, workspace.getFactory(), workspace);
 //		try {
 //			imp.generateWorksheet();
 //		} catch (KarmaException e) {
 //			e.printStackTrace();
 //		}
-//		
+		
 
 //		SampleDataFactory.createFromJsonTextFile(workspace,"./SampleData/JSON/Events.json");
 
