@@ -1,9 +1,12 @@
 // $ANTLR 3.4 Tokenizer.g 2012-08-31 09:41:11
 package edu.isi.karma.cleaning;
-import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.EarlyExitException;
+import org.antlr.runtime.Lexer;
+import org.antlr.runtime.MismatchedSetException;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.RecognizerSharedState;
 
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class Tokenizer extends Lexer {
@@ -218,7 +221,7 @@ public class Tokenizer extends Lexer {
             // Tokenizer.g:7:5: ( ( SYMBOL ) )
             // Tokenizer.g:
             {
-            if ( input.LA(1)=='!'||(input.LA(1) >= '#' && input.LA(1) <= '/')||(input.LA(1) >= ':' && input.LA(1) <= '@')||(input.LA(1) >= '[' && input.LA(1) <= '`')||(input.LA(1) >= '{' && input.LA(1) <= '~') ) {
+            if ( input.LA(1)=='’'||(input.LA(1) >= '!' && input.LA(1) <= '/')||(input.LA(1) >= ':' && input.LA(1) <= '@')||(input.LA(1) >= '[' && input.LA(1) <= '`')||(input.LA(1) >= '{' && input.LA(1) <= '~') ) {
                 input.consume();
             }
             else {

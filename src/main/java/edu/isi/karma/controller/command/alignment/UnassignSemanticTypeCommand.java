@@ -26,22 +26,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.isi.karma.controller.command.Command;
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.update.ErrorUpdate;
+import edu.isi.karma.controller.update.SVGAlignmentUpdate_ForceKarmaLayout;
 import edu.isi.karma.controller.update.SemanticTypesUpdate;
 import edu.isi.karma.controller.update.TagsUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
-import edu.isi.karma.modeling.alignment.AlignToOntology;
+import edu.isi.karma.modeling.alignment.Alignment;
+import edu.isi.karma.modeling.alignment.AlignmentManager;
 import edu.isi.karma.rep.HNodePath;
-import edu.isi.karma.rep.Node;
 import edu.isi.karma.rep.Worksheet;
+import edu.isi.karma.rep.alignment.ColumnNode;
+import edu.isi.karma.rep.alignment.Link;
+import edu.isi.karma.rep.alignment.Node;
+import edu.isi.karma.rep.alignment.SemanticType;
+import edu.isi.karma.rep.alignment.SemanticTypes;
 import edu.isi.karma.rep.metadata.TagsContainer.TagName;
-import edu.isi.karma.rep.semantictypes.SemanticType;
-import edu.isi.karma.rep.semantictypes.SemanticTypes;
 import edu.isi.karma.view.VWorkspace;
 
 public class UnassignSemanticTypeCommand extends Command {
@@ -50,15 +55,18 @@ public class UnassignSemanticTypeCommand extends Command {
 	private final String hNodeId;
 	private String columnName;
 	private SemanticType oldSemanticType;
+	private Alignment oldAlignment;
+	private DirectedWeightedMultigraph<Node, Link> oldGraph;
 
 	private static Logger logger = LoggerFactory
 			.getLogger(UnassignSemanticTypeCommand.class);
 
-	public UnassignSemanticTypeCommand(String id, String hNodeId,
-			String vWorksheetId) {
+	public UnassignSemanticTypeCommand(String id, String hNodeId, String vWorksheetId) {
 		super(id);
 		this.hNodeId = hNodeId;
 		this.vWorksheetId = vWorksheetId;
+		
+		addTag(CommandTag.Modeling);
 	}
 
 	@Override
@@ -81,6 +89,7 @@ public class UnassignSemanticTypeCommand extends Command {
 		return CommandType.undoable;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
 		Worksheet worksheet = vWorkspace.getViewFactory()
@@ -91,6 +100,26 @@ public class UnassignSemanticTypeCommand extends Command {
 		oldSemanticType = types.getSemanticTypeForHNodeId(hNodeId);
 		types.unassignColumnSemanticType(hNodeId);
 
+		// Save the original alignment for undo
+		Alignment alignment = AlignmentManager.Instance().getAlignment(vWorkspace.getWorkspace().getId(), vWorksheetId);
+		oldAlignment = alignment.getAlignmentClone();
+		oldGraph = (DirectedWeightedMultigraph<Node, Link>)alignment.getGraph().clone();
+		
+		// Remove it from the alignment
+		ColumnNode columnNode = alignment.getColumnNodeByHNodeId(hNodeId);
+		if (columnNode != null) {
+			Link currentLink = alignment.getCurrentLinksToNode(columnNode.getId()).iterator().next();
+			String domainNodeId = currentLink.getSource().getId();
+			// Remove the existing link
+			alignment.removeLink(currentLink.getId());
+			// Remove the column node
+			alignment.removeNode(columnNode.getId());
+			// Remove the source node
+			alignment.removeNode(domainNodeId);
+			
+		}
+		alignment.align();
+		
 		// Get the column name
 		HNodePath currentPath = null;
 		List<HNodePath> columnPaths = worksheet.getHeaders().getAllPaths();
@@ -103,10 +132,10 @@ public class UnassignSemanticTypeCommand extends Command {
 		}
 
 		// Remove the nodes (if any) from the outlier tag
-		Collection<Node> nodes = new ArrayList<Node>();
+		Collection<edu.isi.karma.rep.Node> nodes = new ArrayList<edu.isi.karma.rep.Node>();
 		worksheet.getDataTable().collectNodes(currentPath, nodes);
 		Set<String> nodeIds = new HashSet<String>();
-		for (Node node : nodes) {
+		for (edu.isi.karma.rep.Node node : nodes) {
 			nodeIds.add(node.getId());
 		}
 		vWorkspace.getWorkspace().getTagsContainer().getTag(TagName.Outlier)
@@ -114,18 +143,14 @@ public class UnassignSemanticTypeCommand extends Command {
 
 		// Update the container
 		UpdateContainer c = new UpdateContainer();
-		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId));
-
-		// Update the alignment
-		AlignToOntology align = new AlignToOntology(worksheet, vWorkspace,
-				vWorksheetId);
+		
+		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId, alignment));
+		// Add the alignment update
 		try {
-			align.alignAndUpdate(c, false);
+			c.add(new SVGAlignmentUpdate_ForceKarmaLayout(vWorkspace.getViewFactory().getVWorksheet(vWorksheetId), alignment));
 		} catch (Exception e) {
-			logger.error("Error occured while unassigning the semantic type!",
-					e);
-			return new UpdateContainer(new ErrorUpdate(
-					"Error occured while unassigning the semantic type!"));
+			logger.error("Error occured while unassigning the semantic type!",e);
+			return new UpdateContainer(new ErrorUpdate("Error occured while unassigning the semantic type!"));
 		}
 		c.add(new TagsUpdate());
 		
@@ -144,18 +169,17 @@ public class UnassignSemanticTypeCommand extends Command {
 
 		// Update the container
 		UpdateContainer c = new UpdateContainer();
-		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId));
-
-		// Update the alignment
-		AlignToOntology align = new AlignToOntology(worksheet, vWorkspace,
-				vWorksheetId);
+		
+		// Update with old alignment
+		String alignmentId = AlignmentManager.Instance().constructAlignmentId(vWorkspace.getWorkspace().getId(), vWorksheetId);
+		AlignmentManager.Instance().addAlignmentToMap(alignmentId, oldAlignment);
+		oldAlignment.setGraph(oldGraph);
 		try {
-			align.alignAndUpdate(c, false);
+			c.add(new SemanticTypesUpdate(worksheet, vWorksheetId, oldAlignment));
+			c.add(new SVGAlignmentUpdate_ForceKarmaLayout(vWorkspace.getViewFactory().getVWorksheet(vWorksheetId), oldAlignment));
 		} catch (Exception e) {
-			logger.error("Error occured while unassigning the semantic type!",
-					e);
-			return new UpdateContainer(new ErrorUpdate(
-					"Error occured while unassigning the semantic type!"));
+			logger.error("Error occured during undo of unassigning the semantic type!", e);
+			return new UpdateContainer(new ErrorUpdate("Error occured during undo of unassigning the semantic type!"));
 		}
 		return c;
 	}

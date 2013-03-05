@@ -7,13 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
-
-import com.hp.hpl.jena.sparql.function.library.e;
 
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.WorksheetCommand;
-import edu.isi.karma.controller.update.CleaningResultUpdate;
 import edu.isi.karma.controller.update.FetchResultUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.rep.HNodePath;
@@ -62,6 +58,9 @@ public class FetchTransformingDataCommand extends WorksheetCommand {
 		{
 			sample_size = 50;
 		}
+		else {
+			sample_size = size;
+		}
 		Random rad = new Random();
 		while( inds.size() <sample_size)
 		{
@@ -87,8 +86,8 @@ public class FetchTransformingDataCommand extends WorksheetCommand {
 		}	
 		//random nodes 
 		Collection<Node> nodes = new ArrayList<Node>();
-		HashSet<Integer> indSet = this.obtainIndexs(nodes.size());
 		wk.getDataTable().collectNodes(selectedPath, nodes);	
+		HashSet<Integer> indSet = this.obtainIndexs(nodes.size());
 		int index = 0;
 		for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
 			Node node = iterator.next();

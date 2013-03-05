@@ -1,6 +1,5 @@
 package edu.isi.karma.cleaning;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 public class Program implements GrammarTreeNode {
@@ -14,7 +13,8 @@ public class Program implements GrammarTreeNode {
 		for(int i=0;i<this.partitions.size();i++)
 		{
 			this.partitions.get(i).setLabel("\'attr_"+i+"\'");
-			System.out.println(this.partitions.get(i).toString());
+			if(ConfigParameters.debug == 1)
+				System.out.println(this.partitions.get(i).toString());
 		}
 		if(partitions.size()>1)
 			this.learnClassifier();
@@ -37,6 +37,7 @@ public class Program implements GrammarTreeNode {
 		this.score = 0.0;
 		return r;
 	}
+	
 	public String toProgram() {
 		if(this.partitions.size()>1)
 		{
@@ -65,7 +66,12 @@ public class Program implements GrammarTreeNode {
 		{
 			for(Partition p:this.partitions)
 			{
-				pr.addRule(p.label, p.toProgram());
+				String rule = p.toProgram();
+				if(rule.contains("null"))
+					return null;
+				pr.addRule(p.label, rule);
+				if(ConfigParameters.debug == 1)
+					System.out.println(pr.getStringRule(p.label));
 				score += p.getScore();
 			}
 			score = score/this.partitions.size();
@@ -74,7 +80,11 @@ public class Program implements GrammarTreeNode {
 		}
 		else
 		{
-			String s = partitions.get(0).toProgram(); 
+			String s = partitions.get(0).toProgram();
+			if(s.contains("null"))
+				return null;
+			if(ConfigParameters.debug == 1)
+				System.out.println(""+s);
 			score = this.partitions.get(0).getScore();
 			pr.addRule(partitions.get(0).label, s);
 			return pr;
@@ -97,5 +107,28 @@ public class Program implements GrammarTreeNode {
 	public String getNodeType()
 	{
 		return "program";
+	}
+	public String getrepString()
+	{
+		return "Program";
+	}
+	@Override
+	public void createTotalOrderVector() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void emptyState() {
+		// TODO Auto-generated method stub
+		
+	}
+	public long size()
+	{
+		long size = 0;
+		for(Partition p:partitions)
+		{
+			size += p.size();
+		}
+		return size;
 	}
 }

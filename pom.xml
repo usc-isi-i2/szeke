@@ -220,7 +220,7 @@
         <dependency>
               <groupId>uk.com.robust-it</groupId>
               <artifactId>cloning</artifactId>
-              <version>1.7.9</version>
+              <version>1.8.5</version>
         </dependency>
             
         <dependency>
@@ -268,6 +268,11 @@
         	<artifactId>httpclient</artifactId>
         	<version>4.2.2</version>
         </dependency>
+		<dependency>
+			<groupId>org.kohsuke</groupId>
+			<artifactId>graphviz-api</artifactId>
+			<version>1.1</version>
+		</dependency>
   </dependencies>
   
   <build>
