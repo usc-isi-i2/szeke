@@ -37,12 +37,14 @@ import edu.isi.karma.rep.RepFactory;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.rep.Workspace;
 import edu.isi.karma.rep.alignment.ColumnNode;
+import edu.isi.karma.rep.alignment.DataPropertyOfColumnLink;
 import edu.isi.karma.rep.alignment.Label;
 import edu.isi.karma.rep.alignment.Link;
 import edu.isi.karma.rep.alignment.LinkKeyInfo;
 import edu.isi.karma.rep.alignment.LinkType;
 import edu.isi.karma.rep.alignment.Node;
 import edu.isi.karma.rep.alignment.NodeType;
+import edu.isi.karma.rep.alignment.ObjectPropertySpecializationLink;
 import edu.isi.karma.rep.alignment.SemanticType;
 import edu.isi.karma.rep.alignment.SynonymSemanticTypes;
 import edu.isi.karma.webserver.KarmaException;
@@ -300,6 +302,9 @@ public class SourceDescription {
 				} else if (e.getType() == LinkType.DataPropertyOfColumnLink) {
 					stmt = generateDataPropertyOfColumnExpandStatement(v,e,child);
 					s.append("\n ^ " + stmt);
+				} else if (e.getType() == LinkType.ObjectPropertySpecializationLink) {
+					stmt = generateObjectPropertySpecializationExpandStatement(v,e,child);
+					s.append("\n ^ " + stmt);
 				} else if (e.getType() == LinkType.ColumnSubClassLink) {
 					stmt = generateColumnSubClassLinkExpandStatement(v,e,child);
 					s.append("\n ^ " + stmt);
@@ -313,6 +318,35 @@ public class SourceDescription {
 		}
 	}
 	
+	private String generateObjectPropertySpecializationExpandStatement(Node v,
+			Link e, Node child) throws KarmaException {
+		if(child.getType()!=NodeType.ColumnNode){
+			throw new KarmaException("Node " + child.getLabel().getUri()+ " should be of type NodeType.ColumnNode");
+		}
+		
+		//find the key of Class v
+		String key1 = findKey(v);
+		if(key1 == null){
+			throw new KarmaException("Key for " + v.getLabel().getUri() + " is NULL. This should not happen!");
+		}
+		
+		ObjectPropertySpecializationLink oLink = (ObjectPropertySpecializationLink) e;
+		Link specializedLink = oLink.getSpecializedLink();
+		String key2 = findKey(specializedLink.getTarget());
+		if(key2 == null){
+			throw new KarmaException("Key for " + specializedLink.getTarget().getLabel().getUri() + " is NULL. This should not happen!");
+		}
+		
+		String hNodeId = ((ColumnNode) child).getHNodeId();
+		String propertyAttribute = factory.getHNode(hNodeId).getColumnName();
+		if(!useColumnNames){
+			propertyAttribute = factory.getHNode(hNodeId).getHNodePath(factory).toColumnNamePath();
+		}
+		String propertyName = "expand@" + propertyAttribute;
+		
+		return "`" + propertyName + "`(uri(" + key1 + "),uri(" + key2 + "))";
+	}
+
 	// `expand@PositionType`(uri(PersonID))    ---------> subclass
 	private String generateColumnSubClassLinkExpandStatement(Node v, Link e,
 			Node child) throws KarmaException {
@@ -354,13 +388,17 @@ public class SourceDescription {
 			throw new KarmaException("Key for " + v.getLabel().getUri() + " is NULL. This should not happen!");
 		}
 		
+		DataPropertyOfColumnLink dLink = (DataPropertyOfColumnLink) e;
 		String hNodeId = ((ColumnNode) child).getHNodeId();
-		String dataAttribute = factory.getHNode(hNodeId).getColumnName();
+		String specializedHNodeId = dLink.getSpecializedColumnHNodeId();
+		String dataAttribute = factory.getHNode(specializedHNodeId).getColumnName();
+		String propertyAttribute = factory.getHNode(hNodeId).getColumnName();
 		if(!useColumnNames){
-			dataAttribute = factory.getHNode(hNodeId).getHNodePath(factory).toColumnNamePath();
+			dataAttribute = factory.getHNode(specializedHNodeId).getHNodePath(factory).toColumnNamePath();
+			propertyAttribute = factory.getHNode(hNodeId).getHNodePath(factory).toColumnNamePath();
 		}
 		ruleAttributes.add(dataAttribute);
-		String propertyName = "expand@" + dataAttribute;
+		String propertyName = "expand@" + propertyAttribute;
 		if(reversedLinkIds.contains(e.getId())){
 			throw new KarmaException("A data property cannot be an inverse_of:" + e.getLabel().getUri());
 		}

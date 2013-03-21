@@ -18,19 +18,30 @@
  * University of Southern California.  For more information, publications, 
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
-package edu.isi.karma.rep.cleaning;
 
-import java.util.Collection;
+package edu.isi.karma.rep.alignment;
 
-import org.json.JSONObject;
+import edu.isi.karma.modeling.Namespaces;
+import edu.isi.karma.modeling.Prefixes;
+import edu.isi.karma.modeling.Uris;
 
-public interface ValueCollection {
-	public abstract String getValue(String id);
-	public abstract Collection<String> getValues();
-	public abstract Collection<String> getNodeIDs();
-	public abstract void setValue(String id, String val);
-	public abstract JSONObject getJson();
-	public abstract String representation();
-	public abstract void setKeyClass(String key,String cLabel);
-	public abstract String getClass(String key);
+public class ObjectPropertySpecializationLink extends Link {
+	
+	private final Link specializedLink;
+	private static final long serialVersionUID = 1L;
+	private static final Label label = 
+			new Label(Uris.OBJECTPROPERTY_SPECIALIZATION_LINK_URI, Namespaces.KARMA_DEV, Prefixes.KARMA_DEV);
+
+	public ObjectPropertySpecializationLink(String id, Link specializedLink) {
+		super(id, label, LinkType.ObjectPropertySpecializationLink);
+		this.specializedLink = specializedLink;
+	}
+
+	public static Label getFixedLabel() {
+		return label;
+	}
+
+	public Link getSpecializedLink() {
+		return specializedLink;
+	}
 }

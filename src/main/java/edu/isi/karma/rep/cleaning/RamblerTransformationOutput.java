@@ -79,7 +79,6 @@ public class RamblerTransformationOutput implements TransformationOutput {
 	}
 
 	public ValueCollection getTransformedValues(String TransformatinId) {
-		// TODO Auto-generated method stub
 		Transformation t = transformations.get(TransformatinId);
 		ValueCollection v = input.getInputValues();
 		ValueCollection vo = new RamblerValueCollection();
@@ -89,7 +88,10 @@ public class RamblerTransformationOutput implements TransformationOutput {
 		{
 			String k = iter.next();
 			String val = v.getValue(k);
-			val = t.transform(val);
+			if(val.length() >0)
+				val = t.transform(val);
+			else
+				val = "";
 			vo.setValue(k, val);
 			//System.out.println(k+","+val);
 		}
@@ -97,8 +99,36 @@ public class RamblerTransformationOutput implements TransformationOutput {
 	}
 
 	public Collection<String> getRecommandedNextExample() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public ValueCollection getTransformedValues_debug(String TransformationId) {
+		Transformation t = transformations.get(TransformationId);
+		ValueCollection v = input.getInputValues();
+		ValueCollection vo = new RamblerValueCollection();
+		Collection<String> keys = v.getNodeIDs();
+		Iterator<String> iter = keys.iterator();
+		while(iter.hasNext())
+		{
+			String k = iter.next();
+			String orgval = v.getValue(k);
+			String cLabel = "";
+			String val = "";
+			if(orgval.length() >0)
+			{
+				val = t.transform_debug(orgval);
+				cLabel = t.getClassLabel(orgval);
+			}
+			else
+			{
+				val = "";
+				cLabel = t.getClassLabel(val);
+			}
+			vo.setValue(k, val);
+			vo.setKeyClass(k, cLabel);
+			//System.out.println(k+","+val);
+		}
+		return vo;
 	}
 
 }

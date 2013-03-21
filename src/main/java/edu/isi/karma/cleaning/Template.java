@@ -2,8 +2,11 @@ package edu.isi.karma.cleaning;
 
 import java.util.Vector;
 
+import org.python.antlr.PythonParser.return_stmt_return;
+
 public class Template implements GrammarTreeNode {
 	public static int temp_limit = 2048;
+	public static int supermode = 0;
 	public Vector<GrammarTreeNode> body = new Vector<GrammarTreeNode>();
 	public Vector<Vector<Integer>> indexes = new Vector<Vector<Integer>>();
 	public int curState = 0;
@@ -56,8 +59,57 @@ public class Template implements GrammarTreeNode {
 		}
 	}
 
-	@Override
-	public String toProgram() {
+	public String prog1(){
+		String res = "";
+		for(int i = 0; i< this.body.size(); i++)
+		{
+			GrammarTreeNode gt = body.get(i);
+			if (gt.getNodeType().compareTo("segment") == 0) {
+				Segment seg = (Segment)gt;
+				String s = seg.verifySpace();
+				if (s.indexOf("null")!= -1)
+					return "null";
+				res += s+"+";
+			} else if (gt.getNodeType().compareTo("loop") == 0) {
+				Loop p = (Loop) gt;
+				String x = p.verifySpace();
+				if(x.indexOf("null")!= -1)
+					return "null";
+				if (p.looptype == Loop.LOOP_START) {
+					res += "loop(value,r\"" + x + "+";
+				} else if (p.looptype == Loop.LOOP_END) {
+					res += x;
+					res += "\")+";
+				} else if (p.looptype == Loop.LOOP_MID) {
+					res += x + "+";
+				} else if (p.looptype == Loop.LOOP_BOTH) {
+					res += "loop(value,r\"" + x + "\")+";
+				}
+			}
+		}
+		if (res.charAt(res.length() - 1) == '+') {
+			res = res.substring(0, res.length() - 1);
+		}
+		if (res.length() > 0 && !res.contains("null")) {
+			return res;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public String toProgram()
+	{
+		if(supermode == 0)
+		{
+			return prog0();
+		}
+		else
+		{
+			return prog1();
+		}
+	}
+	public String prog0() {
 		while (true) {
 			if (curState >= indexes.size())
 				return "null";
@@ -72,14 +124,14 @@ public class Template implements GrammarTreeNode {
 					Loop p = (Loop) gt;
 					String x = p.getRule(ind);
 					if (p.looptype == Loop.LOOP_START) {
-						res += "loop(value,\"" + x + "+";
+						res += "loop(value,r\"" + x + "+";
 					} else if (p.looptype == Loop.LOOP_END) {
 						res += x;
 						res += "\")+";
 					} else if (p.looptype == Loop.LOOP_MID) {
 						res += x + "+";
 					} else if (p.looptype == Loop.LOOP_BOTH) {
-						res += "loop(value,\"" + x + "\")+";
+						res += "loop(value,r\"" + x + "\")+";
 					}
 				}
 			}

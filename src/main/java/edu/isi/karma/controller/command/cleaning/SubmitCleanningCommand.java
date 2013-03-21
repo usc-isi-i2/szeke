@@ -26,8 +26,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
+import org.geotools.resources.Java6;
 import org.json.JSONObject;
 
 import org.json.JSONArray;
@@ -123,6 +125,7 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 			String value = vc.getValue(key);
 			JSONObject jsonObject;
 			try {
+				value = value.replaceAll("\"", "\\\\\"");
 				jsonObject = new JSONObject(String.format("{\"rowID\":\"%s\",\"value\":\"%s\"}", key,value));
 				strData.put(jsonObject);
 			} catch (JSONException e) {
@@ -153,11 +156,13 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 			// obtain transformed results
 			HashMap<String, String> rows = new HashMap<String,String>();
 			HNodePath selectedPath = null;
+			Random r = new Random();
+			int colno = r.nextInt(1000);
 			List<HNodePath> columnPaths = vWorkspace.getRepFactory().getWorksheet(worksheetId).getHeaders().getAllPaths();
 			for (HNodePath path : columnPaths) {
 				if (path.getLeaf().getId().equals(hNodeId)) {
 					hTableId = path.getLeaf().getHTableId();
-					colnameString = path.getLeaf().getColumnName()+"_t";
+					colnameString = path.getLeaf().getColumnName()+"_"+colno;
 					selectedPath = path;
 				}
 			}

@@ -2,17 +2,54 @@ package edu.isi.karma.cleaning;
 
 import java.util.Vector;
 
+import org.python.antlr.PythonParser.return_stmt_return;
+
 
 public class Section implements GrammarTreeNode {
 	public Position[] pair;
 	public Vector<int[]> rules = new Vector<int[]>();
+	public int rule_cxt_size = Segment.cxtsize_limit;
 	public int curState = 0;
 	public boolean isinloop = false;
-	public Section(Position[] p,boolean isinloop)
+	public Vector<String> orgStrings = new Vector<String>();
+	public Vector<String> tarStrings = new Vector<String>();
+	public static Interpretor itInterpretor = null;
+	public static int supermode = 0;
+	public Section(Position[] p,Vector<String> orgStrings,Vector<String> tarStrings,boolean isinloop)
 	{
 		pair = p;
-		this.createTotalOrderVector();
+		this.orgStrings = orgStrings;
+		this.tarStrings = tarStrings;
+		if(itInterpretor==null)
+			itInterpretor =  new Interpretor();
+		if(supermode == 0)
+			this.createTotalOrderVector();
+		else
+		{
+			this.reiniteRules();
+		}
 		this.isinloop = isinloop;
+	}
+	public String verifySpace() {
+		String rule = "";
+		this.pair[0].isinloop = this.isinloop;
+		this.pair[1].isinloop = this.isinloop;
+		while(curState < this.rules.size())
+		{
+			String rule1 = this.pair[0].VerifySpace(rules.get(curState)[0]);
+			String rule2 = this.pair[1].VerifySpace(rules.get(curState)[1]);
+			curState ++;
+			if (rule1.indexOf("null") == -1 && rule2.indexOf("null") == -1) {
+				rule = String.format("substr(value,%s,%s)", rule1, rule2);
+				return rule;
+			}
+			if(rule1.indexOf("null") != -1 && rule2.indexOf("null")!= -1)
+			{
+				break;
+			}
+		}
+		return "null";
+
 	}
 	@Override
 	public String toProgram() {
@@ -31,7 +68,28 @@ public class Section implements GrammarTreeNode {
 		{
 			Position[] pa = {x,y};
 			boolean loop = this.isinloop || sec.isinloop;
-			return new Section(pa,loop);
+			Vector<String> strs = new Vector<String>();
+			Vector<String> tars = new Vector<String>();
+			if(this.orgStrings.size() == sec.orgStrings.size() && this.orgStrings.size() == 1 && this.orgStrings.get(0).compareTo(sec.orgStrings.get(0))==0)
+			{
+				// merge within one example. test the loop expression
+				//
+				strs.addAll(this.orgStrings);
+				tars.add(this.tarStrings.get(0)+sec.tarStrings.get(0));
+				loop = true;
+			}
+			else 
+			{
+				strs.addAll(this.orgStrings);
+				strs.addAll(sec.orgStrings);
+				tars.addAll(this.tarStrings);
+				tars.addAll(sec.tarStrings);
+			}
+			
+			
+			Section st = new Section(pa,strs,tars,loop);
+			return st;
+			
 		}
 	}
 
@@ -63,7 +121,43 @@ public class Section implements GrammarTreeNode {
 			}
 		}
 	}
-
+	public void reiniteRules()
+	{
+		Vector<Long> indexs = new Vector<Long>();
+		indexs.add((long)16);
+		indexs.add((long)16);
+		Vector<Vector<Integer>> configs = new Vector<Vector<Integer>>();
+		rules.clear();
+		getCrossIndex(indexs, 0, "", configs);
+		for(int i = 0; i<configs.size(); i++)
+		{
+			int[] elem = {configs.get(i).get(0),configs.get(i).get(1)};
+			rules.add(elem);
+		}
+	}
+	public void getCrossIndex(Vector<Long> indexs, int cur, String path,
+			Vector<Vector<Integer>> configs) {
+		String tpath = path;
+		if (cur >= indexs.size()) {
+			// System.out.println(""+tpath);
+			String[] elems = tpath.split(",");
+			Vector<Integer> line = new Vector<Integer>();
+			for (String s : elems) {
+				String x = s.trim();
+				if (x.length() > 0) {
+					line.add(Integer.parseInt(x));
+				}
+			}
+			if (line.size() > 0) {
+				configs.add(line);
+			}
+			return;
+		}
+		for (int i = 0; i < indexs.get(cur); i++) {
+			String xtpath = path + i + ",";
+			getCrossIndex(indexs, cur + 1, xtpath, configs);
+		}
+	}
 	@Override
 	public void emptyState() {
 		this.curState = 0;

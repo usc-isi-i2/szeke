@@ -1,5 +1,6 @@
 package edu.isi.karma.cleaning;
 
+import java.util.HashSet;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -7,6 +8,7 @@ import java.util.Vector;
 public class Segment implements GrammarTreeNode {
 	public Vector<Section> section = new Vector<Section>();
 	public static int cxtsize_limit = 2;
+	public String tarString = "";
 	public static final String LEFTPOS = "leftpos";
 	public static final String RIGHTPOS = "rightpos";
 	public static final int CONST = -1;
@@ -43,6 +45,10 @@ public class Segment implements GrammarTreeNode {
 		this.start = start;
 		this.end = end;
 		this.mappings = mapping;
+		for(int i = start; i<end; i++)
+		{
+			tarString += tarNodes.get(i).text;
+		}
 		initSections(orgNodes);
 		repString = "";
 		repString += tarNodes.get(this.start).getType();
@@ -50,7 +56,7 @@ public class Segment implements GrammarTreeNode {
 			repString += tarNodes.get(this.end-1).getType();
 		this.createTotalOrderVector();
 	}
-	public void setSections(Vector<Position[]> sections)
+/*	public void setSections(Vector<Position[]> sections)
 	{
 		Vector<Section> s = new Vector<Section>();
 		for(Position[] p:sections)
@@ -60,7 +66,7 @@ public class Segment implements GrammarTreeNode {
 		}
 		this.section = s;
 		this.createTotalOrderVector();
-	}
+	}*/
 	public Vector<TNode> getLeftCxt(int c, Vector<TNode> x)
 	{
 		int i = Segment.cxtsize_limit;
@@ -90,6 +96,32 @@ public class Segment implements GrammarTreeNode {
 		}
 		return res;
 	}
+	//if valid segment reture the first program
+	//else reture "null"
+	public String verifySpace()
+	{
+		String ruleString = "null";
+		if(this.isConstSegment())
+		{
+			String mdString = "";
+			for(TNode t:this.constNodes)
+			{
+				mdString += t.text;
+			}
+			mdString = "\'"+mdString+"\'";
+			return mdString;
+		}
+		for(Section s:this.section)
+		{
+			s.isinloop = this.isinloop;
+			ruleString = s.verifySpace();
+			if(ruleString.indexOf("null")== -1)
+			{
+				return ruleString;
+			}
+		}
+		return ruleString;
+	}
 	//
 	public void initSections(Vector<TNode> orgNodes)
 	{
@@ -97,20 +129,36 @@ public class Segment implements GrammarTreeNode {
 		{
 			int s = elem[0];
 			int e = elem[1];
+			//record the data
+			Vector<String> orgStrings = new Vector<String>();
+			Vector<String> tarStrings = new Vector<String>();
+			String org = "";
+			for(int i = 0; i<orgNodes.size(); i++)
+			{
+				org += orgNodes.get(i).text;
+			}
+			orgStrings.add(org);
+			tarStrings.add(tarString);
 			//create the startPosition
 			Vector<Integer> sset = new Vector<Integer>();
 			sset = UtilTools.getStringPos(s, orgNodes);
-			Position sPosition = new Position(sset, getLeftCxt(s, orgNodes), getRightCxt(s, orgNodes),this.isinloop);
+			Vector<String> tars = new Vector<String>();
+			tars.add(sset.get(0).toString());
+			Position sPosition = new Position(sset, getLeftCxt(s, orgNodes), getRightCxt(s, orgNodes),orgStrings,tars,this.isinloop);
 			sPosition.isinloop = this.isinloop;
 			//create the endPosition
 			Vector<Integer> eset = new Vector<Integer>();
 			eset = UtilTools.getStringPos(e, orgNodes);
-			Position ePosition = new Position(eset, getLeftCxt(e, orgNodes), getRightCxt(e, orgNodes),this.isinloop);
+			Vector<String> tars1 = new Vector<String>();
+			tars1.add(eset.get(0).toString());
+			Position ePosition = new Position(eset, getLeftCxt(e, orgNodes), getRightCxt(e, orgNodes),orgStrings,tars1,this.isinloop);
 			ePosition.isinloop = this.isinloop;
+			
 			if(sPosition != null && ePosition !=null)
 			{
 				Position[] pair = {sPosition,ePosition};
-				Section xsec = new Section(pair,isinloop);
+				
+				Section xsec = new Section(pair,orgStrings,tarStrings,isinloop);
 				section.add(xsec);
 			}
 		}
@@ -169,15 +217,21 @@ public class Segment implements GrammarTreeNode {
 			return res;
 		}
 		//merge the position
+		HashSet<String> uniqueKeys = new HashSet<String>();
 		Vector<Section> newSections = new Vector<Section>();
 		for(Section x:this.section)
 		{
 			for(Section y:s.section)
 			{
 				GrammarTreeNode zSection = x.mergewith(y);
-				if(zSection!=null)
+				if(zSection!=null )
 				{
-					newSections.add((Section)zSection);
+					String ukey = zSection.toString();
+					if(!uniqueKeys.contains(ukey))
+					{
+						newSections.add((Section)zSection);
+						uniqueKeys.add(ukey);
+					}
 				}
 			}
 		}
