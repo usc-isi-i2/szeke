@@ -7,6 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import org.apache.log4j.Logger;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.SimpleLayout;
+
 
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.WorksheetCommand;
@@ -27,6 +32,14 @@ public class FetchTransformingDataCommand extends WorksheetCommand {
 		this.hNodeId = hNodeId;
 		this.id = id;
 		this.worksheetId = worksheetId;
+		/////log info
+		try
+		{
+			FileAppender appender = new FileAppender(new SimpleLayout(),"./log/cleanning.log");
+			logger.addAppender(appender);
+		}
+		catch (Exception e) {
+		}
 	}
 
 	@Override
@@ -54,27 +67,32 @@ public class FetchTransformingDataCommand extends WorksheetCommand {
 		HashSet<Integer> inds = new HashSet<Integer>();
 		//select 30% or 50
 		int sample_size = (int)(size*0.3);
-		if(sample_size >=50)
+		if(sample_size >=60)
 		{
-			sample_size = 50;
+			sample_size = 60;
 		}
 		else {
 			sample_size = size;
 		}
-		Random rad = new Random();
+		//Random rad = new Random();
+		int cand = 0;
 		while( inds.size() <sample_size)
 		{
-			int cand = rad.nextInt(size);
+			//int cand = rad.nextInt(size);
 			if(!inds.contains(cand))
 			{
 				inds.add(cand);
 			}
+			cand++;
 		}
 		return inds;
 	}
+	private static Logger logger = Logger.getLogger(FetchTransformingDataCommand.class);
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
 		Worksheet wk = vWorkspace.getRepFactory().getWorksheet(worksheetId);
+		String Msg = String.format("fetch Data begin, Time:%d, Worksheet:%s",System.currentTimeMillis()/1000,worksheetId);
+		logger.info(Msg);
 		// Get the HNode
 		HashMap<String, HashMap<String, String>> rows = new HashMap<String, HashMap<String, String>>();
 		HNodePath selectedPath = null;
@@ -104,6 +122,8 @@ public class FetchTransformingDataCommand extends WorksheetCommand {
 			}
 			index ++;
 		}
+		Msg = String.format("fetch data end, Time:%d, Worksheet:%s",System.currentTimeMillis()/1000,worksheetId);
+		logger.info(Msg);
 		return new UpdateContainer(new FetchResultUpdate(hNodeId,rows));
 	}
 
