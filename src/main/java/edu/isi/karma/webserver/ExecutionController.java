@@ -105,14 +105,16 @@ import edu.isi.karma.controller.command.cleaning.FetchTransformingDataCommand;
 import edu.isi.karma.controller.command.cleaning.FetchTransformingDataFactory;
 import edu.isi.karma.controller.command.cleaning.GenerateCleaningRulesCommand;
 import edu.isi.karma.controller.command.cleaning.GenerateCleaningRulesCommandFactory;
-import edu.isi.karma.controller.command.cleaning.SubmitCleanningCommand;
-import edu.isi.karma.controller.command.cleaning.SubmitCleanningCommandFactory;
+import edu.isi.karma.controller.command.cleaning.SubmitCleaningCommand;
+import edu.isi.karma.controller.command.cleaning.SubmitCleaningCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishCSVCommand;
 import edu.isi.karma.controller.command.publish.PublishCSVCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishDatabaseCommand;
 import edu.isi.karma.controller.command.publish.PublishDatabaseCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishKMLLayerCommand;
 import edu.isi.karma.controller.command.publish.PublishKMLLayerCommandFactory;
+import edu.isi.karma.controller.command.publish.PublishMDBCommand;
+import edu.isi.karma.controller.command.publish.PublishMDBCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishRDFCellCommand;
 import edu.isi.karma.controller.command.publish.PublishRDFCellCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishRDFCommand;
@@ -125,6 +127,10 @@ import edu.isi.karma.controller.command.service.PopulateCommand;
 import edu.isi.karma.controller.command.service.PopulateCommandFactory;
 import edu.isi.karma.controller.command.service.PublishModelCommand;
 import edu.isi.karma.controller.command.service.PublishModelCommandFactory;
+import edu.isi.karma.controller.command.transformation.PreviewPythonTransformationResultsCommand;
+import edu.isi.karma.controller.command.transformation.PreviewPythonTransformationResultsCommandFactory;
+import edu.isi.karma.controller.command.transformation.SubmitPythonTransformationCommand;
+import edu.isi.karma.controller.command.transformation.SubmitPythonTransformationCommandFactory;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.view.VWorkspace;
 
@@ -241,10 +247,16 @@ public class ExecutionController {
 				new ImportUnionResultCommandFactory());
 		commandFactoryMap.put(MultipleValueEditColumnCommand.class.getSimpleName(), 
 				new MultipleValueEditColumnCommandFactory());
-		commandFactoryMap.put(SubmitCleanningCommand.class.getSimpleName(), 
-				new SubmitCleanningCommandFactory());
+		commandFactoryMap.put(SubmitCleaningCommand.class.getSimpleName(), 
+				new SubmitCleaningCommandFactory());
 		commandFactoryMap.put(RenameColumnCommand.class.getSimpleName(), 
 				new RenameColumnCommandFactory());
+		commandFactoryMap.put(PublishMDBCommand.class.getSimpleName(), 
+				new PublishMDBCommandFactory());
+		commandFactoryMap.put(PreviewPythonTransformationResultsCommand.class.getSimpleName(), 
+				new PreviewPythonTransformationResultsCommandFactory());
+		commandFactoryMap.put(SubmitPythonTransformationCommand.class.getSimpleName(), 
+				new SubmitPythonTransformationCommandFactory());
 	}
 
 	public VWorkspace getvWorkspace() {

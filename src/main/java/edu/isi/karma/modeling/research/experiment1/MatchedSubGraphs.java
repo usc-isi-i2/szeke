@@ -19,29 +19,29 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.controller.command.cleaning;
+package edu.isi.karma.modeling.research.experiment1;
 
-import javax.servlet.http.HttpServletRequest;
-import edu.isi.karma.controller.command.Command;
-import edu.isi.karma.controller.command.CommandFactory;
-import edu.isi.karma.view.VWorkspace;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 
-public class SubmitCleanningCommandFactory extends CommandFactory{
+import edu.isi.karma.rep.alignment.Link;
+import edu.isi.karma.rep.alignment.Node;
 
-	private enum Arguments {
-		hNodeID, worksheetID, hTableID, vWorksheetID,examples
+public class MatchedSubGraphs {
+
+	private DirectedWeightedMultigraph<Node, Link> subGraph1;
+	private DirectedWeightedMultigraph<Node, Link> subGraph2;
+	
+	public DirectedWeightedMultigraph<Node, Link> getSubGraph1() {
+		return subGraph1;
 	}
-	@Override
-	public Command createCommand(HttpServletRequest request,
-			VWorkspace vWorkspace) {
-		String hNodeid = request.getParameter(Arguments.hNodeID.name());
-		String wid = request.getParameter(Arguments.worksheetID.name());
-		String hTableID = request.getParameter(Arguments.hTableID.name());
-		String vw = request.getParameter(Arguments.vWorksheetID.name());
-		String exps = request.getParameter(Arguments.examples.name());
-		
-		SubmitCleanningCommand sCleanningCommand = new SubmitCleanningCommand(getNewId(vWorkspace),wid,hNodeid,hTableID, vw,exps);
-		return sCleanningCommand;
+	public DirectedWeightedMultigraph<Node, Link> getSubGraph2() {
+		return subGraph2;
 	}
 
+	public MatchedSubGraphs(DirectedWeightedMultigraph<Node, Link> subGraph1, 
+			DirectedWeightedMultigraph<Node, Link> subGraph2) {
+		this.subGraph1 = subGraph1;
+		this.subGraph2 = subGraph2;
+	}
+	
 }

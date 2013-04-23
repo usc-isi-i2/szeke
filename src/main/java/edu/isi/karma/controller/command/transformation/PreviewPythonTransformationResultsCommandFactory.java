@@ -19,29 +19,28 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.modeling.research;
+package edu.isi.karma.controller.command.transformation;
 
-import org.jgrapht.graph.DirectedWeightedMultigraph;
+import javax.servlet.http.HttpServletRequest;
 
-import edu.isi.karma.rep.alignment.Link;
-import edu.isi.karma.rep.alignment.Node;
+import edu.isi.karma.controller.command.Command;
+import edu.isi.karma.controller.command.CommandFactory;
+import edu.isi.karma.view.VWorkspace;
 
-public class MatchedSubGraphs {
 
-	private DirectedWeightedMultigraph<Node, Link> subGraph1;
-	private DirectedWeightedMultigraph<Node, Link> subGraph2;
-	
-	public DirectedWeightedMultigraph<Node, Link> getSubGraph1() {
-		return subGraph1;
-	}
-	public DirectedWeightedMultigraph<Node, Link> getSubGraph2() {
-		return subGraph2;
+public class PreviewPythonTransformationResultsCommandFactory extends CommandFactory {
+	private enum Arguments {
+		vWorksheetId, transformationCode, errorDefaultValue
 	}
 
-	public MatchedSubGraphs(DirectedWeightedMultigraph<Node, Link> subGraph1, 
-			DirectedWeightedMultigraph<Node, Link> subGraph2) {
-		this.subGraph1 = subGraph1;
-		this.subGraph2 = subGraph2;
+	@Override
+	public Command createCommand(HttpServletRequest request,
+			VWorkspace vWorkspace) {
+		String vWorksheetId = request.getParameter(Arguments.vWorksheetId.name());
+		String transformationCode = request.getParameter(Arguments.transformationCode.name());
+		String errorDefaultValue = request.getParameter(Arguments.errorDefaultValue.name());
+		
+		return new PreviewPythonTransformationResultsCommand(getNewId(vWorkspace), vWorksheetId, transformationCode, errorDefaultValue);
 	}
-	
+
 }

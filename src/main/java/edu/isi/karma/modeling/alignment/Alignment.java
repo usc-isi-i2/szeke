@@ -280,6 +280,17 @@ public class Alignment implements OntologyUpdateListener {
 		return null;	
 	}
 	
+	public void changeLinkWeight(String linkId, double weight) {
+		
+		Link link = this.getLinkById(linkId);
+		if (link == null) {
+			logger.error("Could not find the link with the id " + linkId);
+			return;
+		}
+		
+		this.graphBuilder.changeLinkWeight(link, weight);
+	}
+	
 	public void changeLinkStatus(String linkId, LinkStatus newStatus) {
 		
 		Link link = this.getLinkById(linkId);
@@ -335,7 +346,7 @@ public class Alignment implements OntologyUpdateListener {
 		return this.steinerTree.incomingEdgesOf(node);
 	}
 	
-	public List<Link> getAllPossibleLinksToNode(String nodeId) {
+	public List<Link> getIncomingLinks(String nodeId) {
 		
 		List<Link> possibleLinks = new ArrayList<Link>();
 		Node node = this.getNodeById(nodeId);
@@ -357,6 +368,21 @@ public class Alignment implements OntologyUpdateListener {
 //			System.out.println(l.getLabel().getUri() + " === ");
 //		}
 		
+		return possibleLinks;
+	}
+	
+	public List<Link> getOutgoingLinks(String nodeId) {
+		
+		List<Link> possibleLinks = new ArrayList<Link>();
+		Node node = this.getNodeById(nodeId);
+		if (node == null) return possibleLinks;
+		
+		Set<Link> outgoingLinks = this.graphBuilder.getGraph().outgoingEdgesOf(node);
+		if (outgoingLinks != null) 
+			possibleLinks = Arrays.asList(outgoingLinks.toArray(new Link[0]));
+		
+		Collections.sort(possibleLinks);
+
 		return possibleLinks;
 	}
 	

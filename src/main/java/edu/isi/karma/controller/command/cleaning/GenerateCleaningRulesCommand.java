@@ -33,7 +33,6 @@ import java.util.Vector;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.SimpleLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,7 +41,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import edu.isi.karma.cleaning.ConfigParameters;
 import edu.isi.karma.cleaning.DataCollection;
 import edu.isi.karma.cleaning.ExampleSelection;
-import edu.isi.karma.cleaning.MyLogger;
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
 import edu.isi.karma.cleaning.UtilTools;
@@ -78,7 +76,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		ConfigParameters cfg = new ConfigParameters();
 		cfg.initeParameters();
 		DataCollection.config = cfg.getString();
-		this.examples = this.parseExample(examples);
+		this.examples = parseExample(examples);
 		////log info
 		try
 		{
@@ -176,7 +174,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 
 	@Override
 	public CommandType getCommandType() {
-		return CommandType.undoable;
+		return CommandType.notInHistory;
 	}
 
 	public void StringColorCode(String org, String res,
@@ -274,7 +272,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
 		Worksheet wk = vWorkspace.getRepFactory().getWorksheet(worksheetId);
-		String Msg = String.format("Gen rule start,Time:%d, Worksheet:%s",System.currentTimeMillis()/1000,worksheetId);
+		String Msg = String.format("Gen rule start,Time:%d, Worksheet:%s",System.currentTimeMillis(),worksheetId);
 		logger.info(Msg);
 		// Get the HNode
 		HashMap<String, String> rows = new HashMap<String, String>();
@@ -381,7 +379,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		}
 		expstr += "|";
 		recmd = resdata.get(keys.iterator().next()).get("Org");
-		Msg = String.format("Gen rule end, Time:%d, Worksheet:%s,Examples:%s,Recmd:%s",System.currentTimeMillis()/1000,worksheetId,expstr,recmd);
+		Msg = String.format("Gen rule end, Time:%d, Worksheet:%s,Examples:%s,Recmd:%s",System.currentTimeMillis(),worksheetId,expstr,recmd);
 		logger.info(Msg);
 		return new UpdateContainer(new CleaningResultUpdate(hNodeId, resdata,
 				vars, keys));

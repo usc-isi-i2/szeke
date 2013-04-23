@@ -21,7 +21,6 @@
 package edu.isi.karma.modeling.alignment;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
@@ -68,16 +67,16 @@ public class GraphPreProcess {
 		if (linksForcedByUser != null) 
 			for (Link link : linksForcedByUser) {
 				
-				// removing all the links to target
-				Set<Link> incomingLinks = gPrime.incomingEdgesOf(link.getTarget());
-				if (incomingLinks == null) continue;
-				Link[] incomingLinksArray = incomingLinks.toArray(new Link[0]);
-				for (Link inLink: incomingLinksArray) {
-					gPrime.removeAllEdges( inLink.getSource(), inLink.getTarget() );
-				}
-	
-				// adding the user selected link
-				gPrime.addEdge(link.getSource(), link.getTarget(), link);
+//				// removing all the links to target
+//				Set<Link> incomingLinks = gPrime.incomingEdgesOf(link.getTarget());
+//				if (incomingLinks == null) continue;
+//				Link[] incomingLinksArray = incomingLinks.toArray(new Link[0]);
+//				for (Link inLink: incomingLinksArray) {
+//					gPrime.removeAllEdges( inLink.getSource(), inLink.getTarget() );
+//				}
+//	
+//				// adding the user selected link
+//				gPrime.addEdge(link.getSource(), link.getTarget(), link);
 				
 				gPrime.setEdgeWeight(link, ModelingParams.PROPERTY_USER_PREFERRED_WEIGHT);
 			}			

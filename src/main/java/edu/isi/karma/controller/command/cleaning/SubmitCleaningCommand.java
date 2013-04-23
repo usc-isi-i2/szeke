@@ -26,20 +26,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Vector;
 
-import org.apache.log4j.Level;
-import org.geotools.resources.Java6;
-import org.json.JSONObject;
-
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.RollingFileAppender;
-import org.apache.log4j.SimpleLayout;
-
+import org.json.JSONObject;
 
 import edu.isi.karma.controller.command.AddColumnCommand;
 import edu.isi.karma.controller.command.Command;
@@ -47,11 +41,10 @@ import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.CommandFactory;
 import edu.isi.karma.controller.command.JSONInputCommandFactory;
 import edu.isi.karma.controller.command.MultipleValueEditColumnCommand;
-import edu.isi.karma.controller.command.WorksheetCommand;
-import edu.isi.karma.controller.history.WorksheetCommandHistoryReader;
 import edu.isi.karma.controller.update.InfoUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.rep.HNodePath;
+import edu.isi.karma.rep.HTable;
 import edu.isi.karma.rep.Node;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.rep.cleaning.RamblerTransformationInputs;
@@ -64,41 +57,42 @@ import edu.isi.karma.webserver.ExecutionController;
 import edu.isi.karma.webserver.KarmaException;
 import edu.isi.karma.webserver.WorkspaceRegistry;
 
-public class SubmitCleanningCommand extends WorksheetCommand{
-	String hNodeId = "";
-	String vWorksheetId = "";
-	String hTableId = "";
-	private static Logger logger =Logger.getLogger(SubmitCleanningCommand.class);
+public class SubmitCleaningCommand extends Command {
+	private String hNodeId = "";
+	private String vWorksheetId = "";
+//	private String hTableId = "";
+	private String columnName;
+	private static Logger logger =Logger.getLogger(SubmitCleaningCommand.class);
 	private Vector<TransformationExample> examples = new Vector<TransformationExample>();
-	protected SubmitCleanningCommand(String id, String worksheetId,String hNodeId, String hTableId, String vWorkSheetId,String Examples) {
-		super(id, worksheetId);
+	
+	public SubmitCleaningCommand(String id, String hNodeId, String vWorkSheetId, String Examples) {
+		super(id);
 		this.hNodeId = hNodeId;
 		this.vWorksheetId = vWorkSheetId;
-		this.hTableId = hTableId;
+//		this.hTableId = hTableId;
 		this.examples = GenerateCleaningRulesCommand.parseExample(Examples);
-		try
-		{
+		try {
 			FileAppender appender = new FileAppender(new SimpleLayout(),"./log/cleanning.log");
 			logger.addAppender(appender);
+		} catch (Exception e) {
+			
 		}
-		catch (Exception e) {
-
-		}
+		addTag(CommandTag.Transformation);
 	}
 
 	@Override
 	public String getCommandName() {
-		return null;
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
 	public String getTitle() {
-		return null;
+		return "Transform Column";
 	}
 
 	@Override
 	public String getDescription() {
-		return null;
+		return columnName;
 	}
 
 	@Override
@@ -160,9 +154,9 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) {
 		// create new column command
-		
 		String worksheetId = vWorkspace.getViewFactory().getVWorksheet(this.vWorksheetId).getWorksheetId();
-		String Msg = String.format("submit end, Time:%d, Worksheet:%s",System.currentTimeMillis()/1000,worksheetId);
+		Worksheet worksheet = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId).getWorksheet();
+		String Msg = String.format("submit end, Time:%d, Worksheet:%s",System.currentTimeMillis(),worksheetId);
 		logger.info(Msg);
 		String hTableId = "";
 		String colnameString = "";
@@ -171,14 +165,15 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 			// obtain transformed results
 			HashMap<String, String> rows = new HashMap<String,String>();
 			HNodePath selectedPath = null;
-			Random r = new Random();
-			int colno = r.nextInt(1000);
 			List<HNodePath> columnPaths = vWorkspace.getRepFactory().getWorksheet(worksheetId).getHeaders().getAllPaths();
 			for (HNodePath path : columnPaths) {
 				if (path.getLeaf().getId().equals(hNodeId)) {
 					hTableId = path.getLeaf().getHTableId();
-					colnameString = path.getLeaf().getColumnName()+"_"+colno;
+					this.columnName = path.getLeaf().getColumnName();
+					HTable hTable = path.getLeaf().getHTable(vWorkspace.getRepFactory()); 
+					colnameString = hTable.getNewColumnName(this.columnName);
 					selectedPath = path;
+					
 				}
 			}
 			Collection<Node> nodes = new ArrayList<Node>();
@@ -222,7 +217,7 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 			} catch (KarmaException e1) {
 				e1.printStackTrace();
 			}
-			if(comm1 != null){
+			if(comm1 != null) {
 				try {
 					vWorkspace.getWorkspace().getCommandHistory().doCommand(comm1, vWorkspace);
 				} catch (CommandException e) {
@@ -244,15 +239,13 @@ public class SubmitCleanningCommand extends WorksheetCommand{
 				vWorkspace.getWorkspace().getCommandHistory().doCommand(comm, vWorkspace);
 			}
 		}
-		catch(Exception e)
-		{
-			System.out.println(""+e.toString());
+		catch(Exception e) {
+			e.printStackTrace();
 		}
 		UpdateContainer c = new UpdateContainer();
-		Worksheet worksheet = vWorkspace.getWorkspace().getWorksheet(worksheetId);
 		vWorkspace.getViewFactory().updateWorksheet(vWorksheetId, worksheet,worksheet.getHeaders().getAllPaths(), vWorkspace);
 		vWorkspace.getViewFactory().getVWorksheet(this.vWorksheetId).update(c);
-		c.add(new InfoUpdate("Submit Complete"));
+		c.add(new InfoUpdate("Column transformation complete"));
 		return c;
 	}
 	@Override

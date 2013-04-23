@@ -237,7 +237,7 @@ function handleCleanColumnButton() {
 
 	$("div#ColumnCleaningPanel").dialog({
 		title : 'Transform',
-		width : 1200,
+		width : 'auto',
 		height : 550,
 		buttons : {
 			"Cancel" : function() {
@@ -284,13 +284,12 @@ function populateInfoPanel() {
 	$("tr", tab1).remove();
 	// empty an array in JS
 	if(trTag.length == 0) {
-		trTag = $("<tr>").attr("id", nodeId + "_suggestion_cl_row").addClass("suggestion").append($("<td>").html(datadict[nodeId]["Orgdis"]));
+		trTag = $("<tr>").attr("id", nodeId + "_suggestion_cl_row").append($("<td>").addClass('info').html(datadict[nodeId]["Orgdis"])).append($("<td>").addClass("noBorder"));
 	}
 	else
 	{
 		trTag = trTag[0];
 	}
-	$("td",trTag).addClass("info");
 	tab1.append(trTag);
 	//tab1.append(trTag.clone(true,true));
 	var tab2 = $("table#examples");
@@ -301,9 +300,9 @@ function populateInfoPanel() {
 		var trTag1 = $("tr#" + nodeID + "_suggestion_cl_row",tab2);
 		
 		if(trTag1.length == 0) {
-			trTag1 = $("<tr>").attr("id", nodeID + "_suggestion_cl_row").append($("<td>").text($("tr#" + nodeID + "_cl_row").data("originalVal")));
+			trTag1 = $("<tr>").attr("id", nodeID + "_suggestion_cl_row").append($("<td>").addClass('info').text($("tr#" + nodeID + "_cl_row").data("originalVal")));
 		}
-		trTag1.append($("<td>").append($("<table>").append($("<tr>").append($("<td>").append($("<div>").data("nodeId", nodeId).data("cellValue", value["after"]).addClass("cleanExampleDiv").html(value["after"]))))));
+		
 		var closeButton = $("<button>");
 		closeButton.attr("id",nodeID);
 		closeButton.addClass("closeButton").button({
@@ -327,8 +326,12 @@ function populateInfoPanel() {
 			}
 
 		});
-		$("<td>").append(closeButton).appendTo(trTag1);
-		$(">td",trTag1).addClass("info");
+		var tdButton = $("<td>").attr("class","infobutton").append(closeButton);
+		
+		trTag1.append($("<td>").addClass('noBorder'))
+		trTag1.append($("<td>").addClass("info").append($("<table>").append($("<tr>").append($("<td>").attr("class","contentNoBorder").append($("<div>").data("nodeId", nodeId).data("cellValue", value["after"]).addClass("cleanExampleDiv").html(value["after"]))).append(tdButton))));
+		
+		//$(">td",trTag1).addClass("info");
 		tab2.append(trTag1);
 	});
 }
@@ -581,11 +584,19 @@ function submit() {
 	var vWorksheetId = tdTag.parents("div.Worksheet").attr("id");
 	var transformedRes = $("div#columnHeadingDropDownMenu").data("transformedResult");
 	var info = new Object();
-	info["vWorksheetID"] = vWorksheetId;
-	info["hNodeID"] = selectedHNodeId;
-	info["command"] = "SubmitCleanningCommand";
+	info["vWorksheetId"] = vWorksheetId;
+	info["hNodeId"] = selectedHNodeId;
+	info["command"] = "SubmitCleaningCommand";
 	info["workspaceId"] = $.workspaceGlobalInformation.id;
 	info["examples"] = JSON.stringify(columnHeadingMenu.data("cleaningExamples"));
+
+    var newInfo = [];
+    newInfo.push(getParamObject("vWorksheetId", vWorksheetId, "vWorksheetId"));
+    newInfo.push(getParamObject("hNodeId", selectedHNodeId, "hNodeId"));
+    newInfo.push(getParamObject("examples", columnHeadingMenu.data("cleaningExamples"), "other"));
+    info["newInfo"] = JSON.stringify(newInfo);
+
+    showLoading(vWorksheetId);
 	var returned = $.ajax({
 		url : "RequestController",
 		type : "POST",
@@ -593,11 +604,12 @@ function submit() {
 		dataType : "json",
 		complete : function(xhr, textStatus) {
 			var json = $.parseJSON(xhr.responseText);
-			hideCleanningWaitingSignOnScreen();
 			parse(json);
+            hideLoading(vWorksheetId);
 		},
 		error : function(xhr, textStatus) {
-			$.sticky("Error in submitting");
+			$.sticky("Error in transformation!");
+            hideLoading(vWorksheetId);
 		}
 	});
 }
