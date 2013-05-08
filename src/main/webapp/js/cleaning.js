@@ -278,19 +278,6 @@ function preprocessData(data, nodeIds) {
 
 function populateInfoPanel() {
 	var nodeId = $("div#columnHeadingDropDownMenu").data("topkeys")[0];
-	var datadict = $("div#columnHeadingDropDownMenu").data("results")[0]["data"];
-	var tab1 = $("table#recmd");
-	var trTag = $("tr#" + nodeId + "_suggestion_cl_row",tab1);
-	$("tr", tab1).remove();
-	// empty an array in JS
-	if(trTag.length == 0) {
-		trTag = $("<tr>").attr("id", nodeId + "_suggestion_cl_row").append($("<td>").addClass('info').html(datadict[nodeId]["Orgdis"])).append($("<td>").addClass("noBorder"));
-	}
-	else
-	{
-		trTag = trTag[0];
-	}
-	tab1.append(trTag);
 	//tab1.append(trTag.clone(true,true));
 	var tab2 = $("table#examples");
 	$("tr", tab2).remove();
@@ -329,11 +316,29 @@ function populateInfoPanel() {
 		var tdButton = $("<td>").attr("class","infobutton").append(closeButton);
 		
 		trTag1.append($("<td>").addClass('noBorder'))
-		trTag1.append($("<td>").addClass("info").append($("<table>").append($("<tr>").append($("<td>").attr("class","contentNoBorder").append($("<div>").data("nodeId", nodeId).data("cellValue", value["after"]).addClass("cleanExampleDiv").html(value["after"]))).append(tdButton))));
+		trTag1.append($("<td>").addClass("info").append($("<table>").append($("<tr>").append($("<td>").attr("class","contentNoBorder").append($("<div>").data("nodeId", nodeID).data("cellValue", value["after"]).addClass("cleanExampleDiv").html(value["after"]))).append(tdButton))));
 		
 		//$(">td",trTag1).addClass("info");
 		tab2.append(trTag1);
 	});
+	// recommanded examples
+	if(nodeId == undefined || nodeId == "-2")
+	{
+		return;
+	}
+	var datadict = $("div#columnHeadingDropDownMenu").data("results")[0]["data"];
+	var tab1 = $("table#recmd");
+	var trTag = $("tr#" + nodeId + "_suggestion_cl_row",tab1);
+	$("tr", tab1).remove();
+	// empty an array in JS
+	if(trTag.length == 0) {
+		trTag = $("<tr>").attr("id", nodeId + "_suggestion_cl_row").append($("<td>").addClass('info').html(datadict[nodeId]["Orgdis"])).append($("<td>").addClass("noBorder"));
+	}
+	else
+	{
+		trTag = trTag[0];
+	}
+	tab1.append(trTag);
 }
 
 function populateResult(rdata, nodeIds) {
@@ -354,7 +359,7 @@ function populateResult(rdata, nodeIds) {
 			transformedResult[nodeId] = xval;
 			if(xval == $("div#" + nodeId).text()) {
 				$("div#" + nodeId).attr("class", "cleanExampleDiv");
-				return true;
+				//return true;
 			}
 			$("td.ruleResultsValue_begin", trTag).remove();
 			$("#" + nodeId + "_origVal", trTag).html(xval["Orgdis"]).data("CellValue", xval["Org"]);
@@ -387,6 +392,7 @@ function populateResult(rdata, nodeIds) {
 					"after" : value
 				});
 				$("div#" + nodeId).text(value);
+				xval["Tardis"] = value;
 				updateResult();
 				var trs = $("td#" + nodeId + "_transformed tr");
 				//call the update result function
@@ -397,7 +403,7 @@ function populateResult(rdata, nodeIds) {
 				cancel : 'Cancel',
 				width : 350,
 				callback:function(){
-					$(this).parent().html(xval["Tardis"]);
+					$(this).html(xval["Tardis"]);
 				},
 				onblur : 'ignore',
 				event:"edit"
@@ -626,28 +632,8 @@ function updateResult() {
 	var columnHeadingMenu = $("div#columnHeadingDropDownMenu");
 	var examples = columnHeadingMenu.data("cleaningExamples");
 	console.log(examples)
-	if(examples.length == 0) {
-		return;
-	}
-	$.each(data, function(index, pacdata) {
-		var column = pacdata["data"];
-		islegal = true;
-		$.each(examples, function(ind, exp) {
-			if(!(column[exp["nodeId"]] === exp["after"])) {
-				islegal = false;
-				return;
-			}
-		});
-		if(islegal)// add the result to the new data collection
-		{
-			newdata.push(pacdata);
-		}
-	});
-	//generate rules and apply them to test data
-	if(newdata.length == 0) {
-		showCleanningWaitingSignOnScreen();
-		handleGenerateCleaningRulesButton();
-	}
+	showCleanningWaitingSignOnScreen();
+	handleGenerateCleaningRulesButton();
 	/*else//use the trimmed data
 	 {
 	 populateResult(newdata[0]);

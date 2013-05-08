@@ -32,13 +32,15 @@ import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 
+import edu.isi.karma.modeling.alignment.GraphUtil;
 import edu.isi.karma.rep.alignment.ColumnNode;
+import edu.isi.karma.rep.alignment.DataPropertyLink;
 import edu.isi.karma.rep.alignment.InternalNode;
 import edu.isi.karma.rep.alignment.Label;
 import edu.isi.karma.rep.alignment.Link;
 import edu.isi.karma.rep.alignment.LiteralNode;
 import edu.isi.karma.rep.alignment.Node;
-import edu.isi.karma.rep.alignment.SimpleLink;
+import edu.isi.karma.rep.alignment.ObjectPropertyLink;
 
 
 public class ModelReader2 {
@@ -46,11 +48,9 @@ public class ModelReader2 {
 //	public static String varPrefix = "var:";
 	public static String attPrefix = "att:";
 	
-	private static String importDir1 = "/Users/mohsen/Dropbox/Service Modeling/experiment2/models/dbpedia/";
-	private static String exportDir1 = "/Users/mohsen/Dropbox/Service Modeling/experiment2/dots/dbpedia/";
-
-	private static String importDir2 = "/Users/mohsen/Dropbox/Service Modeling/experiment2/models/schema/";
-	private static String exportDir2 = "/Users/mohsen/Dropbox/Service Modeling/experiment2/dots/schema/";
+	private static String importDir = "/Users/mohsen/Dropbox/Service Modeling/iswc2013/models/";
+	private static String exportDir = "/Users/mohsen/Dropbox/Service Modeling/iswc2013/graphviz/";
+	private static String graphDir = "/Users/mohsen/Dropbox/Service Modeling/iswc2013/jgraph/";
 
 	private static String typePredicate = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	private static HashMap<String, String> prefixNsMapping;
@@ -84,26 +84,18 @@ public class ModelReader2 {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
-		List<ServiceModel2> serviceModels1 = null;
-		List<ServiceModel2> serviceModels2 = null;
+		List<ServiceModel2> serviceModels = null;
 
 		try {
 
-			serviceModels1 = importServiceModels(importDir1);
-			if (serviceModels1 != null) {
-				for (ServiceModel2 sm : serviceModels1) {
+			serviceModels = importServiceModels(importDir);
+			if (serviceModels != null) {
+				for (ServiceModel2 sm : serviceModels) {
 					sm.print();
-					sm.exportModelToGraphviz(exportDir1);
-				}
-			}
-
-			serviceModels2 = importServiceModels(importDir2);
-			if (serviceModels2 != null) {
-				for (ServiceModel2 sm : serviceModels2) {
-					sm.print();
-					sm.exportModelToGraphviz(exportDir2);
+					sm.exportModelToGraphviz(exportDir);
+					GraphUtil.serialize(sm.getModel(), graphDir + sm.getServiceNameWithPrefix() + ".main.jgraph");
 				}
 			}
 
@@ -128,6 +120,7 @@ public class ModelReader2 {
 		prefixNsMapping.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		prefixNsMapping.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		prefixNsMapping.put("foaf", "http://xmlns.com/foaf/0.1/");
+		prefixNsMapping.put("km", "http://isi.edu/integration/karma/dev#");
 	}
 	
 	public static List<ServiceModel2> importServiceModels(String importDir) throws IOException {
@@ -322,7 +315,11 @@ public class ModelReader2 {
 				graph.addVertex(obj);
 			}
 			
-			Link e = new SimpleLink(predicateStr, new Label(predicateStr));
+			Link e;
+			if (obj instanceof InternalNode)
+				e = new ObjectPropertyLink(predicateStr, new Label(predicateStr));
+			else
+				e = new DataPropertyLink(predicateStr, new Label(predicateStr));
 			graph.addEdge(subj, obj, e);
 			
 		}

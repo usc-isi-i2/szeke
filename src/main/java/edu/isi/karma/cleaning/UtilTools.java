@@ -18,6 +18,7 @@ import com.sun.istack.logging.Logger;
 import au.com.bytecode.opencsv.CSVWriter;
 import edu.isi.karma.cleaning.features.Data2Features;
 import edu.isi.karma.cleaning.features.Feature;
+import edu.isi.karma.cleaning.features.RegularityClassifer;
 import edu.isi.karma.cleaning.features.RegularityFeatureSet;
 import edu.isi.karma.webserver.ServletContextParameterMap;
 import edu.isi.karma.webserver.ServletContextParameterMap.ContextParameter;
@@ -28,7 +29,7 @@ public class UtilTools {
 	public static Vector<Integer> getStringPos(int tokenpos,Vector<TNode> example)
 	{
 		Vector<Integer> poss = new Vector<Integer>();
-		if(tokenpos <= 0)
+		if(tokenpos < 0)
 			return poss;
 		int pos = 0;
 		int strleng = 0;
@@ -40,8 +41,8 @@ public class UtilTools {
 		{
 			pos += example.get(i).text.length();
 		}
-		poss.add(pos);
-		poss.add(pos-strleng);
+		poss.add(pos); // forward position
+		poss.add(pos-strleng); // backward position
 		return poss;
 	}
 	public static Vector<GrammarTreeNode> convertSegVector(Vector<Segment> x)
@@ -218,7 +219,7 @@ public class UtilTools {
 		index = 0;
 	}
 
-	public static String dic2Arff(String[] dic, String s) {
+	/*public static String dic2Arff(String[] dic, String s) {
 		String dirpathString = ServletContextParameterMap
 				.getParameterValue(ContextParameter.USER_DIRECTORY_PATH);
 		if (dirpathString.compareTo("") == 0) {
@@ -412,7 +413,7 @@ public class UtilTools {
 			System.out.println("Get Scores error: " + ex.toString());
 		}
 		return vds;
-	}
+	}*/
 
 	public static void main(String[] args) {
 		String s = "+";

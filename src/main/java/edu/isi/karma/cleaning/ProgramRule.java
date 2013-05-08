@@ -9,6 +9,8 @@ public class ProgramRule {
 	public PartitionClassifierType pClassifier;
 	public static Interpretor itInterpretor;
 	public String signString = "";
+	public static String IDENTITY = "substr(value,'START','END')";
+	public boolean nullRule = false;
 	public ProgramRule(Program prog)
 	{
 		this.pClassifier = prog.classifier;
@@ -18,12 +20,12 @@ public class ProgramRule {
 	{
 		initInterpretor();
 		InterpreterType worker = itInterpretor.create(rule);
-		rules.put("default", worker);
+		rules.put( "attr_0", worker);
 		
 	}
 	public String transform(String value)
 	{
-		String s2 = rules.get("default").execute(value);
+		String s2 = rules.get("attr_0").execute(value);
 		return s2;
 	}
 	public void initInterpretor()
@@ -39,7 +41,7 @@ public class ProgramRule {
 	}
 	public String getClassForValue(String value)
 	{
-		String labelString = "\'attr_0\'";
+		String labelString = "attr_0";
 		if(value.length() == 0)
 			return labelString;
 		if(pClassifier != null)
@@ -64,7 +66,6 @@ public class ProgramRule {
 	{
 		this.rules.remove(category);
 		this.strRules.remove(category);
-		//System.out.println("updated Rules: "+newRule);
 		addRule(category, newRule);
 		
 	}

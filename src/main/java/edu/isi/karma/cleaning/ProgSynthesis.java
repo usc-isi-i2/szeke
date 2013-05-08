@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Vector;
 
 public class ProgSynthesis {
+	public static int time_limit = 20;
 	Vector<Vector<TNode>> orgVector = new Vector<Vector<TNode>>();
 	Vector<Vector<TNode>> tarVector = new Vector<Vector<TNode>>();
 	String bestRuleString = "";
@@ -17,7 +18,6 @@ public class ProgSynthesis {
 	public void inite(Vector<String[]> examples) {
 		for (int i = 0; i < examples.size(); i++) {
 			Ruler r = new Ruler();
-			// System.out.println("Example: "+examples.get(i)[0]);
 			r.setNewInput(examples.get(i)[0]);
 			orgVector.add(r.vec);
 			Ruler r1 = new Ruler();
@@ -133,6 +133,7 @@ public class ProgSynthesis {
 		HashSet<ProgramRule> rules = new HashSet<ProgramRule>();
 		int prog_cnt = 1;
 		int i = 0;
+		long startTime = System.currentTimeMillis();
 		while (i < prog_cnt) {
 			ProgramRule r = prog.toProgram1();
 			if (r == null)
@@ -145,9 +146,13 @@ public class ProgSynthesis {
 				{
 					return null; // indistinguishable classes.
 				}
-				if (termCnt == 10000) {
-					findRule = false;
-					break;
+				if (termCnt == 10) {
+					termCnt = 0;
+					if((System.currentTimeMillis() - startTime)/1000 >= time_limit)
+					{
+						findRule = false;
+						break;
+					}
 				}
 				for (Partition p : prog.partitions) {
 					if (p.label.compareTo(xString) == 0) {
@@ -203,12 +208,9 @@ public class ProgSynthesis {
 				{
 					return "NO_CLASIF";
 				}
-				// System.out.println("Rule: "+ p.getStringRule(labelString));
 				InterpreterType worker = p.getWorkerForClass(labelString);
 				String s2 = worker.execute(s1);
 				String s3 = UtilTools.print(px.tarNodes.get(i));
-	
-				// System.out.println("Validation: "+s2+" | "+s3);
 				if (s3.compareTo(s2) != 0) {
 					return labelString;
 				}

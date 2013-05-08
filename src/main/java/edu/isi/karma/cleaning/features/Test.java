@@ -29,7 +29,6 @@ public class Test {
 	{
 		String a = "ren ";
 		Test.test(a);
-		System.out.println(a);
 	}
 
 }

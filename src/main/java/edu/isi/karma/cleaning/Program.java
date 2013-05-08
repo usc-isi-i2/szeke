@@ -2,6 +2,8 @@ package edu.isi.karma.cleaning;
 
 import java.util.Vector;
 
+import edu.isi.karma.cleaning.features.RecordClassifier;
+
 public class Program implements GrammarTreeNode {
 	public Vector<Partition> partitions = new Vector<Partition>();
 	public String cls = "";
@@ -12,7 +14,7 @@ public class Program implements GrammarTreeNode {
 		this.partitions = pars;
 		for(int i=0;i<this.partitions.size();i++)
 		{
-			this.partitions.get(i).setLabel("\'attr_"+i+"\'");
+			this.partitions.get(i).setLabel("attr_"+i);
 			if(ConfigParameters.debug == 1)
 				System.out.println(this.partitions.get(i).toString());
 		}
@@ -22,7 +24,8 @@ public class Program implements GrammarTreeNode {
 	public void learnClassifier()
 	{
 		PartitionClassifier pcf = new PartitionClassifier();
-		PartitionClassifierType classifier= pcf.create(this.partitions);
+		//PartitionClassifierType classifier= pcf.create(this.partitions);
+		PartitionClassifierType classifier= pcf.create2(this.partitions);
 		this.classifier = classifier;
 //		this.cls = pcf.clssettingString;
 		//this.cls = "x";
@@ -66,6 +69,11 @@ public class Program implements GrammarTreeNode {
 		{
 			for(Partition p:this.partitions)
 			{
+				if(p.tarNodes.get(0).size() == 0)
+				{
+					pr.addRule(p.label, "substr(value,0,0)");
+					continue;
+				}
 				String rule = p.toProgram();
 				if(rule.contains("null"))
 					return null;
@@ -80,6 +88,15 @@ public class Program implements GrammarTreeNode {
 		}
 		else
 		{
+			if(partitions.size() <= 0)
+			{
+				return null;
+			}
+			if(partitions.get(0).tarNodes.get(0).size() ==0)
+			{
+				pr.addRule(partitions.get(0).label, "substr(value,0,0)");
+				return pr;
+			}
 			String s = partitions.get(0).toProgram();
 			if(s.contains("null"))
 				return null;
