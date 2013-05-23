@@ -23,9 +23,15 @@ package edu.isi.karma.kr2rml;
 
 public class PredicateObjectMap {
 	
+	// Parent TriplesMap. Useful for traversal
+	private final TriplesMap triplesMap;
 	private Predicate predicate;
 	private ObjectMap object;
 	
+	public PredicateObjectMap(TriplesMap triplesMap) {
+		this.triplesMap = triplesMap;
+	}
+
 	public Predicate getPredicate() {
 		return predicate;
 	}
@@ -38,6 +44,10 @@ public class PredicateObjectMap {
 		return object;
 	}
 	
+	public TriplesMap getTriplesMap() {
+		return triplesMap;
+	}
+
 	public void setObject(ObjectMap object) {
 		this.object = object;
 	}

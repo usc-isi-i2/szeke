@@ -19,38 +19,28 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.cleaning.features;
+package edu.isi.karma.kr2rml;
 
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-
-
-public class RecordCntFeatures implements Feature {
-	public String name = "";
-	public String value = "";
-	public String tar = "";
-	public double score = 0.0;
-	public RecordCntFeatures(String name, String value, String tar)
-	{
-		this.name = "attr_"+name;
-		this.value = value;
-		this.tar = tar;
-		score = this.computerScore();
-	}
-	public double computerScore()
-	{
-		String tstr = value+" ";
-		int count = tstr.split(tar).length -1;
-		return count;
-	}
-	@Override
-	public String getName() {
-		return this.name;
+public class TriplesMapLink {
+	private final TriplesMap sourceMap;
+	private final TriplesMap targetMap;
+	private final PredicateObjectMap pom;
+	
+	public TriplesMapLink(TriplesMap sourceMap, TriplesMap targetMap, PredicateObjectMap pom) {
+		this.sourceMap = sourceMap;
+		this.targetMap = targetMap;
+		this.pom = pom;
 	}
 
-	@Override
-	public double getScore() {
-		return this.score;
+	public TriplesMap getTargetMap() {
+		return targetMap;
+	}
+
+	public TriplesMap getSourceMap() {
+		return sourceMap;
+	}
+
+	public PredicateObjectMap getPredicateObjectMapLink() {
+		return pom;
 	}
 }
