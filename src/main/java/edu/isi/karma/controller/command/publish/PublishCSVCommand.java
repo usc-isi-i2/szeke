@@ -85,9 +85,10 @@ public class PublishCSVCommand extends Command {
 		try {
 
 			final String fileName = csvFileExport.publishCSV();
-			if(fileName == null)
+			if(fileName == null){
 				return new UpdateContainer(new ErrorUpdate(
 						"No data to export! Have you aligned the worksheet?"));
+			}
 			return new UpdateContainer(new AbstractUpdate() {
 				@Override
 				public void generateJson(String prefix, PrintWriter pw,

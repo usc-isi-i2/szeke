@@ -150,8 +150,9 @@ public class ViewPreferences {
 			
 			// Check if the Commands element exists
 			commArray = json.optJSONArray("Commands");
-			if(commArray==null)	
+			if(commArray==null){
 				commArray = new JSONArray();
+			}
 			
 			// Check if the command already exists. In that case, we overwrite the values
 			for(int i=0; i<commArray.length(); i++) {

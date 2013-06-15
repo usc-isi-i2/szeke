@@ -76,11 +76,12 @@ public class TreePostProcess {
 		List<Node> possibleRoots = new ArrayList<Node>();
 
 		// If tree contains the Thing, we return it as the root
-		for (Node v: this.tree.vertexSet()) 
+		for (Node v: this.tree.vertexSet()){
 			if (v.equals(this.thingNode)) {
 				possibleRoots.add(v);
 				return possibleRoots;
 			}
+		}
 
 		int maxReachableNodes = -1;
 		int reachableNodes = -1;
@@ -106,17 +107,20 @@ public class TreePostProcess {
 			}
 		}
 		
-		for (int i = 0; i < vertexList.size(); i++)
-			if (reachableNodesList.get(i).intValue() == maxReachableNodes)
+		for (int i = 0; i < vertexList.size(); i++){
+			if (reachableNodesList.get(i).intValue() == maxReachableNodes){
 				possibleRoots.add(vertexList.get(i));
+			}
+		}
 	
 		return possibleRoots;
 	}
 	
 	private void selectRoot(List<Node> possibleRoots) {
 		
-		if (possibleRoots == null || possibleRoots.size() == 0)
+		if (possibleRoots == null || possibleRoots.size() == 0){
 			return;
+		}
 		
 		Collections.sort(possibleRoots);
 		
@@ -133,7 +137,9 @@ public class TreePostProcess {
 		List<Link> possibleLinks = new ArrayList<Link>();
 		
 		for (Link link : links) {
-			if (!(link instanceof SimpleLink)) continue;
+			if (!(link instanceof SimpleLink)){
+				continue;
+			}
 			
 			// links from source to target
 			sourceId = link.getSource().getId();
@@ -142,9 +148,13 @@ public class TreePostProcess {
 			possibleLinks.clear();
 			
 			temp = this.graphBuilder.getPossibleLinks(sourceId, targetId);
-			if (temp != null) possibleLinks.addAll(temp);
+			if (temp != null){
+				possibleLinks.addAll(temp);
+			}
 			temp = this.graphBuilder.getPossibleLinks(targetId, sourceId);
-			if (temp != null) possibleLinks.addAll(temp);
+			if (temp != null){
+				possibleLinks.addAll(temp);
+			}
 
 			Collections.sort(possibleLinks, new LinkPriorityComparator());
 			if (possibleLinks.size() > 0) {

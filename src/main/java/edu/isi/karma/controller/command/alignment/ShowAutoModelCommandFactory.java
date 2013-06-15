@@ -140,8 +140,9 @@ public class ShowAutoModelCommandFactory extends CommandFactory implements
 
 			Label typeName = ontMgr.getUriLabel(fullType);
 			Label domainName = null;
-			if (domain != null && !domain.trim().equals(""))
+			if (domain != null && !domain.trim().equals("")){
 				domainName = ontMgr.getUriLabel(domain);
+			}
 
 			if (typeName != null) {
 				type = new SemanticType(hNodeId, typeName, domainName,

@@ -51,15 +51,17 @@ public class Test {
 					String[] pair;
 					int index = 0;
 					while ((pair = cr.readNext()) != null) {
-						if (pair == null || pair.length <= 1)
+						if (pair == null || pair.length <= 1){
 							break;
+						}
 						entries.add(pair);
 						String[] line = {pair[0],pair[1],"","","wrong"}; // org, tar, tarcode, label
 						xHashMap.put(index + "", line);
 						index++;
 					}
-					if (entries.size() <= 1)
+					if (entries.size() <= 1){
 						continue;
+					}
 					ExampleSelection expsel = new ExampleSelection();
 					expsel.firsttime = true;
 					expsel.inite(xHashMap,null);
@@ -78,14 +80,15 @@ public class Test {
 						psProgSynthesis.inite(examples);
 						Vector<ProgramRule> pls = new Vector<ProgramRule>();
 						Collection<ProgramRule> ps = psProgSynthesis.run_main();
-						if (ps != null)
+						if (ps != null){
 							pls.addAll(ps);
-						else {
+						}else {
 							System.out.println("Cannot find any rule");
 						}
 						String[] wexam = null;
-						if (pls.size() == 0)
+						if (pls.size() == 0){
 							break;
+						}
 						long t1 = System.currentTimeMillis();
 						
 						for (int i = 0; i < pls.size(); i++) {
@@ -101,8 +104,9 @@ public class Test {
 								UtilTools.StringColorCode(entries.get(j)[0], tmps, dict);
 								String s = dict.get("Tar");
 								res += s+"\n";
-								if (ConfigParameters.debug == 1)
+								if (ConfigParameters.debug == 1){
 									System.out.println("result:   " + dict.get("Tardis"));
+								}
 								if (s == null || s.length() == 0) {
 									String[] ts = {"<_START>" + entries.get(j)[0] + "<_END>","",tmps,classlabel,"wrong"};
 									xHashMap.put(j + "", ts);
@@ -156,8 +160,9 @@ public class Test {
 									xHashMap.put(j + "", ts);			
 								}
 							}
-							if (wexam == null)
+							if (wexam == null){
 								break;
+							}
 							resultString.add(res);
 						}
 						records.put(f.getName()+examples.size(), resultString);
@@ -251,11 +256,13 @@ public class Test {
 			psProgSynthesis.inite(tmp);
 			Vector<ProgramRule> pls = new Vector<ProgramRule>();
 			Collection<ProgramRule> ps = psProgSynthesis.run_main();
-			if (ps != null)
+			if (ps != null){
 				pls.addAll(ps);
+			}
 			String[] wexam = null;
-			if (pls.size() == 0)
+			if (pls.size() == 0){
 				break;
+			}
 			for (int i = 0; i < pls.size(); i++) {
 				ProgramRule script = pls.get(i);
 				for (int j = 0; j < all.size(); j++) {
@@ -304,12 +311,14 @@ public class Test {
 							'\0');
 					String[] pair;
 					while ((pair = cr.readNext()) != null) {
-						if (pair == null || pair.length <= 1)
+						if (pair == null || pair.length <= 1){
 							break;
+						}
 						entries.add(pair);
 					}
-					if (entries.size() <= 1)
+					if (entries.size() <= 1){
 						continue;
+					}
 					int cnt = 0;
 					Vector<String[]> candStrings = new Vector<String[]>();
 					candStrings.addAll(entries);

@@ -83,9 +83,11 @@ public class FunctionRepository {
 		String subject;
 		if(value.startsWith(RuleRDFMapper.URI_FLAG)){
 			int ind = value.indexOf("http");
-			if(ind>0)
+			if(ind>0){
 				subject = "<" + value.substring(ind) + ">";
-			else subject = "";
+			}else{
+				subject = "";
+			}
 		}
 		else{
 			//treat "value" as a value, not a seed
@@ -127,7 +129,9 @@ public class FunctionRepository {
 		//the first value is the separator
 		String sep = values[0];
 		for(int i=1; i<values.length; i++){
-			if(i>1) result += sep;
+			if(i>1){
+				result += sep;
+			}
 			result += values[i];
 		}
 		return result;

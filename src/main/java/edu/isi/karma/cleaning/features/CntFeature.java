@@ -37,16 +37,18 @@ public class CntFeature implements Feature{
 				while (p!=-1)
 				{
 					p = Ruler.Search(z, pa, bpos);
-					if(p==-1)
+					if(p==-1){
 						break;
+					}
 					bpos = p+1;
 					cnt++;
 				}
 				while (p1!=-1)
 				{
 					p1 = Ruler.Search(z1, pa, bpos1);
-					if(p1==-1)
+					if(p1==-1){
 						break;
+					}
 					bpos1 = p1+1;
 					cnt1++;
 				}

@@ -117,8 +117,9 @@ public class LAVRule extends Rule{
 		ArrayList<BuiltInPredicate> rels = new ArrayList<BuiltInPredicate>();
 		for(int i=0; i<consequent.size(); i++){
 			Predicate p = consequent.get(i);
-			if(p instanceof BuiltInPredicate)
+			if(p instanceof BuiltInPredicate){
 				rels.add((BuiltInPredicate)p);
+			}
 		}
 		return rels;
 	}
@@ -142,8 +143,9 @@ public class LAVRule extends Rule{
 		for(int i=0; i<consequent.size(); i++){
 			Predicate p = consequent.get(i);
 			bodyVars.addAll(p.getVars());
-			if(p instanceof RelationPredicate)
+			if(p instanceof RelationPredicate){
 				bodyRelationVars.addAll(p.getVars());
+			}
 		}
 		
 		//make sure that all variables in the head are present in the body
@@ -164,9 +166,9 @@ public class LAVRule extends Rule{
 			for(int k=0; k<pVars.size(); k++){
 				String pVar = pVars.get(k);
 				//System.out.println("Check var : " + pVar + " in " + bodyRelationVars + " and " + headVars);
-				if(!bodyRelationVars.contains(pVar) && !headVars.contains(pVar))
+				if(!bodyRelationVars.contains(pVar) && !headVars.contains(pVar)){
 					throw(new MediatorException("The variable " + pVar + " does not appear in a body relation or head of rule " + this));
-				else{
+				}else{
 					if(!bodyRelationVars.contains(pVar)){
 						//it is in the head, but not the body => in the graph it will be represented as an AssignNode
 						((BuiltInPredicate)p).isAssignment(true);
@@ -185,7 +187,9 @@ public class LAVRule extends Rule{
 		String s = "";
 		s+= antecedent.get(0) + "<-";
 		for(int i=0; i<consequent.size(); i++){
-			if(i>0) s += " ^ \n\t";
+			if(i>0){
+				s += " ^ \n\t";
+			}
 			s += consequent.get(i).toString();
 		}
 		return s;

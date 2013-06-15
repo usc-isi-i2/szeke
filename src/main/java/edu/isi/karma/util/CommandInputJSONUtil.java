@@ -28,18 +28,20 @@ public class CommandInputJSONUtil {
 	
 	public static String getStringValue(String arg, JSONArray json) throws JSONException {
 		JSONObject obj = getJSONObjectWithName(arg, json);
-		if (obj == null)
+		if (obj == null){
 			return null;
-		else
+		}else{
 			return obj.getString(JsonKeys.value.name());
+		}
 	}
 
 	public static JSONArray getJSONArrayValue(String name, JSONArray json) throws JSONException {
 		JSONObject obj = getJSONObjectWithName(name, json);
-		if (obj == null)
+		if (obj == null){
 			return null;
-		else
+		}else{
 			return obj.getJSONArray(JsonKeys.value.name());
+		}
 	}
 	
 	public static JSONObject createJsonObject(String name, Object value, ParameterType type) throws JSONException {

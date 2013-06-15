@@ -106,8 +106,12 @@ public class Attribute {
 
 	public String getUri() {
 		String uri = "";
-		if (getBaseUri() != null) uri += getBaseUri();
-		if (getId() != null) uri += getId();
+		if (getBaseUri() != null){
+			uri += getBaseUri();
+		}
+		if (getId() != null){
+			uri += getId();
+		}
 		return uri;
 	}
 	public String gethNodeId() {

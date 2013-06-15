@@ -60,12 +60,14 @@ public class Repository {
 			_InternalInstance = new Repository();
 
 			File serviceRepository = new File(_InternalInstance.SERVICE_REPOSITORY_DIR);
-			if (!serviceRepository.exists())
+			if (!serviceRepository.exists()){
 				serviceRepository.mkdir();
+			}
 			
 			File sourceRepository = new File(_InternalInstance.SOURCE_REPOSITORY_DIR);
-			if (!sourceRepository.exists())
+			if (!sourceRepository.exists()){
 				sourceRepository.mkdir();
+			}
 			
 			_InternalInstance.createRepository();
 		}
@@ -176,12 +178,19 @@ public class Repository {
 	
 	public String getFileExtension(String lang) {
 		String ext = ".rdf";
-		if (lang.equalsIgnoreCase("RDF/XML")) ext = ".rdf";
-		else if (lang.equalsIgnoreCase("RDF/XML-ABBREV")) ext = ".rdf";
-		else if (lang.equalsIgnoreCase("N-TRIPLE")) ext = ".ntriple";
-		else if (lang.equalsIgnoreCase("TURTLE")) ext = ".turtle";
-		else if (lang.equalsIgnoreCase("TTL")) ext = ".ttl";
-		else if (lang.equalsIgnoreCase("N3")) ext = ".n3";
+		if (lang.equalsIgnoreCase("RDF/XML")){
+			ext = ".rdf";
+		}else if (lang.equalsIgnoreCase("RDF/XML-ABBREV")){
+			ext = ".rdf";
+		}else if (lang.equalsIgnoreCase("N-TRIPLE")){
+			ext = ".ntriple";
+		}else if (lang.equalsIgnoreCase("TURTLE")){
+			ext = ".turtle";
+		}else if (lang.equalsIgnoreCase("TTL")){
+			ext = ".ttl";
+		}else if (lang.equalsIgnoreCase("N3")){
+			ext = ".n3";
+		}
 		return ext;
 	}
 }

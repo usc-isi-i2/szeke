@@ -63,8 +63,9 @@ class VolgenantJonker {
 									// augmenting/alternating path.
 
 			// init how many times a row will be assigned in the column reduction.
-			for (i = 0; i < dim; i++)
+			for (i = 0; i < dim; i++){
 				matches[i] = 0;
+			}
 
 			// COLUMN REDUCTION
 			for (j = dim - 1; j >= 0; j--) // reverse order gives better results.
@@ -72,36 +73,43 @@ class VolgenantJonker {
 				// find minimum cost over rows.
 				min = assigncost[0][j];
 				imin = 0;
-				for (i = 1; i < dim; i++)
+				for (i = 1; i < dim; i++){
 					if (assigncost[i][j] < min) {
 						min = assigncost[i][j];
 						imin = i;
 					}
+				}
 				v[j] = min;
 
 				if (++matches[imin] == 1) {
 					// init assignment if minimum row assigned for first time.
 					rowsol[imin] = j;
 					colsol[j] = imin;
-				} else
+				}
+				else {
 					colsol[j] = -1; // row already assigned, column not assigned.
+				}
 			}
 
 			// REDUCTION TRANSFER
-			for (i = 0; i < dim; i++)
-				if (matches[i] == 0) // fill list of unassigned 'free' rows.
+			for (i = 0; i < dim; i++){
+				if (matches[i] == 0){
 					free[numfree++] = i;
-				else if (matches[i] == 1) // transfer reduction from rows that are
+				}else if (matches[i] == 1) // transfer reduction from rows that are
 											// assigned once.
 				{
 					j1 = rowsol[i];
 					min = BIG;
-					for (j = 0; j < dim; j++)
-						if (j != j1)
-							if (assigncost[i][j] - v[j] < min)
+					for (j = 0; j < dim; j++){
+						if (j != j1){
+							if (assigncost[i][j] - v[j] < min){
 								min = assigncost[i][j] - v[j];
+							}
+						}
+					}
 					v[j1] = v[j1] - min;
 				}
+			}
 
 			// AUGMENTING ROW REDUCTION
 			int loopcnt = 0; // do-loop to be done twice.
@@ -125,7 +133,7 @@ class VolgenantJonker {
 					usubmin = BIG;
 					for (j = 1; j < dim; j++) {
 						h = assigncost[i][j] - v[j];
-						if (h < usubmin)
+						if (h < usubmin){
 							if (h >= umin) {
 								usubmin = h;
 								j2 = j;
@@ -135,15 +143,16 @@ class VolgenantJonker {
 								j2 = j1;
 								j1 = j;
 							}
+						}
 					}
 
 					i0 = colsol[j1];
-					if (umin < usubmin)
+					if (umin < usubmin){
 						// change the reduction of the minimum column to increase
 						// the minimum
 						// reduced cost in the row to the subminimum.
 						v[j1] = v[j1] - (usubmin - umin);
-					else // minimum and subminimum equal.
+					}else // minimum and subminimum equal.
 					if (i0 >= 0) // minimum column j1 is assigned.
 					{
 						// swap columns j1 and j2, as j2 may be unassigned.
@@ -155,18 +164,20 @@ class VolgenantJonker {
 					rowsol[i] = j1;
 					colsol[j1] = i;
 
-					if (i0 >= 0) // minimum column j1 assigned earlier.
+					if (i0 >= 0){
 						/*
 						 * BUGFIX: Endless Loop (Fankhauser), right side after && added
 						 */
-						if ((umin < usubmin) && ((umin-usubmin)>2*Float.MIN_VALUE))
+						if ((umin < usubmin) && ((umin-usubmin)>2*Float.MIN_VALUE)){
 							// put in current k, and go back to that k.
 							// continue augmenting path i - j1 with i0.
 							free[--k] = i0;
-						else
+						}else{
 							// no further augmenting reduction possible.
 							// store i0 in list of free rows for next phase.
 							free[numfree++] = i0;
+						}
+					}
 				}
 			} while (loopcnt < 2); // repeat once.
 
@@ -218,12 +229,13 @@ class VolgenantJonker {
 						// check if any of the minimum columns happens to be
 						// unassigned.
 						// if so, we have an augmenting path right away.
-						for (k = low; k < up; k++)
+						for (k = low; k < up; k++){
 							if (colsol[collist[k]] < 0) {
 								endofpath = collist[k];
 								unassignedfound = true;
 								break;
 							}
+						}
 					}
 
 					if (!unassignedfound) {
@@ -239,8 +251,8 @@ class VolgenantJonker {
 							v2 = assigncost[i][j] - v[j] - h;
 							if (v2 < d[j]) {
 								pred[j] = i;
-								if (v2 == min) // new column found at same minimum
-												// value
+								if (v2 == min){
+									// value
 									if (colsol[j] < 0) {
 										// if unassigned, shortest augmenting path
 										// is complete.
@@ -253,6 +265,7 @@ class VolgenantJonker {
 										collist[k] = collist[up];
 										collist[up++] = j;
 									}
+								}
 								d[j] = v2;
 							}
 						}

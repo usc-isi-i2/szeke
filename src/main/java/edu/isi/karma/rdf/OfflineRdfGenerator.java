@@ -237,8 +237,9 @@ public class OfflineRdfGenerator {
 		Property hasSourceDesc = model.createProperty(Namespaces.KARMA, "hasSourceDescription");
 		ResIterator itr = model.listResourcesWithProperty(hasSourceDesc);
 		List<Resource> sourceList = itr.toList();
-		if (sourceList.size() == 0)
-		    throw new KarmaException("No source found in the model file.");
+		if (sourceList.size() == 0){
+			throw new KarmaException("No source found in the model file.");
+		}
 		Resource resource = sourceList.get(0);
 		Statement stmt = model.getProperty(resource, hasSourceDesc);
 		return stmt.getObject().toString();

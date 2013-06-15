@@ -132,15 +132,16 @@ public class Ruler {
 			if(option.compareTo("from_beginning")==0)
 			{
 				int pos = Ruler.Search(vec,t, 0);
-				if(pos == -1)
+				if(pos == -1){
 					return -1;
+				}
 				if(incld)
 				{
 					return pos;
 				}
 				else
 				{
-					if(pos<vec.size())
+					if(pos<vec.size()){
 						if(pos>0)
 						{
 							return pos-1;
@@ -148,9 +149,9 @@ public class Ruler {
 						else {
 							return 0;
 						}
-						
-					else
+					}else{
 						return vec.size()-1;
+					}
 				}
 				
 			}
@@ -159,21 +160,24 @@ public class Ruler {
 				Vector<TNode> tmpvec = (Vector<TNode>)this.vec.clone();
 				Collections.reverse(tmpvec);
 				int pos = Ruler.Search(tmpvec,t, 0);
-				if(pos == -1)
+				if(pos == -1){
 					return -1;
+				}
 				if(incld)
 				{
-					if(this.vec.size()- pos-1>=0 && this.vec.size()- pos-1 <= vec.size())
+					if(this.vec.size()- pos-1>=0 && this.vec.size()- pos-1 <= vec.size()){
 						return this.vec.size()- pos-1;
-					else
+					}else{
 						return 0;
+					}
 				}
 				else
 				{
-					if(this.vec.size()- pos>=0 && this.vec.size()- pos <= vec.size())
+					if(this.vec.size()- pos>=0 && this.vec.size()- pos <= vec.size()){
 						return this.vec.size()- pos;
-					else
+					}else{
 						return 0;
+					}
 				}
 			}
 		}
@@ -282,16 +286,17 @@ public class Ruler {
 		for(int i =0;i<vec.size();i++)
 		{
 			String type = "";
-			if(vec.get(i).type==TNode.LWRDTYP)
+			if(vec.get(i).type==TNode.LWRDTYP){
 				type = "LWRD";
-			else if(vec.get(i).type==TNode.UWRDTYP)
+			}else if(vec.get(i).type==TNode.UWRDTYP){
 				type = "UWRD";
-			else if(vec.get(i).type==TNode.SYBSTYP)
+			}else if(vec.get(i).type==TNode.SYBSTYP){
 				type = "SYB";
-			else if(vec.get(i).type==TNode.NUMTYP)
+			}else if(vec.get(i).type==TNode.NUMTYP){
 				type = "NUM";
-			else if(vec.get(i).type==TNode.BNKTYP)
+			}else if(vec.get(i).type==TNode.BNKTYP){
 				type = "BNK";
+			}
 			res += vec.get(i).text+"<"+type+">";
 		}
 		return res;

@@ -199,13 +199,16 @@ public class RegularityFeatureSet implements FeatureSet {
 			cnt += c;
 		}
 		if(cnt==0)
+		 {
 			return Math.log(10);//
+		}
 		double entropy = 0.0;
 		for(int i=0;i<a.length;i++)
 		{
 			double freq = a[i]*1.0/cnt;
-			if(freq==0)
+			if(freq==0){
 				continue;
+			}
 			entropy -= freq*Math.log(freq);
 		}
 		return entropy;

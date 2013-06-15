@@ -112,8 +112,9 @@ public class ServiceModel1 {
 	public void print() {
 		System.out.println(this.getServiceName());
 		System.out.println();
-		for (DirectedWeightedMultigraph<Node, Link> g : this.getModels())
-				GraphUtil.printGraphSimple(g);
+		for (DirectedWeightedMultigraph<Node, Link> g : this.getModels()){
+			GraphUtil.printGraphSimple(g);
+		}
 		System.out.println();
 		
 		List<String> sortedKeys = Arrays.asList(shortestPathsBetweenTwoAttributes.keySet().toArray(new String[0]));
@@ -127,8 +128,9 @@ public class ServiceModel1 {
 				
 				List<Link> pathEdges = path.getPathEdgeList();
 				lastNodeId = ""; nextId = ""; currentId = "";
-				if (pathEdges == null)
+				if (pathEdges == null){
 					continue;
+				}
 				for (int i = 0; i < pathEdges.size(); i++) {
 					
 					Link e = pathEdges.get(i);
@@ -240,7 +242,9 @@ public class ServiceModel1 {
 	
 	public void exportMatchedSubGraphToGraphviz(String exportDirectory) throws FileNotFoundException {
 		
-		if (this.matchedSubGraphs == null) return;
+		if (this.matchedSubGraphs == null){
+			return;
+		}
 		
 		OutputStream out = new FileOutputStream(exportDirectory + this.getServiceNameWithPrefix() + "_subgraphs.dot");
 		org.kohsuke.graphviz.Graph graphViz = new org.kohsuke.graphviz.Graph();

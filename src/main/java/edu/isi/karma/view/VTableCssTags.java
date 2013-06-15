@@ -63,8 +63,9 @@ public class VTableCssTags {
 	}
 	
 	public String getCssTag(String hTableId, int depth) {
-		if(useDepthBasedCSSTags)
+		if(useDepthBasedCSSTags){
 			return depthCssMap.get(depth%5);
+		}
 		String result = tagMap.get(hTableId);
 		if (result == null){
 			result = CSS_TOP_LEVEL_TABLE_CELL;

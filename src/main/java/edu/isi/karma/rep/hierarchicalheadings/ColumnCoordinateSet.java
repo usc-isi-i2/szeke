@@ -63,10 +63,12 @@ public class ColumnCoordinateSet {
 	public int getCoordinatesCountForIndex (int index) {
 		int count = 0;
 		for(Coordinate c : coordinates) {
-			if(c.getIndex() > index)
+			if(c.getIndex() > index){
 				break;
-			if (c.getIndex() == index)
+			}
+			if (c.getIndex() == index){
 				count++;
+			}
 		}
 		return count;
 	}

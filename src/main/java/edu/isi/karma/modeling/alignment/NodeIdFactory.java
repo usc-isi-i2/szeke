@@ -53,9 +53,10 @@ public class NodeIdFactory {
 	}
 	
 	public int lastIndexOf(String uri) {
-		if (nodeUris.containsKey(uri))
+		if (nodeUris.containsKey(uri)){
 			return nodeUris.get(uri).intValue();
-		else
+		}else{
 			return -1;
+		}
 	}
 }

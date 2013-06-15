@@ -104,8 +104,9 @@ public class GetAlternativeLinksCommand extends Command {
 								alignment.getNodeById(LinkIdFactory.getLinkSourceId(link.getId()));
 						String edgeSourceLabel = edgeSource.getDisplayId();
 						Label nodeLabel = edgeSource.getLabel();
-						if (nodeLabel.getUri() !=null && nodeLabel.getNs() != null && nodeLabel.getUri().equalsIgnoreCase(nodeLabel.getNs()))
+						if (nodeLabel.getUri() !=null && nodeLabel.getNs() != null && nodeLabel.getUri().equalsIgnoreCase(nodeLabel.getNs())){
 							edgeSourceLabel = edgeSource.getId();
+						}
 						
 						
 						JSONObject edgeObj = new JSONObject();

@@ -39,11 +39,13 @@ public class ObjectMap extends TermMap {
 
 	@Override
 	public String toString() {
-		if (template != null)
+		if (template != null){
 			return "ObjectMap [template=" + template + "]";
-		else if (refObjectMap != null)
+		}else if (refObjectMap != null){
 			return "RefObjectMap [" + refObjectMap.getParentTriplesMap().getId() + "]";
-		else return "<No ObjectMap or RefObjectMap found for the ObjectMap!>";
+		}else{
+			return "<No ObjectMap or RefObjectMap found for the ObjectMap!>";
+		}
 	}
 	
 	public boolean hasRefObjectMap() {

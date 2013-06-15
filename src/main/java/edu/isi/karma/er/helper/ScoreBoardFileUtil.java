@@ -103,8 +103,9 @@ public class ScoreBoardFileUtil {
 			for (int j = 0; j < len; j++) {
 				
 				ScoreBoard s = list.get(j); 
-				if (s.getDbpediaUri().trim().length() > 0)
+				if (s.getDbpediaUri().trim().length() > 0){
 					i ++;
+				}
 				if (s.getKarmaUri() != null && s.getKarmaUri().length() > 0) {
 					count++;
 					StringBuffer sb = new StringBuffer();
@@ -264,8 +265,9 @@ public class ScoreBoardFileUtil {
 			int i;
 			for (i = 0; i < list.size() ; i++) {
 				rec = list.get(i);
-				if (s.getFound() > rec.getFound())
+				if (s.getFound() > rec.getFound()){
 					break;
+				}
 			}
 			list.add(i, s);
 		}
@@ -328,8 +330,9 @@ public class ScoreBoardFileUtil {
 	 */
 	public Vector<ScoreBoard> loadScoreBoardFile(String filename) {
 		File file = new File(Constants.PATH_SCORE_BOARD_FILE + filename);
-		if (!file.exists())
+		if (!file.exists()){
 			throw new IllegalArgumentException("file " + file.getAbsolutePath() + " not exists.");
+		}
 		
 		RandomAccessFile raf = null;
 		Vector<ScoreBoard> list = new Vector<ScoreBoard>();
@@ -411,8 +414,9 @@ public class ScoreBoardFileUtil {
 		} else {
 			file = new File(Constants.PATH_SCORE_BOARD_FILE + filename);
 		}
-		if (!file.exists())
+		if (!file.exists()){
 			throw new IllegalArgumentException("file " + file.getAbsolutePath() + " not exists.");
+		}
 		
 		RandomAccessFile raf = null;
 		Vector<ScoreBoard> list = new Vector<ScoreBoard>();
@@ -531,8 +535,9 @@ public class ScoreBoardFileUtil {
 		FilenameFilter filter = new FilenameFilter() {
 
 			public boolean accept(File dir, String name) {
-				if (name.toLowerCase().endsWith(".csv")) 
+				if (name.toLowerCase().endsWith(".csv")){
 					return true;
+				}
 				return false;
 			}};
 		File[] files = file.listFiles(filter);

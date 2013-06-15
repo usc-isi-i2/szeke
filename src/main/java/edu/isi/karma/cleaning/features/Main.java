@@ -42,8 +42,9 @@ public class Main {
 				Vector<String> row = new Vector<String>();
 				Vector<String> examples = new Vector<String>();
 				Vector<String> oexamples = new Vector<String>();
-				if(!flist[i].getName().contains(".csv"))
+				if(!flist[i].getName().contains(".csv")){
 					continue;
+				}
 				CSVReader re = new CSVReader(new FileReader(flist[i]), '\t');
 				String[] line = null;
 				re.readNext();//discard the first line

@@ -147,8 +147,9 @@ public class InvokeServiceCommand extends WorksheetCommand {
 	
 	public Worksheet generateWorksheet(Workspace workspace, String title) throws KarmaException, IOException {
 
-		if (workspace == null)
+		if (workspace == null){
 			throw new KarmaException("Workspace is null.");
+		}
 		
 		Worksheet worksheet = workspace.getFactory().createWorksheet(title, workspace);
 		

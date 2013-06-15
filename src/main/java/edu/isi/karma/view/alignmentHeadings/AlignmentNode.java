@@ -64,22 +64,25 @@ public class AlignmentNode implements TNode {
 	}
 	
 	public boolean hasSemanticType() {
-		if(semanticType != null)
+		if(semanticType != null){
 			return true;
+		}
 		return false;
 	}
 	
 	public boolean hasChildren() {
-		if(children != null && children.size() != 0)
+		if(children != null && children.size() != 0){
 			return true;
+		}
 		return false;
 	}
 	
 	public String getSemanticTypeHNodeId() {
 		if(semanticType != null) {
 			return semanticType.getHNodeId();
-		} else
+		}else{
 			return null;
+		}
 	}
 
 	public void generateContentJson(PrintWriter pw) {

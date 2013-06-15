@@ -69,8 +69,9 @@ public class HHTree {
 			root.getRightStrokes().add(root.getRightStroke());
 			
 			// Add the stroke to children (if any)
-			if(!root.isLeaf())
+			if(!root.isLeaf()){
 				calculateLeftAndRightStrokes(root);
+			}
 		}
 	}
 
@@ -154,8 +155,9 @@ public class HHTree {
 	private void calculateDepth(HHTNode node, int depth) {
 		node.setDepth(depth);
 		// Keep account of the maximum depth in the HHTree
-		if(depth > maxDepth)
+		if(depth > maxDepth){
 			maxDepth = depth;
+		}
 		
 		if (!node.isLeaf()) {
 			for (HHTNode child : node.getChildren()) {
@@ -208,17 +210,19 @@ public class HHTree {
 		for (TNode child : children) {
 			HHTNode childNode = new HHTNode(child);
 			childrenList.add(childNode);
-			if (!isTNodeLeaf(child))
+			if (!isTNodeLeaf(child)){
 				populateChildren(child, childNode);
+			}
 		}
 		rootNode.setChildren(childrenList);
 	}
 
 	private boolean isTNodeLeaf(TNode node) {
-		if (node.getChildren() == null || node.getChildren().size() == 0)
+		if (node.getChildren() == null || node.getChildren().size() == 0){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	}
 
 	public int getMaxDepth() {
@@ -265,8 +269,9 @@ public class HHTree {
 				int htmlColSpan = ccMap.getCoordinatesCountForIndex(colIndex);
 				node.setHtmlColSpan(htmlColSpan);
 				return htmlColSpan;
-			} else 
+			}else{
 				return 0;
+			}
 		} else {
 			int htmlColSpan = 0;
 			List<HHTNode> children = node.getChildren();

@@ -131,8 +131,9 @@ public class Table extends RepEntity {
 		for (Row r : rows) {
 			result.add(r);
 			count++;
-			if (count >= maxNumber)
+			if (count >= maxNumber){
 				return result;
+			}
 		}
 		return result;
 	}
@@ -176,8 +177,9 @@ public class Table extends RepEntity {
 	 *            Collection of nodes that satisfy the path
 	 */
 	public void collectNodes(HNodePath path, Collection<Node> nodes) {
-		if (nodes == null)
+		if (nodes == null){
 			nodes = new ArrayList<Node>();
+		}
 		collectNodes(path, nodes, rows);
 	}
 
@@ -197,14 +199,16 @@ public class Table extends RepEntity {
 					// Check if the node has a nested table
 					if (n.hasNestedTable()) {
 						int numRows = n.getNestedTable().getNumRows();
-						if (numRows == 0)
+						if (numRows == 0){
 							continue RowIterator;
+						}
 
 						List<Row> rowsNestedTable = n.getNestedTable().getRows(
 								0, numRows);
 						if (rowsNestedTable != null
-								&& rowsNestedTable.size() != 0)
+								&& rowsNestedTable.size() != 0){
 							collectNodes(path.getRest(), nodes, rowsNestedTable);
+						}
 					}
 				}
 			}

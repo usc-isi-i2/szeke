@@ -164,8 +164,9 @@ public class UnassignSemanticTypeCommand extends Command {
 
 		// Add the old SemanticType object if it is not null
 		SemanticTypes types = worksheet.getSemanticTypes();
-		if (oldSemanticType != null)
+		if (oldSemanticType != null){
 			types.addType(oldSemanticType);
+		}
 
 		// Update the container
 		UpdateContainer c = new UpdateContainer();

@@ -82,8 +82,9 @@ public class TestRandomFrequency {
 			}
 		}
 		File file = new File(Constants.PATH_BASE + "qgram-string-example.csv");
-		if (file.exists())
+		if (file.exists()){
 			file.delete();
+		}
 		RandomAccessFile raf = null;
 		try {
 			file.createNewFile();
@@ -128,8 +129,9 @@ public class TestRandomFrequency {
 		int[] timesArr = {100000000};//, 200000000 ,300000000};//, 40000000, 50000000};//, 60000000, 70000000, 80000000, 90000000};
 		//int[] timesArr = {80000000, 90000000, 100000000};
 		for (int times : timesArr) {
-			for (int i = 0; i < N; i++) 
+			for (int i = 0; i < N; i++){
 				counts[i] = 0;
+			}
 			System.out.println("times:" + times);
 			for (int i = 0; i < times; ) {
 				n1 = r.nextInt(len);
@@ -157,8 +159,10 @@ public class TestRandomFrequency {
 									}
 								}
 								if (j < N)
+								 {
 									counts[j] ++;
 							//} catch (NumberFormatException e) {
+								}
 								
 							//}
 						}
@@ -172,8 +176,9 @@ public class TestRandomFrequency {
 			}
 		}
 		File file = new File(Constants.PATH_BASE + "jw_random_frequency.result");
-		if (file.exists())
+		if (file.exists()){
 			file.delete();
+		}
 		RandomAccessFile raf = null;
 		try {
 			file.createNewFile();
@@ -311,8 +316,9 @@ public class TestRandomFrequency {
 		}
 		
 		File file = new File(Constants.PATH_BASE + "frequency.result");
-		if (file.exists())
+		if (file.exists()){
 			file.delete();
+		}
 		RandomAccessFile raf = null;
 		try {
 			file.createNewFile();
@@ -422,10 +428,11 @@ public class TestRandomFrequency {
 				//if (i % 500000 == 0)
 				//	break;
 			}
-			if (sp.getFullName() != null && sp.getFullName().getValue().size() > 0)
+			if (sp.getFullName() != null && sp.getFullName().getValue().size() > 0){
 				s2 = sp.getFullName().getValue().get(0);
-			else 
+			}else{
 				continue;
+			}
 			for (String s1 : srcList) {
 				
 				/*	

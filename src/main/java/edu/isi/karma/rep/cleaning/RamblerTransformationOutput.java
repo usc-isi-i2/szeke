@@ -94,10 +94,11 @@ public class RamblerTransformationOutput implements TransformationOutput {
 		{
 			String k = iter.next();
 			String val = v.getValue(k);
-			if(val.length() >0)
+			if(val.length() >0){
 				val = t.transform(val);
-			else
+			}else{
 				val = "";
+			}
 			vo.setValue(k, val);
 			//System.out.println(k+","+val);
 		}

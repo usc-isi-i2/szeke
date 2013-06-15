@@ -87,11 +87,13 @@ public class ServiceTableUtil {
 			List<String> hNodeIdList, edu.isi.karma.rep.Table dataTable) {
 		
 		for (List<String> rowValues : tableValues) {
-			if (rowValues == null || rowValues.size() == 0)
+			if (rowValues == null || rowValues.size() == 0){
 				continue;
+			}
 			Row row = dataTable.addRow(factory);
-			for (int i = 0; i < rowValues.size(); i++) 
+			for (int i = 0; i < rowValues.size(); i++){
 				row.setValue(hNodeIdList.get(i), rowValues.get(i), factory);
+			}
 		}
 		
 	}
@@ -125,8 +127,9 @@ public class ServiceTableUtil {
 			
 			for (int k = 0; k < tableValues.size(); k++) {
 				List<String> rowValues = tableValues.get(k);
-				if (rowValues == null || rowValues.size() == 0)
+				if (rowValues == null || rowValues.size() == 0){
 					continue;
+				}
 				
 				String tableRowId = tableRowIds.get(k);
 				if (tableRowId == null || !tableRowId.trim().equalsIgnoreCase(currentRowId.trim())) {
@@ -136,10 +139,11 @@ public class ServiceTableUtil {
 				addedRowsCount ++;
 				
 				Row row = null;
-				if (addedRowsCount <= rowsCount)
+				if (addedRowsCount <= rowsCount){
 					row = dataTable.getRows(addedRowsCount - 1, 1).get(0);
-				else 
+				}else{
 					row = dataTable.addRow(factory);
+				}
 				
 //				System.out.println(hNodeIdList.size());
 				for (int j = 0; j < hNodeIdList.size(); j++) {

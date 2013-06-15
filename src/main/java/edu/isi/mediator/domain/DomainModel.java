@@ -170,8 +170,9 @@ public class DomainModel{
 	public LAVRule getLAVRule(String name){
 		for(int i=0; i<lavRules.size(); i++){
 			LAVRule r = lavRules.get(i);
-			if(r.getHead().getName().equals(name))
+			if(r.getHead().getName().equals(name)){
 				return r;
+			}
 		}
 		return null;
 	}
@@ -185,8 +186,9 @@ public class DomainModel{
 	public GAVRule getGAVRule(String name){
 		for(int i=0; i<gavRules.size(); i++){
 			GAVRule r = gavRules.get(i);
-			if(r.getHead().getName().equals(name))
+			if(r.getHead().getName().equals(name)){
 				return r;
+			}
 		}
 		return null;
 	}
@@ -201,8 +203,9 @@ public class DomainModel{
 	public SourceSchema getSourceSchema(String name){
 		for(int i=0; i<sourceSchemas.size(); i++){
 			SourceSchema s = sourceSchemas.get(i);
-			if(s.getName().equals(name))
+			if(s.getName().equals(name)){
 				return s;
+			}
 		}
 		return null;
 	}
@@ -217,8 +220,9 @@ public class DomainModel{
 	public DomainSchema getDomainSchema(String name){
 		for(int i=0; i<domainSchemas.size(); i++){
 			DomainSchema s = domainSchemas.get(i);
-			if(s.getName().equals(name))
+			if(s.getName().equals(name)){
 				return s;
+			}
 		}
 		return null;
 	}
@@ -254,11 +258,13 @@ public class DomainModel{
 			return true;
 		}
 		DomainSchema ds = getDomainSchema(domainTable);
-		if(ds==null)
+		if(ds==null){
 			throw new MediatorException("Domain concept " +  domainTable + " does not exist.");
+		}
 		
-		if(ds.hasAttribute(domainAttr))
+		if(ds.hasAttribute(domainAttr)){
 			return true;
+		}
 		return false;
 	}
 

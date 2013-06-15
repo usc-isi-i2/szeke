@@ -51,18 +51,19 @@ public class RankedModel implements Comparable<RankedModel>{
 		
 		@Override
 		public int compareTo(Coherence c) {
-			if (c == null)
+			if (c == null){
 				return 1;
-			else if (this.linkCount > c.linkCount)
+			}else if (this.linkCount > c.linkCount){
 				return 1;
-			else if (this.linkCount < c.linkCount)
+			}else if (this.linkCount < c.linkCount){
 				return -1;
-			else if (this.patternFrequency > c.patternFrequency)
+			}else if (this.patternFrequency > c.patternFrequency){
 				return 1;
-			else if (this.patternFrequency < c.patternFrequency)
+			}else if (this.patternFrequency < c.patternFrequency){
 				return -1;
-			else
+			}else{
 				return 0;
+			}
 		}
 	}
 	
@@ -93,8 +94,9 @@ public class RankedModel implements Comparable<RankedModel>{
 
 	public String getCoherenceString() {
 		String s = "";
-		for (Coherence c : this.coherence)
+		for (Coherence c : this.coherence){
 			s += "(" + c.linkCount + "," + c.patternFrequency + ")";
+		}
 		return s;
 	}
 	
@@ -148,8 +150,9 @@ public class RankedModel implements Comparable<RankedModel>{
 	
 	private List<Coherence> computeCoherence() {
 		
-		if (model == null || model.edgeSet().size() == 0)
+		if (model == null || model.edgeSet().size() == 0){
 			return null;
+		}
 		  
 		List<Coherence> coherence = new ArrayList<Coherence>();
 
@@ -157,11 +160,12 @@ public class RankedModel implements Comparable<RankedModel>{
 		HashMap<String, HashSet<String>> patternToLinks = new HashMap<String, HashSet<String>>();
 		HashMap<String, Integer> patternToFrequency = new HashMap<String, Integer>();
 		
-		for (Link e : model.edgeSet()) 
+		for (Link e : model.edgeSet()){
 			for (String s : e.getPatternIds()) {
 				
-				if (!patternIds.contains(s))
+				if (!patternIds.contains(s)){
 					patternIds.add(s);
+				}
 				
 				patternToFrequency.put(s, 1);
 				
@@ -172,25 +176,35 @@ public class RankedModel implements Comparable<RankedModel>{
 				}
 				links.add(e.getId());
 			}
+		}
 		
 		int size1, size2, size3;
 		String p1, p2;
 		for (int i = 0; i < patternIds.size() - 1; i++) {
 			p1 = patternIds.get(i);
-			if (!patternToLinks.containsKey(p1)) continue;
+			if (!patternToLinks.containsKey(p1)){
+				continue;
+			}
 			size1 = patternToLinks.get(p1).size();
 			for (int j = i + 1; j < patternIds.size(); j++) {
 				p2 = patternIds.get(j);
-				if (!patternToLinks.containsKey(p1)) continue;
-				if (!patternToLinks.containsKey(p2)) continue;
+				if (!patternToLinks.containsKey(p1)){
+					continue;
+				}
+				if (!patternToLinks.containsKey(p2)){
+					continue;
+				}
 				size2 = patternToLinks.get(p2).size();
 				
 				Set<String> shared = Sets.intersection(patternToLinks.get(p1), patternToLinks.get(p2));
-				if (shared == null) continue;
+				if (shared == null){
+					continue;
+				}
 				
 				size3 = shared.size();
-				if (size3 < size2 && size3 < size1) continue;
-				else if (size3 == size1 && size3 < size2) {
+				if (size3 < size2 && size3 < size1){
+					continue;
+				}else if (size3 == size1 && size3 < size2) {
 					patternToLinks.remove(p1);
 					patternToFrequency.remove(p1);
 				} else if (size3 == size2 && size3 < size1) { 
@@ -266,36 +280,41 @@ public class RankedModel implements Comparable<RankedModel>{
 //	}
 	
 	private int compareCoherence(List<Coherence> c1, List<Coherence> c2) {
-		if (c1 == null || c2 == null)
+		if (c1 == null || c2 == null){
 			return 0;
+		}
 		
 		for (int i = 0; i < c1.size(); i++) {
 			if (i < c2.size()) {
-				if (c1.get(i).compareTo(c2.get(i)) > 0) return 1;
-				else if (c1.get(i).compareTo(c2.get(i)) < 0) return -1;
+				if (c1.get(i).compareTo(c2.get(i)) > 0){
+					return 1;
+				}else if (c1.get(i).compareTo(c2.get(i)) < 0){
+					return -1;
+				}
 			}
 		}
-		if (c1.size() < c2.size())
+		if (c1.size() < c2.size()){
 			return 1;
-		else if (c2.size() < c1.size())
+		}else if (c2.size() < c1.size()){
 			return -1;
-		else
+		}else{
 			return 0;
+		}
 	}
 	
 	@Override
 	public int compareTo(RankedModel m) {
 		
 		int k = compareCoherence(this.coherence, m.coherence);
-		if (k > 0)
+		if (k > 0){
 			return -1;
-		else if (k < 0)
+		}else if (k < 0){
 			return 1;
-		else if (this.cost < m.cost)
+		}else if (this.cost < m.cost){
 			return -1;
-		else if (m.cost < this.cost)
+		}else if (m.cost < this.cost){
 			return 1;
-		else {
+		}else {
 			return 0;
 		}
 	}

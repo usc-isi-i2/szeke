@@ -95,8 +95,9 @@ public class JenaUtil {
 				//extract the prefix
 				int ind1 = propertyValue.indexOf("http");
 				int ind2 = propertyValue.lastIndexOf("/");
-				if(ind1>=0 && ind2>0)
+				if(ind1>=0 && ind2>0){
 					propertyPrefix = propertyValue.substring(ind1,ind2+1);
+				}
 			}
 		}
 		logger.debug("Property Prefix=" +  propertyPrefix);
@@ -205,11 +206,13 @@ public class JenaUtil {
 			}
 			else {
 				//it's a URI/Resource, so I have to extract the value
-				if(valueAsURI)
+				if(valueAsURI){
 					onerow.put(var, node.toString());
-				else
+				}
+				else {
 					onerow.put(var, getValueFromUri(node.toString()));
 				//System.out.println("VAR=" + var + " Val=" + node.toString());
+				}
 			}
 
 		}

@@ -36,8 +36,9 @@ public class CommandHistoryWriter {
 				JSONArray json = new JSONArray(command.getInputParameterJson());
 				String vWorksheetId = HistoryJsonUtil.getStringValue(HistoryArguments.vWorksheetId.name(), json);
 				String worksheetName = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId).getWorksheet().getTitle(); 
-				if(comMap.get(worksheetName) == null)
+				if(comMap.get(worksheetName) == null){
 					comMap.put(worksheetName, new ArrayList<Command>());
+				}
 				comMap.get(worksheetName).add(command);
 			}
 		}
@@ -51,8 +52,9 @@ public class CommandHistoryWriter {
 				
 				// Populate the tags
 				JSONArray tagsArr = new JSONArray();
-				for (CommandTag tag : comm.getTags())
+				for (CommandTag tag : comm.getTags()){
 					tagsArr.put(tag.name());
+				}
 				commObj.put(HistoryArguments.tags.name(), tagsArr);
 				
 				JSONArray inputArr = new JSONArray(comm.getInputParameterJson());
@@ -73,8 +75,9 @@ public class CommandHistoryWriter {
 					}
 				}
 				commObj.put(HistoryArguments.inputParameters.name(), inputArr);
-				 if(!commandAlreadyexists(commArr, commObj))
+				 if(!commandAlreadyexists(commArr, commObj)){
 					commArr.put(commObj);
+				}
 			}
 //			System.out.println(commArr.toString(4));
 			JSONUtil.writeJsonFile(commArr, HistoryJsonUtil.constructWorksheetHistoryJsonFilePath(wkName, 

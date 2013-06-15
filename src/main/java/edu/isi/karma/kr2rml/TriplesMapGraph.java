@@ -65,8 +65,9 @@ public class TriplesMapGraph {
 	}
 	
 	public List<TriplesMapLink> getAllNeighboringTriplesMap(String triplesMapId) {
-		if (neighboringTriplesMapCache.get(triplesMapId) == null)
+		if (neighboringTriplesMapCache.get(triplesMapId) == null){
 			return new ArrayList<TriplesMapLink>();
+		}
 		
 		return neighboringTriplesMapCache.get(triplesMapId);
 	}

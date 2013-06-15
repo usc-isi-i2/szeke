@@ -292,8 +292,14 @@ public class Test {
 	
 	public static void main(String[] args) {
 		boolean test1 = true, test2 = false, test3 = false;
-		if (test1) testOntologyImport();
-		if (test2) testAlignment();
-		if (test3) getGeoNamesNeighbourhoodTree();
+		if (test1){
+			testOntologyImport();
+		}
+		if (test2){
+			testAlignment();
+		}
+		if (test3){
+			getGeoNamesNeighbourhoodTree();
+		}
 	}
 }

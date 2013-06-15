@@ -195,13 +195,16 @@ public class SourceDescription {
 		this.worksheet=worksheet;
 		
 		//add source prefix
-		if(rdfSourceNamespace==null)
+		if(rdfSourceNamespace==null){
 			rdfSourceNamespace = "http://localhost:8080/";
-		if(rdfSourcePrefix==null)
+		}
+		if(rdfSourcePrefix==null){
 			rdfSourcePrefix = "s";
+		}
 		//add a delimiter if it doesn't exist, otherwise the URIs will not be well formed
-		if(!rdfSourceNamespace.endsWith("/") && !rdfSourceNamespace.endsWith("#"))
+		if(!rdfSourceNamespace.endsWith("/") && !rdfSourceNamespace.endsWith("#")){
 			rdfSourceNamespace += "/";
+		}
 		seenPrefixNamespaceCombination.put(rdfSourcePrefix+ ":"+rdfSourceNamespace,rdfSourcePrefix);
 		assignedPrefixes.add(rdfSourcePrefix);
 		allNamespaces.add(RDFDomainModel.SOURCE_PREFIX + rdfSourcePrefix+ ":'"+rdfSourceNamespace+"'");
@@ -227,13 +230,16 @@ public class SourceDescription {
 		//generate statements for synonym sem types
 		//do this only at the end, so I make sure that I already have all keys computed
 		String stmt = generateSynonymStatements();
-		if(stmt!=null)
+		if(stmt!=null){
 			s.append(stmt);
+		}
 		
 		String rule =  "SourceDescription(";
 		int i=0;
 		for(String attr:ruleAttributes){
-			if(i++>0) rule +=",";
+			if(i++>0){
+				rule +=",";
+			}
 			rule += addBacktick(attr);
 		}
 		rule += ") -> \n" + s.toString();
@@ -267,7 +273,9 @@ public class SourceDescription {
 		}
 		if(v.getType()==NodeType.InternalNode){
 			String stmt = generateClassStatement(v);
-			if(s.length()!=0) s.append(" ^ ");
+			if(s.length()!=0){
+				s.append(" ^ ");
+			}
 			s.append(stmt);
 			Set<Link> edges = steinerTree.outgoingEdgesOf(v);
 			for(Link e:edges){
@@ -400,8 +408,9 @@ public class SourceDescription {
 		}
 		ruleAttributes.add(dataAttribute);
 		String propertyName = "expand@" + propertyAttribute;
-		if (rdfLiteralType != null && !rdfLiteralType.equals(""))
-			propertyName += "@@" + rdfLiteralType; 
+		if (rdfLiteralType != null && !rdfLiteralType.equals("")){
+			propertyName += "@@" + rdfLiteralType;
+		} 
 		if(reversedLinkIds.contains(e.getId())){
 			throw new KarmaException("A data property cannot be an inverse_of:" + e.getLabel().getUri());
 		}
@@ -518,8 +527,9 @@ public class SourceDescription {
 		String propertyName = getPrefix(e.getLabel().getPrefix(), e.getLabel().getNs()) + ":" + e.getLabel().getLocalName();
 
 		String s = "`" + propertyName + "`(uri(" + key1 + "),uri(" + key2 + "))";
-		if(generateInverse)
+		if(generateInverse){
 			s += addInverseProperty(e.getLabel().getUri(), key1,key2);
+		}
 		
 		if(reversedLinkIds.contains(e.getId())){
 			//propertyName = TableRDFGenerator.inverseProperty + propertyName;
@@ -553,14 +563,17 @@ public class SourceDescription {
 				List<SemanticType> semT = synonyms.getSynonyms();
 				for(SemanticType st: semT){
 					String stmt = generateSynonymStatement(child,st);
-					if(stmt!=null)
+					if(stmt!=null){
 						s += "\n ^ " + stmt;
+					}
 				}
 			}
 		}
-		if(s.trim().isEmpty())
+		if(s.trim().isEmpty()){
 			return null;
-		else return s;
+		}else{
+			return s;
+		}
 	}
 
 
@@ -582,10 +595,11 @@ public class SourceDescription {
 			String key = findKey(child);
 			//logger.info("Sem Type is a class:"+st.getType());
 			String className = getPropertyWithPrefix(st.getType());
-			if (rdfLiteralType != null && !rdfLiteralType.equals(""))
+			if (rdfLiteralType != null && !rdfLiteralType.equals("")){
 				s = "`" + className + "@@" + rdfLiteralType + "`(uri(" + key + "))";
-			else
+			}else{
 				s = "`" + className + "`(uri(" + key + "))";
+			}
 			return s;
 		}
 		else{
@@ -615,10 +629,11 @@ public class SourceDescription {
 			}
 			ruleAttributes.add(dataAttribute);
 			String propertyName = getPropertyWithPrefix(st.getType());
-			if (rdfLiteralType != null && !rdfLiteralType.equals(""))
+			if (rdfLiteralType != null && !rdfLiteralType.equals("")){
 				s = "`" + propertyName + "@@" + rdfLiteralType + "`(uri(" + key + ")," + addBacktick(dataAttribute) + ")";
-			else
+			}else{
 				s = "`" + propertyName + "`(uri(" + key + ")," + addBacktick(dataAttribute) + ")";
+			}
 			return s;
 		}
 	}
@@ -639,8 +654,10 @@ public class SourceDescription {
 		
 		//this can happen if propertyName is not an Object property; it could be a subclass
 		if (!ontMgr.isObjectProperty(propertyName))
+		 {
 			return s;
 		//see if this property has an inverse property, and if it does add it to the SD
+		}
 
 		//one or the other will be null
 		Label inversePropLabel = ontMgr.getInverseProperty(propertyName);
@@ -669,8 +686,9 @@ public class SourceDescription {
 	 * @return
 	 */
 	private String getPropertyWithPrefix(Label label){
-		if(label==null)
+		if(label==null){
 			return null;
+		}
 		String namespace = label.getNs();
 		String prefix = label.getPrefix();
 		String propWithPrefix = getPrefix(prefix, namespace) + ":" + label.getLocalName();
@@ -759,7 +777,9 @@ public class SourceDescription {
 				//I have more than 1 key, so I have to construct a concat statement that will be the key
 				key = "";
 				for(int i=0; i<keys.size();i++){
-					if(i>0) key+=",";
+					if(i>0){
+						key+=",";
+					}
 					key += addBacktick(keys.get(i));
 				}
 				isCompoundKey=true;
@@ -775,8 +795,9 @@ public class SourceDescription {
 			ruleAttributes.add(key);
 		}
 		//I have to do it here because I don't want backticks for the gensyms
-		if(!isGensym && !isCompoundKey)
+		if(!isGensym && !isCompoundKey){
 			key = addBacktick(key);
+		}
 		
 		classNameToId.put(v.getLabel().getUri(), v.getId());
 		uriMap.put(v.getId(), key);
@@ -842,17 +863,20 @@ public class SourceDescription {
 				allNamespaces.add(prefix+":'"+namespace+"'");
 				return prefix;
 			}
+		}else{
+			return givenPrefix;
 		}
-		else return givenPrefix;
 
 	}
 
 	private String addBacktick(String s){
 		//this method has to be enhanced to add backtick if we have columns with
 		//"strange" chars
-		if(!useColumnNames)
+		if(!useColumnNames){
 			return MediatorUtil.addBacktick(s);
-		else return s;
+		}else{
+			return s;
+		}
 	}
 	
 }

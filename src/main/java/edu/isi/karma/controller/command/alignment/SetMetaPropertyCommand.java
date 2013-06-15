@@ -137,8 +137,9 @@ public class SetMetaPropertyCommand extends Command {
 			columnNodeAlreadyExisted = true;
 			oldIncomingLinkToColumnNode = alignment.getCurrentLinksToNode(existingColumnNode.getId()).iterator().next();
 			oldDomainNode = oldIncomingLinkToColumnNode.getSource();
-			if (!rdfLiteralType.equals(existingColumnNode.getRdfLiteralType()))
+			if (!rdfLiteralType.equals(existingColumnNode.getRdfLiteralType())){
 				existingColumnNode.setRdfLiteralType(rdfLiteralType);
+			}
 		}
 		
 		if (metaPropertyName.equals(METAPROPERTY_NAME.isUriOfClass)) {
@@ -147,8 +148,9 @@ public class SetMetaPropertyCommand extends Command {
 			if (columnNodeAlreadyExisted) {
 				clearOldSemanticTypeLink(oldIncomingLinkToColumnNode, oldDomainNode, alignment, classNode);
 				columnNode = existingColumnNode;
-			} else
-				columnNode = getColumnNode(alignment, vWorkspace.getRepFactory().getHNode(hNodeId)); 
+			}else{
+				columnNode = getColumnNode(alignment, vWorkspace.getRepFactory().getHNode(hNodeId));
+			} 
 			
 			if (classNode == null) {
 				Label classNodeLabel = ontMgr.getUriLabel(metaPropertyValue);
@@ -200,8 +202,9 @@ public class SetMetaPropertyCommand extends Command {
 			if (columnNodeAlreadyExisted) {
 				clearOldSemanticTypeLink(oldIncomingLinkToColumnNode, oldDomainNode, alignment, classNode);
 				columnNode = existingColumnNode;
-			} else
-				columnNode = getColumnNode(alignment, vWorkspace.getRepFactory().getHNode(hNodeId)); 
+			}else{
+				columnNode = getColumnNode(alignment, vWorkspace.getRepFactory().getHNode(hNodeId));
+			} 
 			
 			if (classNode == null) {
 				Label classNodeLabel = ontMgr.getUriLabel(metaPropertyValue);
@@ -252,8 +255,9 @@ public class SetMetaPropertyCommand extends Command {
 	private void clearOldSemanticTypeLink(Link oldIncomingLinkToColumnNode,
 			Node oldDomainNode, Alignment alignment, Node newDomainNode) {
 		alignment.removeLink(oldIncomingLinkToColumnNode.getId());
-		if (oldDomainNode != newDomainNode)
+		if (oldDomainNode != newDomainNode){
 			alignment.removeNode(oldDomainNode.getId());
+		}
 	}
 
 	@Override

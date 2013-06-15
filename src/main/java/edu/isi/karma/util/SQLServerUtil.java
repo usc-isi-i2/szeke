@@ -49,8 +49,9 @@ public class SQLServerUtil extends AbstractJDBCUtil {
 		//Pedro: 2012/12/03 comment out to enable loading Views in Karma (on behalf of Maria)
 		//ResultSet rs = dmd.getTables(null, null, null, new String[] {"TABLE"});
 		ResultSet rs = dmd.getTables(null, null, null, new String[] {"TABLE","VIEW"});
-		while (rs.next())
+		while (rs.next()){
 			tableNames.add(rs.getString(3));
+		}
 		Collections.sort(tableNames);
 		return tableNames;
 	}

@@ -78,8 +78,9 @@ public class PatternContainment {
 		
 		Set<String> sharedLinks = Sets.intersection(mainLinks.keySet(), newLinks.keySet());
 		for (String key : sharedLinks) {
-			if (mainLinks.get(key).size() != newLinks.get(key).size())
+			if (mainLinks.get(key).size() != newLinks.get(key).size()){
 				return false;
+			}
 		}
 		
 		if (sharedLinks.size() == newLinks.keySet().size()) {

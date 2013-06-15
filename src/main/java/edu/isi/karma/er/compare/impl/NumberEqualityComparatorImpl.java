@@ -13,8 +13,9 @@ public class NumberEqualityComparatorImpl implements NumberComparator {
 	}
 	
 	public double getSimilarity(Number a, Number b) {
-		if (a.intValue() == b.intValue()) 
+		if (a.intValue() == b.intValue()){
 			return 1;
+		}
 		return 0; 
 	}
 

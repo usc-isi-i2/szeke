@@ -73,16 +73,18 @@ public class RequestController extends HttpServlet{
 					} catch (CommandException e) {
 						logger.error("Error occured while executing command: " + currentCommand.getCommandName(), e);
 					}
-				} else
+				}else{
 					responseString = ((CommandWithPreview) currentCommand).handleUserActions(request)
 							.generateJson(ctrl.getvWorkspace());
+				}
 			}
 		} else {
 			Command command = ctrl.getCommand(request);
-			if(command != null)
+			if(command != null){
 				responseString = ctrl.invokeCommand(command);
-			else
+			}else{
 				logger.error("Error occured while creating command (Could not create Command object): " + request.getParameter("command"));
+			}
 		}
 		
 		response.setCharacterEncoding("UTF-8");

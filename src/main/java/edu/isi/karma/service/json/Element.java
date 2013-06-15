@@ -42,8 +42,9 @@ public class Element {
 	}
 	public String getLocalName(int depth) {
 		String result = "";
-		if (valueType == ValueType.SINGLE)
+		if (valueType == ValueType.SINGLE){
 			result += "d=" + depth + ",k=" + getKey() + ",v=" + ((SingleValue)getValue()).getValueString();
+		}
 		return result;
 	}
 	public String getFullPath() {
@@ -54,8 +55,9 @@ public class Element {
 	}
 	public String getKey() {
 		// to remove @ in front of keys in process of converting xml to json
-		if (key.startsWith("@"))
+		if (key.startsWith("@")){
 			key = key.substring(1);
+		}
 		return key.trim();
 	}
 	public void setKey(String key) {
@@ -80,8 +82,9 @@ public class Element {
     
     private void print(Element root, int depth) {
     	String tabs = "";
-    	for (int i = 0; i < depth; i++)
-    		tabs += "\t";
+    	for (int i = 0; i < depth; i++){
+			tabs += "\t";
+		}
     	System.out.println(tabs + "name:" + root.key);
     	System.out.print(tabs + "value:");
 
@@ -90,8 +93,9 @@ public class Element {
     		System.out.println();
     	} else {
     		System.out.println();
-    		for (int i = 0; i < ((ArrayValue)root.value).getElements().size(); i++)
-    			print(((ArrayValue)root.value).getElements().get(i), depth + 1);
+    		for (int i = 0; i < ((ArrayValue)root.value).getElements().size(); i++){
+				print(((ArrayValue)root.value).getElements().get(i), depth + 1);
+			}
     	}
     }
 
@@ -100,12 +104,14 @@ public class Element {
     }
     
     private void computeFullPaths(Element root, List<String> result) {
-    	if (root.getFullPath().length() > 0) 
-    		result.add(root.getFullPath());
+    	if (root.getFullPath().length() > 0){
+			result.add(root.getFullPath());
+		}
     	if (root.valueType == ValueType.SINGLE) {
     	} else {
-    		for (int i = 0; i < ((ArrayValue)root.value).getElements().size(); i++)
-    			computeFullPaths(((ArrayValue)root.value).getElements().get(i), result);
+    		for (int i = 0; i < ((ArrayValue)root.value).getElements().size(); i++){
+				computeFullPaths(((ArrayValue)root.value).getElements().get(i), result);
+			}
     	}
     }
 
@@ -115,16 +121,18 @@ public class Element {
     
     private void updateHeaders(Element root, String prefix) {
     	if (prefix.trim().length() > 0) {
-    		if (root.key.trim().length() > 0)
-    			root.key = prefix + ":" + root.key;
-    		else
-    			root.key = prefix;
+    		if (root.key.trim().length() > 0){
+				root.key = prefix + ":" + root.key;
+			}else{
+				root.key = prefix;
+			}
     	}
     	if (root.valueType == ValueType.SINGLE) {
     		return;
     	} else {
-			for (Element children : ((ArrayValue)root.getValue()).getElements()) 
+			for (Element children : ((ArrayValue)root.getValue()).getElements()){
 				updateHeaders(children, root.key);
+			}
     	}
     }
     
@@ -168,8 +176,9 @@ public class Element {
 		    		unionT.cartesianProductOrUnionIfSameHeaders(innerT);
 				}
 			}
-			if (unionT.getColumnsCount() > 0)
+			if (unionT.getColumnsCount() > 0){
 				t.cartesianProductOrUnionIfSameHeaders(unionT);
+			}
 		}
     }
     
@@ -182,8 +191,9 @@ public class Element {
     	if (root.valueType == ValueType.ARRAY && ((ArrayValue)root.getValue()).getElements().size() <= 1) {
     		while (true) {
 	    		
-    			if (((ArrayValue)root.getValue()).getElements().size() > 1) 
-	    			break;
+    			if (((ArrayValue)root.getValue()).getElements().size() > 1){
+					break;
+				}
 	    		
     			if (((ArrayValue)root.getValue()).getElements().size() == 0) {
 //    				if (root.getParent() != null)
@@ -196,12 +206,14 @@ public class Element {
 				root.setValue(e.getValue());
 				root.setValueType(e.getValueType());
 				root.setKey(e.getKey());
-				if (e.valueType == ValueType.SINGLE) 
+				if (e.valueType == ValueType.SINGLE){
 					return;
+				}
     		}
     	}
-    	if (root.valueType == ValueType.SINGLE)
-    		return;
+    	if (root.valueType == ValueType.SINGLE){
+			return;
+		}
     	
     	for (int i = 0; i < ((ArrayValue)root.value).getElements().size(); i++) { 
 			moveUpOneValueElements(((ArrayValue)root.value).getElements().get(i));

@@ -1061,7 +1061,9 @@ public class DomainModelLexer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt4 >= 1 ) break loop4;
+            	    if ( cnt4 >= 1 ){
+						break loop4;
+					}
                         EarlyExitException eee =
                             new EarlyExitException(4, input);
                         throw eee;
@@ -1092,7 +1094,9 @@ public class DomainModelLexer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt5 >= 1 ) break loop5;
+            	    if ( cnt5 >= 1 ){
+						break loop5;
+					}
                         EarlyExitException eee =
                             new EarlyExitException(5, input);
                         throw eee;
@@ -1141,7 +1145,9 @@ public class DomainModelLexer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt6 >= 1 ) break loop6;
+            	    if ( cnt6 >= 1 ){
+						break loop6;
+					}
                         EarlyExitException eee =
                             new EarlyExitException(6, input);
                         throw eee;

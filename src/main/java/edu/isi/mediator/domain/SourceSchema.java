@@ -49,8 +49,9 @@ public class SourceSchema{
 	
 	public void addAttribute(SourceAttribute sa){
 		attrs.add(sa);
-		if(sa.needsBinding())
+		if(sa.needsBinding()){
 			needsBinding=true;
+		}
 	}
 	
 	public String getName(){
@@ -60,9 +61,9 @@ public class SourceSchema{
 	public String getSQLName(){
 		if(hasIllegalChars){
 			return "`" + name.replaceAll(MediatorConstants.ILLEGAR_CHARS," ") + "`";
-		}
-		else
+		}else{
 			return name;
+		}
 	}
 
 	public ArrayList<SourceAttribute> getAttrs(){
@@ -70,9 +71,11 @@ public class SourceSchema{
 	}
 	
 	public void setType(String type){
-		if(type.equals("function"))
+		if(type.equals("function")){
 			this.type=MediatorConstants.FUNCTION;
-		else this.type=MediatorConstants.OGSADQP;
+		}else{
+			this.type=MediatorConstants.OGSADQP;
+		}
 	}
 	
 	public String getType(){
@@ -90,8 +93,9 @@ public class SourceSchema{
 	public String getFirstFreeAttr(){
 		for(int i=0; i<attrs.size(); i++){
 			SourceAttribute a = attrs.get(i);
-			if(!a.needsBinding())
+			if(!a.needsBinding()){
 				return a.getName();
+			}
 		}
 		return null;
 	}
@@ -99,8 +103,9 @@ public class SourceSchema{
 	public int getFirstFreeAttrPosition(){
 		for(int i=0; i<attrs.size(); i++){
 			SourceAttribute a = attrs.get(i);
-			if(!a.needsBinding())
+			if(!a.needsBinding()){
 				return i;
+			}
 		}
 		return -1;
 	}
@@ -109,7 +114,9 @@ public class SourceSchema{
 		String s = "";
 		s += name + "(";
 		for(int i=0; i<attrs.size(); i++){
-			if(i>0) s += ",";
+			if(i>0){
+				s += ",";
+			}
 			s += attrs.get(i).toString();
 		}
 		s+= ")";

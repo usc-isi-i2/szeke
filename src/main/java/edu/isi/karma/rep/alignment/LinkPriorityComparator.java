@@ -33,13 +33,21 @@ public class LinkPriorityComparator implements Comparator<Link> {
 	}
 
 	private String getPriority(LinkPriorityType priorityType) {
-		if (priorityType == LinkPriorityType.DirectDataProperty) return "0";
-		else if (priorityType == LinkPriorityType.IndirectObjectProperty) return "1";
-		else if (priorityType == LinkPriorityType.ObjectPropertyWithOnlyDomain) return "2";
-		else if (priorityType == LinkPriorityType.ObjectPropertyWithOnlyRange) return "2";
-		else if (priorityType == LinkPriorityType.SubClassOf) return "3";
-		else if (priorityType == LinkPriorityType.ObjectPropertyWithoutDomainAndRange) return "4";
-		else return "5";
+		if (priorityType == LinkPriorityType.DirectDataProperty){
+			return "0";
+		}else if (priorityType == LinkPriorityType.IndirectObjectProperty){
+			return "1";
+		}else if (priorityType == LinkPriorityType.ObjectPropertyWithOnlyDomain){
+			return "2";
+		}else if (priorityType == LinkPriorityType.ObjectPropertyWithOnlyRange){
+			return "2";
+		}else if (priorityType == LinkPriorityType.SubClassOf){
+			return "3";
+		}else if (priorityType == LinkPriorityType.ObjectPropertyWithoutDomainAndRange){
+			return "4";
+		}else{
+			return "5";
+		}
 	}
 
 }

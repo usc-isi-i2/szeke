@@ -78,8 +78,9 @@ public class SchemaParser {
 		}
 
 		//check if it is a function
-		if(functions.contains(source.getText()))
+		if(functions.contains(source.getText())){
 			ss.setType(MediatorConstants.FUNCTION);
+		}
 
 		return ss;
 	}
@@ -100,15 +101,17 @@ public class SchemaParser {
 			name=name.substring(1, name.length()-1);
 		}
 		
-		if(attr.getChildCount()!=2)
+		if(attr.getChildCount()!=2){
 			throw(new MediatorException("Attribute definition for SourceSchema is incorrect " + attr.toStringTree()));
+		}
 		String type = attr.getChild(0).getText();
 		String binding = attr.getChild(1).getText();
 		
 		//System.out.println("name=" + name + " type=" + type + " binding=" + binding);
 		
-		if(!binding.toUpperCase().equals(MediatorConstants.BOUND) && !binding.toUpperCase().equals(MediatorConstants.FREE))
+		if(!binding.toUpperCase().equals(MediatorConstants.BOUND) && !binding.toUpperCase().equals(MediatorConstants.FREE)){
 			throw(new MediatorException("Binding can be only b|f " + attr.toStringTree()));
+		}
 		
 		SourceAttribute sa = new SourceAttribute(name, type.toUpperCase(), binding.toUpperCase());
 		return sa;
@@ -163,8 +166,9 @@ public class SchemaParser {
 			name=name.substring(1, name.length()-1);
 		}
 		
-		if(attr.getChildCount()!=1)
+		if(attr.getChildCount()!=1){
 			throw(new MediatorException("Attribute definition for DomainSchema is incorrect " + attr.toStringTree()));
+		}
 		String type = attr.getChild(0).getText();
 		
 		DomainAttribute sa = new DomainAttribute(name, type.toUpperCase());

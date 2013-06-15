@@ -93,8 +93,9 @@ public class CRFColumnModel implements Jsonizable {
 			if(label.contains("|")){
 				Label domainURI = ontMgr.getUriLabel(label.split("\\|")[0]);
 				Label typeURI = ontMgr.getUriLabel(label.split("\\|")[1]);
-				if(domainURI == null || typeURI == null)
+				if(domainURI == null || typeURI == null){
 					continue;
+				}
 				
 				String clazzLocalNameWithPrefix = domainURI.getDisplayName();
 				
@@ -109,24 +110,28 @@ public class CRFColumnModel implements Jsonizable {
 						if (steinerTreeNodeIds.contains(domainURI.getUri() + (graphLastIndex))) {
 							insertSemanticTypeSuggestion(arr, clazzLocalNameWithPrefix + i, domainURI.getUri() + i, 
 									typeURI.getDisplayName(), label.split("\\|")[1], probability);
-							if (i == graphLastIndex)
+							if (i == graphLastIndex){
 								hasLastNodeFromSteinerTree = true;
+							}
 						} else {
 							Node graphNode = alignment.getNodeById(domainURI.getUri() + i);
-							if (graphNode != null)
+							if (graphNode != null){
 								insertSemanticTypeSuggestion(arr, clazzLocalNameWithPrefix + i + " (add)", graphNode.getId(), 
 									typeURI.getDisplayName(), label.split("\\|")[1], probability);
+							}
 						}
 					}
 					// Add an option to add one more node for the domain
-					if (hasLastNodeFromSteinerTree)
+					if (hasLastNodeFromSteinerTree){
 						insertSemanticTypeSuggestion(arr, clazzLocalNameWithPrefix + (graphLastIndex+1) + " (add)", domainURI.getUri(), 
 							typeURI.getDisplayName(), label.split("\\|")[1], probability);
+					}
 				}
 			} else {
 				Label typeURI = ontMgr.getUriLabel(label);
-				if(typeURI == null)
+				if(typeURI == null){
 					continue;
+				}
 				
 				String clazzLocalNameWithPrefix = typeURI.getDisplayName();
 				
@@ -140,13 +145,15 @@ public class CRFColumnModel implements Jsonizable {
 							insertSemanticTypeSuggestion(arr, "", "", clazzLocalNameWithPrefix + i, typeURI.getUri() + i, probability);
 						} else {
 							Node graphNode = alignment.getNodeById(typeURI.getUri() + i);
-							if (graphNode != null)
+							if (graphNode != null){
 								insertSemanticTypeSuggestion(arr, "", "", clazzLocalNameWithPrefix + i + " (add)", graphNode.getId(), probability);
+							}
 						}
 					}
 					// Add an option to add one more node for the domain
-					if (hasLastNodeFromSteinerTree)
+					if (hasLastNodeFromSteinerTree){
 						insertSemanticTypeSuggestion(arr, "", "", clazzLocalNameWithPrefix + (graphLastIndex+1) + " (add)", typeURI.getUri(), probability);
+					}
 				}
 			}
 		}

@@ -50,8 +50,9 @@ public class paperFigures {
 
 		org.kohsuke.graphviz.Graph gViz = new org.kohsuke.graphviz.Graph();
 
-		if (model == null)
+		if (model == null){
 			return gViz;
+		}
 
 		org.kohsuke.graphviz.Style internalNodeStyle = new org.kohsuke.graphviz.Style();
 //		internalNodeStyle.attr("shape", "circle");
@@ -108,7 +109,10 @@ public class paperFigures {
 			String id = source.getId();
 			String uri = source.getLabel().getUri();
 			String label = (uri == null?id:uri);
-			if (source instanceof ColumnNode) label = "";// ((ColumnNode)source).getColumnName();
+			if (source instanceof ColumnNode)
+			 {
+				label = "";// ((ColumnNode)source).getColumnName();
+			}
 			if (n == null) {
 				n = new org.kohsuke.graphviz.Node();
 				n.attr("label", label);
@@ -118,12 +122,13 @@ public class paperFigures {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (source instanceof ColumnNode)  // attribute
+				if (source instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (source instanceof LiteralNode)  // literal
+				}else if (source instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -132,7 +137,10 @@ public class paperFigures {
 			id = target.getId();
 			uri = target.getLabel().getUri();
 			label = (uri == null?id:uri);
-			if (target instanceof ColumnNode) label = "";//((ColumnNode)target).getColumnName();
+			if (target instanceof ColumnNode)
+			 {
+				label = "";//((ColumnNode)target).getColumnName();
+			}
 			if (n == null) {
 				n = new org.kohsuke.graphviz.Node();
 				n.attr("label", label);
@@ -142,12 +150,13 @@ public class paperFigures {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (target instanceof ColumnNode)  // attribute
+				if (target instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (target instanceof LiteralNode)  // literal
+				}else if (target instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -158,15 +167,18 @@ public class paperFigures {
 			
 			label = (uri == null?id:uri);
 			if (e instanceof SubClassLink)
+			 {
 				label = "";//"subClassOf";
+			}
 			edge.attr("label", label);
 			
-			if (e instanceof SubClassLink)
+			if (e instanceof SubClassLink){
 				gViz.edgeWith(subClassLinkStyle);
-			else if (e instanceof DataPropertyLink)
+			}else if (e instanceof DataPropertyLink){
 				gViz.edgeWith(dataPropertyLinkStyle);
-			else
+			}else{
 				gViz.edgeWith(objectPropertyLinkStyle);
+			}
 
 			gViz.edge(edge);
 		}

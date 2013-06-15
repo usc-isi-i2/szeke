@@ -81,17 +81,19 @@ public class LargeNumber {
 		double m ;
 		int e ;
 
-		if(n1.mantissa == 0.0)
+		if(n1.mantissa == 0.0){
 			return n2 ;
-		else if(n2.mantissa == 0.0)
+		}else if(n2.mantissa == 0.0){
 			return n1 ;
+		}
 
 		if(Math.abs(n1.exp - n2.exp) > 300 && n1.mantissa != 0.0 && n2.mantissa != 0.0) {
 			//Prn.prn("The difference between the exponentials is more than 300. n1 = " + n1 + " and n2 = " + n2) ;
-			if(n1.exp > n2.exp)
+			if(n1.exp > n2.exp){
 				return n1 ;
-			else
+			}else{
 				return n2 ;
+			}
 		}
 
 		if(n1.exp > n2.exp) {
@@ -180,9 +182,9 @@ public class LargeNumber {
 	static public double divide(LargeNumber ln1, LargeNumber ln2) {
 		double m = ln1.mantissa / ln2.mantissa ;
 		int e = ln1.exp - ln2.exp ;
-		if(e <= -300)
+		if(e <= -300){
 			return 0.0 ;
-		else {
+		}else {
 			double d = m * Math.pow(10, e) ;
 			return d ;
 		}
@@ -196,8 +198,9 @@ public class LargeNumber {
 	}
 
 	static public double log(LargeNumber ln) {
-		if(ln.mantissa == 0.0)
+		if(ln.mantissa == 0.0){
 			Prnt.endIt("Zero passed to LargeNumber.log") ;
+		}
 
 		double log = Math.log(ln.mantissa) + ln.exp * Math.log(10) ;
 		return log ;
@@ -206,16 +209,18 @@ public class LargeNumber {
 	static public double log10(LargeNumber ln) {
 		double value = 0.0 ;
 		
-		if(ln.mantissa < 0)
+		if(ln.mantissa < 0){
 			Prnt.endIt("Attemping to take log10 of a negative number. Quiting.") ;
+		}
 		
 		value = Math.log10(ln.mantissa) + ln.exp ;
 		return value ;
 	}
 	
 	private void normalize() {
-		if(mantissa >= 1.0 && mantissa < 10.0)
+		if(mantissa >= 1.0 && mantissa < 10.0){
 			return ;
+		}
 
 		double exp_of_mantissa = Math.log10(mantissa) ;
 		double floor_of_exp_of_mantissa = Math.floor(exp_of_mantissa) ;
@@ -232,14 +237,15 @@ public class LargeNumber {
 			setValue(largeNumber2) ;
 			return ;
 		}
-		else if(largeNumber2.mantissa == 0.0)
+		else if(largeNumber2.mantissa == 0.0){
 			return ;
+		}
 
 		if(Math.abs(this.exp - largeNumber2.exp) > 300 && this.mantissa != 0.0 && largeNumber2.mantissa != 0.0) {
 			//Prn.prn("The difference between the exponentials is more than 300. n1 = " + this + " and n2 = " + largeNumber2) ;
-			if(this.exp > largeNumber2.exp)
+			if(this.exp > largeNumber2.exp){
 				return ;
-			else {
+			}else {
 				setValue(largeNumber2) ;
 				return ;
 			}

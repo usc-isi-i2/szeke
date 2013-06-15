@@ -222,14 +222,16 @@ public class SemanticTypesUpdate extends AbstractUpdate {
 		// Check for the case of DataPropertyOfColumnLink and ColumnSubClassLink
 		boolean case1 =  (type.getUri().equals(DataPropertyOfColumnLink.getFixedLabel().getUri()) 
 				|| type.getUri().equals(ColumnSubClassLink.getFixedLabel().getUri()));
-		if (case1)
+		if (case1){
 			return true;
+		}
 		Set<Link> incomingLinks = alignment.getCurrentLinksToNode(alignmentColumnNode.getId());
 		if (incomingLinks != null && !incomingLinks.isEmpty()) {
 			Link incomingLink = incomingLinks.iterator().next();
 			if (incomingLink != null && (incomingLink instanceof ClassInstanceLink) 
-					&& incomingLink.getKeyType().equals(LinkKeyInfo.UriOfInstance))
+					&& incomingLink.getKeyType().equals(LinkKeyInfo.UriOfInstance)){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -237,8 +239,9 @@ public class SemanticTypesUpdate extends AbstractUpdate {
 	private Map<String, InternalNode> createDomainNodeMap() {
 		Map<String, InternalNode> hNodeIdToDomainNodeMap = new HashMap<String, InternalNode>();
 		List<Node> alignmentColumnNodes = alignment.getNodesByType(NodeType.ColumnNode);
-		if (alignmentColumnNodes == null)
+		if (alignmentColumnNodes == null){
 			return hNodeIdToDomainNodeMap;
+		}
 		for (Node cNode : alignmentColumnNodes) {
 			Set<Link> incomingLinks = alignment.getCurrentLinksToNode(cNode.getId());
 			if (incomingLinks != null && !incomingLinks.isEmpty()) {
@@ -256,8 +259,9 @@ public class SemanticTypesUpdate extends AbstractUpdate {
 	private Map<String, ColumnNode> createColumnNodeMap() {
 		List<Node> alignmentColumnNodes = alignment.getNodesByType(NodeType.ColumnNode);
 		Map<String, ColumnNode> hNodeIdToColumnNodeMap = new HashMap<String, ColumnNode>();
-		if (alignmentColumnNodes == null)
+		if (alignmentColumnNodes == null){
 			return hNodeIdToColumnNodeMap;
+		}
 		for (Node cNode : alignmentColumnNodes) {
 			ColumnNode columnNode = (ColumnNode) cNode;
 			hNodeIdToColumnNodeMap.put(columnNode.getHNodeId(), columnNode);

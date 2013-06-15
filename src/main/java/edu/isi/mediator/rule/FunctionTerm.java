@@ -81,9 +81,9 @@ public class FunctionTerm extends Term{
 	 * @throws MediatorException
 	 */
 	public void setFunction(FunctionPredicate p) throws MediatorException{
-		if(function==null)
+		if(function==null){
 			function=p;
-		else{
+		}else{
 			//a variable can be assigned only to one function
 			throw new MediatorException("A variable can be assigned only to one function var=" + var);
 		}
@@ -123,11 +123,14 @@ public class FunctionTerm extends Term{
 	 */
 	public boolean equals(Term t){
 		//System.out.println("Equal term : " + this + " and " + t);
-		if(!(t instanceof FunctionTerm))
+		if(!(t instanceof FunctionTerm)){
 			return false;
-		if(function.equals(((FunctionTerm)t).function))
-				return true;
-		else return false;
+		}
+		if(function.equals(((FunctionTerm)t).function)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -136,8 +139,9 @@ public class FunctionTerm extends Term{
 	 * returns true if the {@link edu.isi.mediator.gav.domain.FunctionPredicate} needs binding and false otherwise. 
 	 */
 	public boolean needsBinding(boolean b){
-		if(b==true) return true;
-		else{
+		if(b==true){
+			return true;
+		}else{
 			//if this function needs bindings => return true, else false
 			return function.needsBinding();
 		}
@@ -158,10 +162,12 @@ public class FunctionTerm extends Term{
 	 */
 	public String toString(){
 		String s = "";
-		if(var!=null)
+		if(var!=null){
 			s += var + ":";
-		if(queryName!=null)
+		}
+		if(queryName!=null){
 			s += queryName + ":";
+		}
 		s+=function.toString();
 		return s;
 	}

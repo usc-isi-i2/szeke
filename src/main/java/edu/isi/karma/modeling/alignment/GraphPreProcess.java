@@ -60,11 +60,13 @@ public class GraphPreProcess {
 		
 		logger.debug("<enter");
 
-		if (linksPreferredByUI != null) 
-			for (Link link : linksPreferredByUI) 
+		if (linksPreferredByUI != null){
+			for (Link link : linksPreferredByUI){
 				gPrime.setEdgeWeight(link, ModelingParams.PROPERTY_UI_PREFERRED_WEIGHT);
+			}
+		}
 				
-		if (linksForcedByUser != null) 
+		if (linksForcedByUser != null){
 			for (Link link : linksForcedByUser) {
 				
 //				// removing all the links to target
@@ -79,7 +81,8 @@ public class GraphPreProcess {
 //				gPrime.addEdge(link.getSource(), link.getTarget(), link);
 				
 				gPrime.setEdgeWeight(link, ModelingParams.PROPERTY_USER_PREFERRED_WEIGHT);
-			}			
+			}
+		}			
 
 		logger.debug("exit>");
 //		GraphUtil.printGraph(gPrime);

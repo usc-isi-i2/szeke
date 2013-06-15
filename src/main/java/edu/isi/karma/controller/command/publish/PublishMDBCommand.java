@@ -84,9 +84,10 @@ public class PublishMDBCommand extends Command {
 
 		try {
 			final String csvFileName = csvFileExport.publishCSV();
-			if(csvFileName == null)
+			if(csvFileName == null){
 				return new UpdateContainer(new ErrorUpdate(
 						"No data to export! Have you aligned the worksheet?"));
+			}
 			final String fileName = mdbFileExport.publishMDB(csvFileName);
 
 			return new UpdateContainer(new AbstractUpdate() {

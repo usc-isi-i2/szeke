@@ -51,8 +51,9 @@ public class GraphUtil {
 		}
 		
 		String s = node.getClass().getName();
-		if (s.indexOf(".") != -1)
+		if (s.indexOf(".") != -1){
 			s = s.substring(s.lastIndexOf(".") + 1);
+		}
     	return s;
 	}
 
@@ -64,8 +65,9 @@ public class GraphUtil {
 		}
 		
 		String s = link.getClass().getName();
-		if (s.indexOf(".") != -1)
+		if (s.indexOf(".") != -1){
 			s = s.substring(s.lastIndexOf(".") + 1);
+		}
     	return s;
 	}
 	
@@ -80,10 +82,11 @@ public class GraphUtil {
     	System.out.print( node.getLocalId());
 //    	System.out.print( vertex.getID());
     	System.out.print(", ");
-		if (node instanceof ColumnNode)
+		if (node instanceof ColumnNode){
 			System.out.print( ((ColumnNode)node).getColumnName());
-		else
+		}else{
 			System.out.print(node.getLabel().getLocalName());
+		}
     	System.out.print(", ");
     	System.out.print(getNodeTypeString(node));
     	System.out.print(")");
@@ -119,11 +122,13 @@ public class GraphUtil {
 
 		DirectedGraph<Node, Link> g = new DirectedWeightedMultigraph<Node, Link>(Link.class);
 		
-		for (Node v : undirectedGraph.vertexSet())
+		for (Node v : undirectedGraph.vertexSet()){
 			g.addVertex(v);
+		}
 		
-		for (Link e: undirectedGraph.edgeSet())
+		for (Link e: undirectedGraph.edgeSet()){
 			g.addEdge(e.getSource(), e.getTarget(), e);
+		}
 		
 		return g;
 	}
@@ -158,10 +163,11 @@ public class GraphUtil {
 
 		for (Link edge : graph.edgeSet()) {
 			System.out.print("(");
-			if (edge.getSource() instanceof ColumnNode)
+			if (edge.getSource() instanceof ColumnNode){
 				System.out.print(edge.getSource().getLocalId() + "-" + ((ColumnNode)edge.getSource()).getColumnName());
-			else
+			}else{
 				System.out.print(edge.getSource().getLocalId());
+			}
 			System.out.print(")");
 			System.out.print(" - ");
 			System.out.print("(");
@@ -169,10 +175,11 @@ public class GraphUtil {
 			System.out.print(")");
 			System.out.print(" - ");
 			System.out.print("(");
-			if (edge.getTarget() instanceof ColumnNode)
+			if (edge.getTarget() instanceof ColumnNode){
 				System.out.print(edge.getTarget().getLocalId() + "-" + ((ColumnNode)edge.getTarget()).getColumnName());
-			else
+			}else{
 				System.out.print(edge.getTarget().getLocalId());
+			}
 			System.out.print(")");
 			System.out.print(" - w=" + edge.getWeight());
 			System.out.println();
@@ -192,8 +199,9 @@ public class GraphUtil {
 
 		DirectedWeightedMultigraph<Node, Link> rootedTree = 
 				(DirectedWeightedMultigraph<Node, Link>)tree.clone();
-		if (reversedLinks == null)
+		if (reversedLinks == null){
 			reversedLinks = new HashSet<String>();
+		}
 		treeToRootedTree(rootedTree, root, null, reversedLinks);
 		return rootedTree;
 	}
@@ -225,16 +233,18 @@ public class GraphUtil {
         Object obj  = in.readObject();
         in.close();
         
-        if (obj instanceof DirectedWeightedMultigraph<?, ?>)
-        	return (DirectedWeightedMultigraph<Node, Link>)obj;
-        else 
-        	return null;
+        if (obj instanceof DirectedWeightedMultigraph<?, ?>){
+			return (DirectedWeightedMultigraph<Node, Link>)obj;
+		}else{
+			return null;
+		}
 	}
 
 	private static void treeToRootedTree(DirectedWeightedMultigraph<Node, Link> tree, Node node, Link e, Set<String> reversedLinks) {
 		
-		if (node == null)
+		if (node == null){
 			return;
+		}
 		
 		Node source, target;
 		
@@ -247,8 +257,9 @@ public class GraphUtil {
 				target = inLink.getTarget();
 				
 				// don't remove the incoming link from parent to this node
-				if (e != null && inLink.equals(e))
+				if (e != null && inLink.equals(e)){
 					continue;
+				}
 				
 				// removeEdge method should always be called before addEdge because the new edge has the same id
 				// and JGraph does not add the duplicate link
@@ -265,8 +276,9 @@ public class GraphUtil {
 
 		Set<Link> outgoingLinks = tree.outgoingEdgesOf(node);
 
-		if (outgoingLinks == null)
+		if (outgoingLinks == null){
 			return;
+		}
 		
 		
 		for (Link outLink : outgoingLinks) {

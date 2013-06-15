@@ -34,13 +34,15 @@ import edu.isi.karma.rep.Worksheet;
 
 public class PythonTransformationHelper {
 	public String getPyObjectValueAsString(PyObject obj) {
-		if (obj == null)
+		if (obj == null){
 			return "";
+		}
 		PyType type = obj.getType();
-		if (type.getName().equals("long"))
+		if (type.getName().equals("long")){
 			return Long.toString(obj.asLong());
-		else if (type.getName().equals("int"))
+		}else if (type.getName().equals("int")){
 			return Integer.toString(obj.asInt());
+		}
 		
 		return obj.asString();
 	}
@@ -60,8 +62,9 @@ public class PythonTransformationHelper {
 		Collection<HNode> hNodes = worksheet.getHeaders().getHNodes();
 		List<String> propertyNames = new ArrayList<String>();
 		for (HNode hNode: hNodes) {
-			if (hNode.hasNestedTable())
+			if (hNode.hasNestedTable()){
 				continue;
+			}
 			String propertyName = normalizeString(hNode.getColumnName());
 			normalizedColumnNamesMap.put(hNode.getColumnName(), propertyName);
 			pyClass.append("," + propertyName);
@@ -95,8 +98,9 @@ public class PythonTransformationHelper {
 		dictStmt.append("columnNameMap = {");
 		int counter = 0;
 		for (String columnName:columnNameMap.keySet()) {
-			if (counter != 0)
+			if (counter != 0){
 				dictStmt.append(",");
+			}
 			dictStmt.append("\"" + columnName + "\":\"" + columnNameMap.get(columnName) + "\"");
 			counter++;
 		}

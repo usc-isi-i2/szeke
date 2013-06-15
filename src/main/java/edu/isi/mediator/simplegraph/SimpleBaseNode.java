@@ -73,14 +73,17 @@ public abstract class SimpleBaseNode
     	
     	String sql="";
     	sql += "select " + distinctToken + " " +sqlSelect.toString().substring(1,sqlSelect.toString().length()-1)+" from "+ sqlFrom.toString().substring(1,sqlFrom.toString().length()-1)+" ";
-    	if (sqlWhere.size()>0)
-    		sql += " where ";
+    	if (sqlWhere.size()>0){
+			sql += " where ";
+		}
     	for (int j=0;j<sqlWhere.size();j++)
     	{
     		String nextSelect = (String)sqlWhere.get(j);
     		//System.out.println("next select ..." + nextSelect + "\n SQL so far:" + sql);
     		if(sql.indexOf(nextSelect)<0){
-    			if (j>0) sql += " and ";
+    			if (j>0){
+					sql += " and ";
+				}
     			//insert if not there
     			sql += nextSelect;
     		}
@@ -99,7 +102,9 @@ public abstract class SimpleBaseNode
     	for(int i=0; i<allDan.size(); i++){
     		SimpleDataAccessNode dan = allDan.get(i);
     		sAttr = dan.getSourceAttribute(attr);
-    		if(sAttr!=null) return sAttr;
+    		if(sAttr!=null){
+				return sAttr;
+			}
     	}
     	
     	return sAttr;
@@ -114,8 +119,9 @@ public abstract class SimpleBaseNode
     		String oneSelect = sqlSelect.get(i);
     		//I want to make sure that I match with EXACTLY that attr name (that's why I have the " " at the end
     		int ind = oneSelect.indexOf(" as " + attr + " ");
-    		if(ind>0)
-    			return oneSelect.substring(0, ind);
+    		if(ind>0){
+				return oneSelect.substring(0, ind);
+			}
     	}
     	//attr not found
 		throw new MediatorException("Attribute " + attr + " not found in " + sqlSelect);
@@ -129,10 +135,12 @@ public abstract class SimpleBaseNode
     	ArrayList<Term> terms = p.getTerms();
     	for(int k=0; k<terms.size(); k++){
     		Term t = terms.get(k);
-    		if(k!=0) actualName += ",";
-    		if(t instanceof FunctionTerm)
-    			actualName += getActualName(t.getFunction());
-    		else if(t instanceof ConstTerm){
+    		if(k!=0){
+				actualName += ",";
+			}
+    		if(t instanceof FunctionTerm){
+				actualName += getActualName(t.getFunction());
+			}else if(t instanceof ConstTerm){
     			SourceAttribute sa = p.getSourceAttribute(k);
 				actualName += t.getSqlVal(sa.isNumber());
     		}
@@ -159,8 +167,9 @@ public abstract class SimpleBaseNode
     		if(ind>0){
     			String varWithTable = oneSelect.substring(0, ind);
     	    	ind = varWithTable.indexOf(".");
-    	    	if(ind>0 && ind+1<varWithTable.length()-1) 
-    	    		allAttr.add(varWithTable.substring(ind+1));
+    	    	if(ind>0 && ind+1<varWithTable.length()-1){
+					allAttr.add(varWithTable.substring(ind+1));
+				}
     		}
     	}
     	return allAttr;
@@ -175,21 +184,29 @@ public abstract class SimpleBaseNode
     		for(int i=0; i<joinAttributes.size(); i++){
     			String joinAttr = joinAttributes.get(i);
     			int ind = oneSelect.indexOf(" as " + joinAttr +" ");
-    			if(ind>0) addSelect = false; 
+    			if(ind>0){
+					addSelect = false;
+				} 
     		}
-    		if(addSelect) newSelect.add(oneSelect);
+    		if(addSelect){
+				newSelect.add(oneSelect);
+			}
     	}
     	return newSelect;
     }
     
     public void getDataAccessNodes(ArrayList<SimpleDataAccessNode> dan){
     	ArrayList<SimpleBaseNode> nodes = getSubNodes();
-    	if(nodes==null) return;
+    	if(nodes==null){
+			return;
+		}
     	for(int i=0; i<nodes.size(); i++){
     		SimpleBaseNode pn = (SimpleBaseNode)nodes.get(i);
-    		if(pn instanceof SimpleDataAccessNode)
-    			dan.add((SimpleDataAccessNode)pn);
-    		else pn.getDataAccessNodes(dan);
+    		if(pn instanceof SimpleDataAccessNode){
+				dan.add((SimpleDataAccessNode)pn);
+			}else{
+				pn.getDataAccessNodes(dan);
+			}
     	}
     }
     

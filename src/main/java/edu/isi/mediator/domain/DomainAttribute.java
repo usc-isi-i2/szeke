@@ -63,12 +63,13 @@ public class DomainAttribute{
 		if(name.contains(MediatorInstance.ILLEGAR_CHARS))
 			hasIllegalChars=true;
 */
-		if(type.equals("STRING"))
+		if(type.equals("STRING")){
 			this.type=AttrType.STRING;
-		else if(type.equals("NUMBER"))
+		}else if(type.equals("NUMBER")){
 			this.type=AttrType.NUMBER;
-		else
+		}else{
 			this.type=AttrType.OTHER;
+		}
 	}
 
 	/**
@@ -85,9 +86,9 @@ public class DomainAttribute{
 	public String getSQLName(){
 		if(hasIllegalChars){
 			return "`" + name.replaceAll(MediatorConstants.ILLEGAR_CHARS," ") + "`";
-		}
-		else
+		}else{
 			return name;
+		}
 	}
 
 	/**
@@ -98,8 +99,9 @@ public class DomainAttribute{
 	public boolean isNumber(){
 		if(type.equals(AttrType.NUMBER)){
 			return true;
+		}else{
+			return false;
 		}
-		else return false;
 	}
 	
 	/* (non-Javadoc)

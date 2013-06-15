@@ -59,22 +59,40 @@ public class SemanticLabel1 implements Comparable<SemanticLabel1>{
 
 	@Override
 	public int compareTo(SemanticLabel1 sl) {
-		if (this.nodeLabel == null || sl.getNodeLabel() == null) return 1;
-		if (this.nodeLabel.getUri() == null || sl.getNodeLabel().getUri() == null) return 1;
+		if (this.nodeLabel == null || sl.getNodeLabel() == null){
+			return 1;
+		}
+		if (this.nodeLabel.getUri() == null || sl.getNodeLabel().getUri() == null){
+			return 1;
+		}
 		if (this.nodeLabel.getUri().equalsIgnoreCase(sl.getNodeLabel().getUri ())) {
-			if (this.linkLabel == null && sl.getLinkLabel() == null) return 0;
-			if (this.linkLabel == null || sl.getLinkLabel() == null) return 1;
-			if (this.linkLabel.getUri() == null || sl.getLinkLabel().getUri() == null) return 1;
-			if (this.linkLabel.getUri().equalsIgnoreCase(sl.getLinkLabel().getUri ())) return 0;
+			if (this.linkLabel == null && sl.getLinkLabel() == null){
+				return 0;
+			}
+			if (this.linkLabel == null || sl.getLinkLabel() == null){
+				return 1;
+			}
+			if (this.linkLabel.getUri() == null || sl.getLinkLabel().getUri() == null){
+				return 1;
+			}
+			if (this.linkLabel.getUri().equalsIgnoreCase(sl.getLinkLabel().getUri ())){
+				return 0;
+			}
 		}
 		return 1;
 	}
 
 	public void print() {
 		String s = "";
-		if (this.nodeLabel != null && this.nodeLabel.getUri() != null) s += this.nodeLabel.getUri();
-		if (this.linkLabel != null && this.linkLabel.getUri() != null) s += " --- " + this.linkLabel.getUri();
-		if (this.leafName != null)  s += " --- " + this.leafName;
+		if (this.nodeLabel != null && this.nodeLabel.getUri() != null){
+			s += this.nodeLabel.getUri();
+		}
+		if (this.linkLabel != null && this.linkLabel.getUri() != null){
+			s += " --- " + this.linkLabel.getUri();
+		}
+		if (this.leafName != null){
+			s += " --- " + this.leafName;
+		}
 		logger.info(s);
 	}
 

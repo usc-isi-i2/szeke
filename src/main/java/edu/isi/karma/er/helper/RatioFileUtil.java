@@ -220,16 +220,18 @@ public class RatioFileUtil {
 		Map<String, List<SimilarityFrequency>> map = loadDefaultFrequency();
 		List<SimilarityFrequency> list = map.get(predicate);
 		int i = 0; 
-		if (list == null) 
+		if (list == null){
 			return freq;
+		}
 		for (i = 0; i < list.size(); i++) {
 			SimilarityFrequency f = list.get(i);
 			if (similarity >= f.getSimilarity()) {
 				break;
 			}
 		}
-		if (i < list.size())
+		if (i < list.size()){
 			freq = list.get(i).getFrequency();
+		}
 		
 		return freq;
 	}

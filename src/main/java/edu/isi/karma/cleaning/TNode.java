@@ -127,16 +127,18 @@ public class TNode{
 		{
 			return true;
 		}
-		if(this.type == t.type)
+		if(this.type == t.type){
 			return true;
+		}
 		return false;
 	}
 	public int mergableType(TNode t)
 	{
 		 
 		boolean res = this.sameType(t);
-		if(res)
+		if(res){
 			return this.type;
+		}
 		if((this.type == TNode.UWRDTYP || this.type == TNode.LWRDTYP || this.type == TNode.WORD) &&(t.type == TNode.LWRDTYP || t.type == TNode.UWRDTYP || t.type == TNode.WORD))
 		{
 			return TNode.WORD;

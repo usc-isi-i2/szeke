@@ -110,8 +110,9 @@ public class HHTable {
 			// Copy the HHCell info to the HHCells below in the same column
 			copyToHHCellsBelow(cell, rowIndex, colIndex);
 
-			if (!node.isLeaf())
+			if (!node.isLeaf()){
 				populateHHCells(node.getChildren(), rowIndex + 1);
+			}
 		}
 	}
 
@@ -218,9 +219,10 @@ public class HHTable {
 					translator.getCssTag("", cell.getDepth()));
 
 			// Populate with the content (if not dummy)
-			if (!cell.isDummy())
+			if (!cell.isDummy()){
 				cellObj.put(CellJsonKeys.contentCell.name(), cell.gettNode()
 						.generateJsonObject());
+			}
 
 			// Fill the left and right border
 			if (cell.hasLeafTNode() || cell.isDummy()) {
@@ -313,15 +315,17 @@ public class HHTable {
 					HHCell cell = cells[row][col];
 
 					// Print the left borders
-					if(!NO_SEPARATORS_FLAG)
+					if(!NO_SEPARATORS_FLAG){
 						populateLeftBorders(cell, cellArray, translator, row);
+					}
 
 					// Print the content cell (if any)
 					populateContentCell(cell, cellArray, translator);
 
 					// Print the right borders
-					if(!NO_SEPARATORS_FLAG)
+					if(!NO_SEPARATORS_FLAG){
 						populateRightBorders(cell, cellArray, translator, row);
+					}
 
 					col += cell.getColspan();
 				}

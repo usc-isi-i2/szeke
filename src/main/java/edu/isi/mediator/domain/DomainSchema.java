@@ -68,9 +68,9 @@ public class DomainSchema{
 	public String getSQLName(){
 		if(hasIllegalChars){
 			return "`" + name.replaceAll(MediatorConstants.ILLEGAR_CHARS," ") + "`";
-		}
-		else
+		}else{
 			return name;
+		}
 	}
 
 	/**
@@ -112,8 +112,9 @@ public class DomainSchema{
 	public boolean hasAttribute(String name){
 		for(int i=0; i<attrs.size(); i++){
 			DomainAttribute da = attrs.get(i);
-			if(da.name.equals(name))
+			if(da.name.equals(name)){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -125,7 +126,9 @@ public class DomainSchema{
 		String s = "";
 		s += name + "(";
 		for(int i=0; i<attrs.size(); i++){
-			if(i>0) s += ",";
+			if(i>0){
+				s += ",";
+			}
 			s += attrs.get(i).toString();
 		}
 		s+= ")";

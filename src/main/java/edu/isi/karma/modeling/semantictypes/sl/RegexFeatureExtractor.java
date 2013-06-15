@@ -38,12 +38,14 @@ public class RegexFeatureExtractor {
 	public static ArrayList<String> getFieldFeatures(String field) {
 		ArrayList<String> feature_list = new ArrayList<String>() ;
 		
-		if(field == null)
+		if(field == null){
 			return feature_list ;
+		}
 		
 		field.trim() ;
-		if(field.equals(""))
+		if(field.equals("")){
 			return feature_list ;
+		}
 		
 		ArrayList<Part> parts = Lexer.tokenizeField(field) ;
 		
@@ -72,17 +74,18 @@ public class RegexFeatureExtractor {
 			
 			boolean all_caps = true ;
 			for(int i=0; i<token.length() ; i++) {
-				if(part.string.charAt(i) >= 'A' && part.string.charAt(i) <= 'Z')
+				if(part.string.charAt(i) >= 'A' && part.string.charAt(i) <= 'Z'){
 					continue ;
-				else {
+				}else {
 					all_caps = false ;
 					break ;
 				}
 			}
-			if(all_caps)
+			if(all_caps){
 				feature_list.add(Feature.all_capitalized_token) ;
-			else if(first_character.charAt(0) >= 'A' && first_character.charAt(0) <= 'Z')
+			}else if(first_character.charAt(0) >= 'A' && first_character.charAt(0) <= 'Z'){
 				feature_list.add(Feature.capitalized_token) ;
+			}
 			
 			feature_list.add(Feature.alpha_id_ + token) ;
 		}
@@ -112,14 +115,17 @@ public class RegexFeatureExtractor {
 			
 			feature_list.add(Feature.after_decimal_len_ + decimal_part.length()) ;
 			
-			if(!first_part.equals("")) 
+			if(!first_part.equals("")){
 				feature_list.add(Feature.starting_digit_ + first_part.substring(0,1)) ;
+			}
 			
-			if(!first_part.equals("")) 
+			if(!first_part.equals("")){
 				feature_list.add(Feature.unit_place_digit_ + first_part.substring(first_part.length()-1)) ;
+			}
 			
-			if(!decimal_part.equals(""))
+			if(!decimal_part.equals("")){
 				feature_list.add(Feature.tenth_place_digit_ + decimal_part.substring(0,1)) ;
+			}
 			
 		}
 		else if(part.type == Type.symbol) {

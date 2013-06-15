@@ -261,8 +261,9 @@ public class CreateOntologyRepositoryUsingJena {
 		List<MatchResultOntology> mlist = new Vector<MatchResultOntology>();
 		String filename = "BuildingMatchResult.csv";
 		File file = new File(Constants.PATH_SCORE_BOARD_FILE + filename);
-		if (!file.exists())
+		if (!file.exists()){
 			throw new IllegalArgumentException("file " + file.getAbsolutePath() + " not exists.");
+		}
 		
 		RandomAccessFile raf = null;
 		

@@ -48,8 +48,9 @@ public class R2RMLMapping {
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append("R2RMLMapping [triplesMapSet=\n");
-		for (TriplesMap trMap:triplesMapList)
+		for (TriplesMap trMap:triplesMapList){
 			str.append("\t" + trMap.toString() + "\n");
+		}
 		str.append("]");
 		return str.toString();
 	}

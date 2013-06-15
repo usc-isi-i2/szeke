@@ -99,8 +99,9 @@ public class VTable {
 				// Define the VRowEntry for this column.
 				String tag = viewFactory.getTableCssTags().getCssTag(
 						path.getLeaf().getHTableId(), 0);
-				if (tag == null)
+				if (tag == null){
 					tag = VTableCssTags.CSS_TOP_LEVEL_TABLE_CELL;
+				}
 				// System.err.println("VTable.addRows.TAG=" + tag + "%%");
 				VRowEntry re = new VRowEntry(path.toString(), tag);
 				vr.addRowEntry(re);

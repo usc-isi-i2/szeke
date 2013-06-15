@@ -130,20 +130,26 @@ public class ConstTerm extends Term{
 	public boolean equals(Term t){
 		//System.out.println("Equal term : " + this + " and " + t);
 		String var1, var2;
-		if(var==null)
+		if(var==null){
 			var1="null";
-		else var1=var;
+		}else{
+			var1=var;
+		}
 		
-		if(t.var==null)
+		if(t.var==null){
 			var2="null";
-		else var2=t.var;
+		}else{
+			var2=t.var;
+		}
 
-		if(!(t instanceof ConstTerm))
+		if(!(t instanceof ConstTerm)){
 			return false;
+		}
 		if(val.equals(((ConstTerm)t).val) && var1.equals(var2)){
 				return true;
+		}else{
+			return false;
 		}
-		else return false;
 	}
 	
 	/**
@@ -156,16 +162,19 @@ public class ConstTerm extends Term{
 	public boolean equalsValue(ConstTerm t){
 		
 		String newV1=val, newV2=t.val;
-		if(newV1.startsWith("\"") || newV1.startsWith("'"))
+		if(newV1.startsWith("\"") || newV1.startsWith("'")){
 			newV1 = newV1.substring(1, newV1.length()-1);
+		}
 
-		if(newV2.startsWith("\"") || newV2.startsWith("'"))
+		if(newV2.startsWith("\"") || newV2.startsWith("'")){
 			newV2 = newV2.substring(1, newV2.length()-1);
+		}
 
 		if(newV1.equals(newV2)){
 			return true;
+		}else{
+			return false;
 		}
-		else return false;
 	}
 
 	/* (non-Javadoc)
@@ -187,10 +196,11 @@ public class ConstTerm extends Term{
 	 * @see edu.isi.mediator.gav.domain.Term#getSqlVal(boolean)
 	 */
 	public String getSqlVal(boolean isNumber) throws MediatorException{
-		if(isNumber)
+		if(isNumber){
 			return getNumberVal();
-		else
+		}else{
 			return getStringVal();
+		}
 	}
 	
 	//I don't know what it is, so I return t as is
@@ -204,10 +214,11 @@ public class ConstTerm extends Term{
 		}
 		if(newV.startsWith("\"") || newV.startsWith("'")){
 			newV = val.substring(1, val.length()-1);
-			if(newV.equals(MediatorConstants.NULL_VALUE))
+			if(newV.equals(MediatorConstants.NULL_VALUE)){
 				return MediatorConstants.NULL_VALUE;
-			else
+			}else{
 				return "'" + newV + "'";
+			}
 		}
 		else{
 			return newV;
@@ -269,10 +280,11 @@ public class ConstTerm extends Term{
 		}
 		if(newV.startsWith("\"") || newV.startsWith("'")){
 			newV = val.substring(1, val.length()-1);
-			if(newV.equals(MediatorConstants.NULL_VALUE))
+			if(newV.equals(MediatorConstants.NULL_VALUE)){
 				return MediatorConstants.NULL_VALUE;
-			else
+			}else{
 				return "'" + newV + "'";
+			}
 		}
 		else{
 			throw new MediatorException(newV + " should be a String! Enclose it between \"'\"");
@@ -288,11 +300,13 @@ public class ConstTerm extends Term{
 	 * 		input value otherwise
 	 */
 	private String normalizeVal(String val){
-		if(val==null)
+		if(val==null){
 			return MediatorConstants.NULL_VALUE;
-		else if(val.toUpperCase().equals(MediatorConstants.NULL_VALUE))
+		}else if(val.toUpperCase().equals(MediatorConstants.NULL_VALUE)){
 			return MediatorConstants.NULL_VALUE;
-		else return val;
+		}else{
+			return val;
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -300,10 +314,12 @@ public class ConstTerm extends Term{
 	 */
 	public String toString(){
 		String s = val;
-		if(var!=null)
+		if(var!=null){
 			s = var + ":" + s;
-		if(queryName!=null)
+		}
+		if(queryName!=null){
 			s += ":" + queryName;
+		}
 		return s;
 	}
 

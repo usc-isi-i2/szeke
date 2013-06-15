@@ -63,8 +63,9 @@ public class InvocationManager {
 		this.urlColumnName = (urlColumnName == null || urlColumnName.trim().length() == 0) ? "url" : urlColumnName;
 		this.idList = idList;
 		requestURLs = URLManager.getURLsFromStrings(requestURLStrings);
-		if (requestURLs == null || requestURLs.size() == 0)
+		if (requestURLs == null || requestURLs.size() == 0){
 			throw new KarmaException("Cannot model a service without any request example.");
+		}
 		
 		this.serviceData = null;
 		this.invocations = new ArrayList<Invocation>();
@@ -88,8 +89,9 @@ public class InvocationManager {
 		List<String> requestURLList = new ArrayList<String>();
 		requestURLList.add(requestURLString);
 		requestURLs = URLManager.getURLsFromStrings(requestURLList);
-		if (requestURLs == null || requestURLs.size() == 0)
+		if (requestURLs == null || requestURLs.size() == 0){
 			throw new KarmaException("Cannot model a service without any request example.");
+		}
 		
 		this.serviceData = null;
 		this.invocations = new ArrayList<Invocation>();
@@ -109,8 +111,9 @@ public class InvocationManager {
 		for (int i = 0; i < requestURLs.size(); i++) {
 			URL url = requestURLs.get(i);
 			String requestId = null;
-			if (idList != null)
+			if (idList != null){
 				requestId = idList.get(i);
+			}
 			Request request = new Request(url);
 			Invocation invocation = new Invocation(requestId, request);
 			logger.info("Invoking the service " + request.getUrl().toString() + " ...");
@@ -145,16 +148,18 @@ public class InvocationManager {
 			this.jsonUrl.add(url);
 			
 			JsonObject in = new JsonObject();
-			for (Attribute att : inv.getRequest().getAttributes()) 
+			for (Attribute att : inv.getRequest().getAttributes()){
 				in.addProperty(att.getName(), att.getValue());
+			}
 //			JsonArray inArray = new JsonArray();
 //			inArray.add(in);
 			this.jsonInputs.add(in);
 			
 			JsonObject urlAndIn = new JsonObject();
 			urlAndIn.addProperty(this.urlColumnName, inv.getRequest().getUrl().toString());
-			for (Attribute att : inv.getRequest().getAttributes()) 
+			for (Attribute att : inv.getRequest().getAttributes()){
 				urlAndIn.addProperty(att.getName(), att.getValue());
+			}
 			this.jsonUrlAndInputs.add(urlAndIn);
 			
 			JsonArray urlAndOut = new JsonArray();
@@ -179,28 +184,30 @@ public class InvocationManager {
 	}
 	
 	public String getServiceJson(boolean includeURL, boolean includeInputAttributes, boolean includeOutputAttributes) {
-		if (includeURL && includeInputAttributes && includeOutputAttributes)		
+		if (includeURL && includeInputAttributes && includeOutputAttributes){
 			return this.json.toString();
-		else if (includeURL && includeInputAttributes)
+		}else if (includeURL && includeInputAttributes){
 			return this.jsonUrlAndInputs.toString();
-		else if (includeURL && includeOutputAttributes)
+		}else if (includeURL && includeOutputAttributes){
 			return this.jsonUrlAndOutputs.toString();
-		else if (includeInputAttributes && includeOutputAttributes)
+		}else if (includeInputAttributes && includeOutputAttributes){
 			return this.jsonInputsAndOutputs.toString();
-		else if (includeURL)
+		}else if (includeURL){
 			return this.jsonUrl.toString();
-		else if (includeInputAttributes)
+		}else if (includeInputAttributes){
 			return this.jsonInputs.toString();
-		else if (includeOutputAttributes)
+		}else if (includeOutputAttributes){
 			return this.jsonOutputs.toString();
-		else 
+		}else{
 			return "";
+		}
 	}
 	
 	public Table getServiceData(boolean includeURL, boolean includeInputAttributes, boolean includeOutputAttributes) {
 
-		if (includeURL && includeInputAttributes && includeOutputAttributes)
+		if (includeURL && includeInputAttributes && includeOutputAttributes){
 			return this.serviceData;
+		}
 		
 		List<Attribute> headers = this.serviceData.getHeaders();
 		List<List<String>> values = this.serviceData.getValues();
@@ -213,14 +220,17 @@ public class InvocationManager {
 		List<Integer> includingColumns = new ArrayList<Integer>();
 		
 		if (headers != null) {
-			if (includeURL && headers.size() > 0)
+			if (includeURL && headers.size() > 0){
 				includingColumns.add(0);
+			}
 			
 			for (int i = 1; i < this.serviceData.getHeaders().size(); i++) {
-				if (includeInputAttributes && headers.get(i).getIOType() == IOType.INPUT)
+				if (includeInputAttributes && headers.get(i).getIOType() == IOType.INPUT){
 					includingColumns.add(i);
-				if (includeOutputAttributes && headers.get(i).getIOType() == IOType.OUTPUT)
+				}
+				if (includeOutputAttributes && headers.get(i).getIOType() == IOType.OUTPUT){
 					includingColumns.add(i);
+				}
 			}
 		}
 		
@@ -229,8 +239,9 @@ public class InvocationManager {
 		}
 		for (List<String> vals : values) {
 			List<String> rowVals = new ArrayList<String>();
-			for (Integer colIndex : includingColumns)
+			for (Integer colIndex : includingColumns){
 				rowVals.add(vals.get(colIndex));
+			}
 			newValues.add(rowVals);
 		}
 		
@@ -246,8 +257,9 @@ public class InvocationManager {
 	}
 	
 	public String getServiceJson(boolean includeInputAttributes) {
-		if (includeInputAttributes)
+		if (includeInputAttributes){
 			return getServiceJson(true, true, true);
+		}
 		return getServiceJson(false, false, true);
 	}
 	
@@ -269,8 +281,9 @@ public class InvocationManager {
 		
 		Table serviceTable = getServiceData();
 		for (Attribute p : serviceTable.getHeaders()) {
-			if (p.getIOType().equalsIgnoreCase(IOType.OUTPUT))
+			if (p.getIOType().equalsIgnoreCase(IOType.OUTPUT)){
 				outAttributes.add(p);
+			}
 		}
 
 		return outAttributes;
@@ -287,14 +300,16 @@ public class InvocationManager {
 //		guid = "E9C3F8D3-F778-5C4B-E089-C1749D50AE1F";
 		URL sampleUrl = requestURLs.get(0);
 		
-		if (sampleUrl == null)
+		if (sampleUrl == null){
 			return null;
+		}
 
 		WebService service = null;
-		if (serviceName == null || serviceName.trim().length() == 0)
+		if (serviceName == null || serviceName.trim().length() == 0){
 			service = new WebService(guid, sampleUrl);
-		else
+		}else{
 			service = new WebService(guid, serviceName, sampleUrl);
+		}
 
 		service.setMethod(HttpMethods.GET);
 

@@ -47,14 +47,21 @@ public abstract class Node implements Comparable<Node>, Serializable {
 	public Node(String id, Label label, NodeType type) {
 		
 		this.init();
-		if (id != null && id.trim().length() > 0) this.id = id;
-		if (label != null) this.label = label;
-		if (type != null) this.type = type;
+		if (id != null && id.trim().length() > 0){
+			this.id = id;
+		}
+		if (label != null){
+			this.label = label;
+		}
+		if (type != null){
+			this.type = type;
+		}
 	}
 	
 	public Node(Node v) {
-		if (v == null) this.init();
-		else {
+		if (v == null){
+			this.init();
+		}else {
 			this.id = v.id;
 			this.label = v.label;
 			this.type = v.type;
@@ -81,16 +88,18 @@ public abstract class Node implements Comparable<Node>, Serializable {
 		
 		String s = this.id;
 
-		if (this.label.getNs() != null)
+		if (this.label.getNs() != null){
 			s = s.replaceAll(this.label.getNs(), "");
+		}
 		
 		return s;
 	}
 	
 	public String getDisplayId() {
 		
-		if (this.label.getPrefix() == null)
+		if (this.label.getPrefix() == null){
 			return this.getLocalId();
+		}
 		
 		return this.label.getPrefix() + ":" + this.getLocalId();
 	}

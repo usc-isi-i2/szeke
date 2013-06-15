@@ -69,10 +69,11 @@ public class ImportServiceCommand extends Command {
 
 	@Override
 	public String getDescription() {
-		if (serviceUrl.length() > 50)
+		if (serviceUrl.length() > 50){
 			return serviceUrl.substring(0, 50);
-		else
+		}else{
 			return serviceUrl;
+		}
 	}
 
 	@Override

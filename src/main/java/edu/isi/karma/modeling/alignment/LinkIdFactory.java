@@ -54,26 +54,29 @@ public class LinkIdFactory {
 	
 	public static String getLinkUri(String linkId) {
 		String[] parts = linkId.split(separator);
-		if (parts != null && parts.length == 3)
+		if (parts != null && parts.length == 3){
 			return parts[1];
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	public static String getLinkSourceId(String linkId) {
 		String[] parts = linkId.split(separator);
-		if (parts != null && parts.length == 3)
+		if (parts != null && parts.length == 3){
 			return parts[0];
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	public static String getLinkTargetId(String linkId) {
 		String[] parts = linkId.split(separator);
-		if (parts != null && parts.length == 3)
+		if (parts != null && parts.length == 3){
 			return parts[2];
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	public boolean duplicateUri(String uriString) {
@@ -81,9 +84,10 @@ public class LinkIdFactory {
 	}
 	
 	public int lastIndexOf(String uri) {
-		if (linksUris.containsKey(uri))
+		if (linksUris.containsKey(uri)){
 			return linksUris.get(uri).intValue();
-		else
+		}else{
 			return -1;
+		}
 	}
 }

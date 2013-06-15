@@ -64,8 +64,9 @@ public class GLAVRuleParser{
 	 * @throws MediatorException
 	 */
 	public GLAVRule parseGLAVRule(String rule) throws MediatorException{
-		if(!rule.startsWith("GLAV_RULES:"))
+		if(!rule.startsWith("GLAV_RULES:")){
 			rule = "GLAV_RULES:" + rule;
+		}
 		
 		DomainParser dp = new DomainParser();
 		CommonTree t = dp.parse(rule);
@@ -112,8 +113,8 @@ public class GLAVRuleParser{
 		
 		if(r.isValid()){
 			return r;
-		}
-		else
+		}else{
 			return null;
+		}
 	}	
 }

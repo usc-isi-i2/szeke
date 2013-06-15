@@ -96,13 +96,16 @@ public class DataSource extends Source {
 	
 	public void setAttributes(List<Attribute> attributes) {
 		
-		if (this.attributes != null)
+		if (this.attributes != null){
 			this.attributes.clear();
+		}
 		
-		for (Attribute att : attributes)
+		for (Attribute att : attributes){
 			att.setBaseUri(this.getUri());
-		for (Attribute att : attributes)
+		}
+		for (Attribute att : attributes){
 			attIdToAttMap.put(att.getId(), att);
+		}
 		
 		this.attributes = attributes;
 	}
@@ -112,8 +115,9 @@ public class DataSource extends Source {
 	}
 
 	public void setModel(Model model) {
-		if (model != null)
+		if (model != null){
 			model.setBaseUri(this.getUri());
+		}
 		this.model = model;
 	}
 
@@ -127,8 +131,9 @@ public class DataSource extends Source {
 	
 	private void updateModel(DirectedWeightedMultigraph<Node, Link> treeModel) {
 		
-		if (treeModel == null)
+		if (treeModel == null){
 			return;
+		}
 		
 		Model m = new Model("model");
 		
@@ -158,11 +163,13 @@ public class DataSource extends Source {
 
 		for (Node n : treeModel.vertexSet()) {
 			
-			if (n instanceof ColumnNode || n instanceof LiteralNode)
+			if (n instanceof ColumnNode || n instanceof LiteralNode){
 				continue;
+			}
 			
-			if (vertexIdToArgument.get(n.getId()) == null)
+			if (vertexIdToArgument.get(n.getId()) == null){
 				continue;
+			}
 			
 			Label classPredicate = new Label(n.getLabel().getUri(), n.getLabel().getNs(), n.getLabel().getPrefix());
 
@@ -173,8 +180,9 @@ public class DataSource extends Source {
 		for (Link e : treeModel.edgeSet()) {
 			
 			if (vertexIdToArgument.get(e.getSource().getId()) == null || 
-					vertexIdToArgument.get(e.getTarget().getId()) == null)
+					vertexIdToArgument.get(e.getTarget().getId()) == null){
 				continue;
+			}
 
 			Label propertyPredicate = new Label(e.getLabel().getUri(), e.getLabel().getNs(), e.getLabel().getPrefix());
 			IndividualPropertyAtom propertyAtom = null;
@@ -213,8 +221,9 @@ public class DataSource extends Source {
 		System.out.println("Source: " + getInfo());
 		System.out.println("********************************************");
 		System.out.println("Attributes: ");
-		for (Attribute p : getAttributes())
+		for (Attribute p : getAttributes()){
 			p.print();
+		}
 		System.out.print("Model: ");
 		if (this.model != null) {
 			System.out.println(model.getUri());

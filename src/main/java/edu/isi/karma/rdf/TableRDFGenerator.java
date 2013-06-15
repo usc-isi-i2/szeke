@@ -316,8 +316,9 @@ public class TableRDFGenerator {
 		//see if there are any unary predicates ex: Person(uri(N))
 		Predicate p = findUnaryPredicate(v, preds);
 		if(p!=null){
-			if(!consequent.contains(p))
-				consequent.add(p.clone());				
+			if(!consequent.contains(p)){
+				consequent.add(p.clone());
+			}				
 		}
 		//////////////////
 		
@@ -355,15 +356,16 @@ public class TableRDFGenerator {
 			ArrayList<Predicate> preds, RelationPredicate antecedent,
 			ArrayList<Predicate> consequent) throws MediatorException {
 
-		if(term instanceof VarTerm)
+		if(term instanceof VarTerm){
 			return;
-		else if(term instanceof FunctionTerm){
+		}else if(term instanceof FunctionTerm){
 			//it is a uri();
 			//find the unary predicate for this URI
 			Predicate p2 = findUnaryPredicate(term, preds);
 			//System.out.println("Unary Pred ...="+p2);
-			if(!consequent.contains(p2))
+			if(!consequent.contains(p2)){
 				consequent.add(p2.clone());
+			}
 			if(gensymPredicate(p2)){
 				//if it is a gensym see if you can find other related 
 				ArrayList<Predicate> binaryP = findAllBinaryPredicates(p2.getTerms().get(0),preds);
@@ -435,8 +437,9 @@ public class TableRDFGenerator {
 		for(Predicate p:preds){
 			if(p.getTerms().size()==1){
 				Term t = p.getTerms().get(0);
-				if(t.equals(term))
+				if(t.equals(term)){
 					return p;
+				}
 			}
 		}
 		return null;
@@ -459,8 +462,9 @@ public class TableRDFGenerator {
 				if(t instanceof FunctionTerm){
 					for(Term term: t.getFunction().getTerms()){
 						String var = term.getVar();
-						if(var!=null && var.equals(v))
+						if(var!=null && var.equals(v)){
 							return p;
+						}
 					}
 				}
 			}
@@ -482,8 +486,9 @@ public class TableRDFGenerator {
 			if(p.getTerms().size()==2){
 				//get second term
 				Term t = p.getTerms().get(1);
-				if(t.equals(term))
+				if(t.equals(term)){
 					binaryP.add(p);
+				}
 			}
 		}
 		return binaryP;
@@ -509,14 +514,16 @@ public class TableRDFGenerator {
 				String var=null;
 				if(t instanceof VarTerm){
 					var = t.getVar();
-					if(var.equals(v))
+					if(var.equals(v)){
 						binaryP.add(p);
+					}
 				}
 				else if(t instanceof FunctionTerm){
 					for(Term term: t.getFunction().getTerms()){
 						String termVar = term.getVar();
-						if(termVar!=null && termVar.equals(v))
+						if(termVar!=null && termVar.equals(v)){
 							binaryP.add(p);
+						}
 					}
 				}
 			}
@@ -536,14 +543,16 @@ public class TableRDFGenerator {
 	 */
 	private boolean gensymPredicate(Predicate p){
 		Term t = p.getTerms().get(0);
-		if(!(t instanceof FunctionTerm))
+		if(!(t instanceof FunctionTerm)){
 			return false;
+		}
 		String varName = t.getFunction().getTerms().get(0).getVar();
 		if(varName==null){
 			//it is a gensym
 			return true;
+		}else{
+			return false;
 		}
-		else return false;
 	}
 	
 	/**
@@ -556,9 +565,9 @@ public class TableRDFGenerator {
 	private List<String> getAllVariableNames(Predicate p){
 		List<String> vars = new ArrayList<String>();
 		for(Term t: p.getTerms()){
-			if(t instanceof VarTerm)
+			if(t instanceof VarTerm){
 				vars.add(t.getVar());
-			else if(t instanceof FunctionTerm){
+			}else if(t instanceof FunctionTerm){
 				vars.addAll(t.getFunction().getVars());
 			}
 		}

@@ -95,8 +95,9 @@ public class RuleRDFMapper extends RuleRDFGenerator{
 				//abort the process; max number of triples was reached
 				return false;
 			}
-			if(i%10000==0 && i>0)
+			if(i%10000==0 && i>0){
 				logger.info("Processed " + i + " rows.");
+			}
 		}
 		return true;
 	}
@@ -112,13 +113,15 @@ public class RuleRDFMapper extends RuleRDFGenerator{
 		//handle URI's separately
 		if(value.startsWith(RuleRDFMapper.URI_FLAG)){
 			int ind1 = value.indexOf("http");
-			if(ind1>0)
+			if(ind1>0){
 				value = "<" + value.substring(ind1) + ">";
-			else value="";
+			}else{
+				value="";
+			}
 			return value;
-		}
-		else
+		}else{
 			return RDFUtil.escapeQuote(value);
+		}
 	}
 
 	/**
@@ -172,8 +175,9 @@ public class RuleRDFMapper extends RuleRDFGenerator{
 				varName = term.getVar();
 				//get its value
 				String val = values.get(varName);
-				if(val==null)
+				if(val==null){
 					throw new MediatorException("The values map does not contain variable: " + varName + " Map is:" + values);
+				}
 				if(i>0){ varValue += "_"; allVarNames += "_";}
 				if(val.equals("NULL")){
 					//create a gensym for this value
@@ -239,9 +243,11 @@ public class RuleRDFMapper extends RuleRDFGenerator{
 		//if the value is already a URI just return that
 		if(varValue.startsWith(URI_FLAG)){
 			int ind = varValue.indexOf("http");
-			if(ind>0)
+			if(ind>0){
 				return "<" + varValue.substring(ind) + ">";
-			else return "";
+			}else{
+				return "";
+			}
 		}
 		else if(isGensym){
 			String newValue = className +"_" + varValue;
@@ -262,9 +268,11 @@ public class RuleRDFMapper extends RuleRDFGenerator{
 
 				if(objValue.startsWith(URI_FLAG)){
 					int ind = objValue.indexOf("http");
-					if(ind>0)
+					if(ind>0){
 						return "<" + objValue.substring(ind) + ">";
-					else return "";
+					}else{
+						return "";
+					}
 				}
 				else if(objValue.equals("NULL")){
 					//use the input URI

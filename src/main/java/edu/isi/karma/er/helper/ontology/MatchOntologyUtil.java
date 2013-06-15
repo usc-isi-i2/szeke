@@ -276,8 +276,9 @@ public class MatchOntologyUtil {
 			}
 			
 			Resource res = this.createMatchOntology(model, finalScore, matched, generatedTime, srcURI, dstURI, creator, comment, srcAttr, srcVal, dstAttr, dstVal, onto.getNytimes());
-			if (res == null)
+			if (res == null){
 				return null;
+			}
 			onto.setResId(res.getURI());
 		}
 		model.commit();
@@ -1200,7 +1201,9 @@ public class MatchOntologyUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (raf != null) raf.close();
+				if (raf != null){
+					raf.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

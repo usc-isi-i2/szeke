@@ -65,12 +65,15 @@ public class HungarianAlgorithm {
 		int minutes = (int)floor((time%3600)/60);
 		int seconds = (int)round(time%60);
 		
-		if (days > 0)
+		if (days > 0){
 			timeElapsed = Integer.toString(days) + "d:";
-		if (hours > 0)
+		}
+		if (hours > 0){
 			timeElapsed = timeElapsed + Integer.toString(hours) + "h:";
-		if (minutes > 0)
+		}
+		if (minutes > 0){
 			timeElapsed = timeElapsed + Integer.toString(minutes) + "m:";
+		}
 		
 		timeElapsed = timeElapsed + Integer.toString(seconds) + "s";
 		System.out.print("\nTotal time required: " + timeElapsed + "\n\n");

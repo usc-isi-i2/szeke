@@ -67,13 +67,15 @@ public class GAVRule extends Rule{
 	public boolean isNoneRule(){return false;}
 	public boolean isUACRule(){return false;}
 	public boolean isUACVar(String v){
-		if(v.equals(ALL_VAR) || v.equals(NONE_VAR) || v.equals(NONE_BUT_JOINABLE_VAR))
-				return true;
+		if(v.equals(ALL_VAR) || v.equals(NONE_VAR) || v.equals(NONE_BUT_JOINABLE_VAR)){
+			return true;
+		}
 		return false;
 	}
 	public boolean isNullVar(String v){
-		if(v.toUpperCase().equals(MediatorConstants.NULL_VALUE))
-				return true;
+		if(v.toUpperCase().equals(MediatorConstants.NULL_VALUE)){
+			return true;
+		}
 		return false;
 	}
 	//////////////////////////////
@@ -142,8 +144,9 @@ public class GAVRule extends Rule{
 		ArrayList<RelationPredicate> rels = new ArrayList<RelationPredicate>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(p instanceof RelationPredicate)
+			if(p instanceof RelationPredicate){
 				rels.add((RelationPredicate)p);
+			}
 		}
 		return rels;
 	}
@@ -156,8 +159,9 @@ public class GAVRule extends Rule{
 		ArrayList<BuiltInPredicate> rels = new ArrayList<BuiltInPredicate>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(p instanceof BuiltInPredicate)
+			if(p instanceof BuiltInPredicate){
 				rels.add((BuiltInPredicate)p);
+			}
 		}
 		return rels;
 	}
@@ -170,8 +174,9 @@ public class GAVRule extends Rule{
 		ArrayList<Predicate> rels = new ArrayList<Predicate>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(p.getName().equals(MediatorConstants.EQUALS))
+			if(p.getName().equals(MediatorConstants.EQUALS)){
 				rels.add(p);
+			}
 		}
 		return rels;
 	}
@@ -184,8 +189,9 @@ public class GAVRule extends Rule{
 		ArrayList<Predicate> rels = new ArrayList<Predicate>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if((p instanceof BuiltInPredicate) && !p.getName().equals(MediatorConstants.EQUALS))
+			if((p instanceof BuiltInPredicate) && !p.getName().equals(MediatorConstants.EQUALS)){
 				rels.add(p);
+			}
 		}
 		return rels;
 	}
@@ -199,8 +205,9 @@ public class GAVRule extends Rule{
 		HashSet<String> predNames = new HashSet<String>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(containsPredicate(p, i+1))
+			if(containsPredicate(p, i+1)){
 				predNames.add(p.getName());
+			}
 		}
 		return predNames;
 	}
@@ -220,8 +227,9 @@ public class GAVRule extends Rule{
 		//System.out.println("Find term " + t + " in " + terms + " starting at " + index);
 		for(int i=index; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(pred.getName().equals(p.getName()))
+			if(pred.getName().equals(p.getName())){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -236,8 +244,9 @@ public class GAVRule extends Rule{
 		ArrayList<Predicate> preds = new ArrayList<Predicate>();
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
-			if(name.equals(p.getName()))
+			if(name.equals(p.getName())){
 				preds.add(p);
+			}
 		}
 		return preds;
 	}
@@ -257,15 +266,20 @@ public class GAVRule extends Rule{
 		for(int i=0; i<antecedent.size(); i++){
 			Predicate p = antecedent.get(i);
 			bodyVars.addAll(p.getVars());
-			if(p instanceof RelationPredicate)
+			if(p instanceof RelationPredicate){
 				bodyRelationVars.addAll(p.getVars());
+			}
 		}
 		//make sure that all variables in the head are present in the body
 		for( int j=0; j<headVars.size(); j++){
 			String headVar = headVars.get(j);
 			//variable used in user access rule
-			if(isUACVar(headVar)) continue;
-			if(isNullVar(headVar)) continue;
+			if(isUACVar(headVar)){
+				continue;
+			}
+			if(isNullVar(headVar)){
+				continue;
+			}
 			if(!bodyVars.contains(headVar)){
 				throw(new MediatorException("The head variable " + headVar + " does not appear in the body of rule " + this));
 			}
@@ -280,9 +294,9 @@ public class GAVRule extends Rule{
 			for(int k=0; k<pVars.size(); k++){
 				String pVar = pVars.get(k);
 				//System.out.println("Check var : " + pVar + " in " + bodyRelationVars + " and " + headVars);
-				if(!bodyRelationVars.contains(pVar) && !headVars.contains(pVar))
+				if(!bodyRelationVars.contains(pVar) && !headVars.contains(pVar)){
 					throw(new MediatorException("The variable " + pVar + " does not appear in a body relation or head of rule " + this));
-				else{
+				}else{
 					if(!bodyRelationVars.contains(pVar)){
 						//it is in the head, but not the body => in the graph it will be represented as an AssignNode
 						((BuiltInPredicate)p).isAssignment(true);
@@ -314,7 +328,9 @@ public class GAVRule extends Rule{
 		String s = "";
 		s+= consequent.get(0) + "<-";
 		for(int i=0; i<antecedent.size(); i++){
-			if(i>0) s += " ^ \n\t";
+			if(i>0){
+				s += " ^ \n\t";
+			}
 			s += antecedent.get(i).toString();
 			//s+= conjunctiveFormula.get(i).getClass().getName();
 		}

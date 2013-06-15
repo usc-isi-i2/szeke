@@ -51,8 +51,9 @@ public class LinkedApiServiceHandler extends HttpServlet {
 			// regex parse pathInfo
 			
 			Matcher matcher;
-			if (pathInfo == null || pathInfo.trim().length() == 0)
+			if (pathInfo == null || pathInfo.trim().length() == 0){
 				return;
+			}
 			
 			if (method == HttpMethods.GET) {
 				matcher = getInputOrOutputWithFormatPattern.matcher(pathInfo);
@@ -101,8 +102,9 @@ public class LinkedApiServiceHandler extends HttpServlet {
 		}
 		public String getFormat() {
 			// I don't know why Jena gives error for turtle.
-			if (format.equalsIgnoreCase("TTL") || format.equalsIgnoreCase("TURTLE"))
+			if (format.equalsIgnoreCase("TTL") || format.equalsIgnoreCase("TURTLE")){
 				format = DEFAULT_FORMAT;
+			}
 			return format.toUpperCase();
 		}
 		public String getResource() {
@@ -120,7 +122,9 @@ public class LinkedApiServiceHandler extends HttpServlet {
 		RestRequest restRequest = null;
 		try {
 			String url = request.getPathInfo();
-			if (request.getQueryString() != null) url += "?" + request.getQueryString();
+			if (request.getQueryString() != null){
+				url += "?" + request.getQueryString();
+			}
 			restRequest = new RestRequest(url , HttpMethods.GET);
 		} catch (ServletException e) {
 			response.setContentType(MimeType.TEXT_PLAIN);
@@ -137,10 +141,12 @@ public class LinkedApiServiceHandler extends HttpServlet {
 		logger.debug("Resource: " + resource);
 
 		ResourceType resourceType = ResourceType.Service;
-		if (resource != null && resource.trim().toString().equalsIgnoreCase("input"))
+		if (resource != null && resource.trim().toString().equalsIgnoreCase("input")){
 			resourceType = ResourceType.Input;
-		if (resource != null && resource.trim().toString().equalsIgnoreCase("output"))
+		}
+		if (resource != null && resource.trim().toString().equalsIgnoreCase("output")){
 			resourceType = ResourceType.Output;
+		}
 
 		new GetRequestManager(serviceId, resourceType, format, response).HandleRequest();
 		
@@ -156,7 +162,9 @@ public class LinkedApiServiceHandler extends HttpServlet {
 		RestRequest restRequest = null;
 		try {
 			String url = request.getPathInfo();
-			if (request.getQueryString() != null) url += "?" + request.getQueryString();
+			if (request.getQueryString() != null){
+				url += "?" + request.getQueryString();
+			}
 			restRequest = new RestRequest(url, HttpMethods.POST);
 		} catch (ServletException e) {
 			response.setContentType(MimeType.TEXT_PLAIN);
@@ -177,14 +185,16 @@ public class LinkedApiServiceHandler extends HttpServlet {
 		
 		String formData = null;
 		String inputLang = "";
-		if (request.getContentType().startsWith(MimeType.APPLICATION_RDF_XML))
+		if (request.getContentType().startsWith(MimeType.APPLICATION_RDF_XML)){
 			inputLang = SerializationLang.XML;
-		if (request.getContentType().startsWith(MimeType.TEXT_XML))
+		}
+		if (request.getContentType().startsWith(MimeType.TEXT_XML)){
 			inputLang = SerializationLang.XML;
-		else if (request.getContentType().startsWith(MimeType.APPLICATION_XML))
+		}else if (request.getContentType().startsWith(MimeType.APPLICATION_XML)){
 			inputLang = SerializationLang.XML;
-		else if (request.getContentType().startsWith(MimeType.APPLICATION_RDF_N3))
+		}else if (request.getContentType().startsWith(MimeType.APPLICATION_RDF_N3)){
 			inputLang = SerializationLang.N3;
+		}
 		if (request.getContentType().startsWith(MimeType.APPLICATION_FORM_URLENCODED)) {
 			inputLang = SerializationLang.N3; // default for html forms
 			formData = request.getParameter("rdf");

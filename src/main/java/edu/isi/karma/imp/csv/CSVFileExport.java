@@ -57,10 +57,13 @@ public class CSVFileExport {
 		for (SemanticType type : worksheet.getSemanticTypes().getListOfTypes()) {
 			modeledColumnTable.put(type.getHNodeId(),"");
 		}
-		if(modeledColumnTable.size()==0) return null;
+		if(modeledColumnTable.size()==0){
+			return null;
+		}
 		int numRows = worksheet.getDataTable().getNumRows();
-		if(numRows==0) 
+		if(numRows==0){
 			return "";
+		}
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Row> rows =  worksheet.getDataTable().getRows(0, numRows);
 		List<HNode> sortedLeafHNodes = new ArrayList<HNode>();
@@ -68,8 +71,9 @@ public class CSVFileExport {
 		worksheet.getHeaders().getSortedLeafHNodes(sortedLeafHNodes);
 		for (HNode hNode : sortedLeafHNodes) {
 			if(modeledColumnTable.containsKey(hNode.getId())) {
-				if (sb.length() != 0)
+				if (sb.length() != 0){
 					sb.append(",");
+				}
 				sb.append(hNode.getColumnName());
 				hNodeIdList.add(hNode.getId());
 			}
@@ -79,10 +83,11 @@ public class CSVFileExport {
 			boolean newRow = true;
 			try {
 				for(String hNodeId : hNodeIdList) {
-					if(!newRow) 
+					if(!newRow){
 						sb.append(",");
-					else
+					}else{
 						newRow = false;
+					}
 					String colValue =row.getNode(hNodeId).getValue().asString();
 					sb.append("\"");
 					sb.append(colValue);

@@ -48,12 +48,16 @@ public class Table {
 	}
 	
 	public int getRowsCount() {
-		if (this.values == null) return 0;
+		if (this.values == null){
+			return 0;
+		}
 		return this.values.size();
 	}
 	
 	public int getColumnsCount() {
-		if (this.headers == null) return 0;
+		if (this.headers == null){
+			return 0;
+		}
 		return this.headers.size();
 	}
 	
@@ -135,26 +139,32 @@ public class Table {
 	}
 
 	private boolean sameHeaders(Table t) {
-		if (t == null)
+		if (t == null){
 			return false;
+		}
 		
-		if (this.getColumnsCount() == 0 || t.getColumnsCount() == 0)
+		if (this.getColumnsCount() == 0 || t.getColumnsCount() == 0){
 			return false;
+		}
 		
-		if (this.getColumnsCount() != t.getColumnsCount())
+		if (this.getColumnsCount() != t.getColumnsCount()){
 			return false;
+		}
 		
 		List<String> attNames = new ArrayList<String>();
 		List<String> tAttNames = new ArrayList<String>();
 		
-		for (Attribute att : this.getHeaders()) 
+		for (Attribute att : this.getHeaders()){
 			attNames.add(att.getName());
+		}
 		
-		for (Attribute att : t.getHeaders()) 
+		for (Attribute att : t.getHeaders()){
 			tAttNames.add(att.getName());
+		}
 		
-		if (attNames.containsAll(tAttNames) && tAttNames.containsAll(attNames))
+		if (attNames.containsAll(tAttNames) && tAttNames.containsAll(attNames)){
 			return true;
+		}
 		
 		return false;
 	}
@@ -164,24 +174,29 @@ public class Table {
     	int t1Cols = this.getColumnsCount();
     	int t2Cols = t.getColumnsCount();
     	
-    	if (t2Cols == 0)
-    		return;
-    	
-    	else if (t1Cols == 0) {
+    	if (t2Cols == 0){
+			return;
+		}else if (t1Cols == 0) {
     		
-    		if (this.headers == null)
-    			this.headers = new ArrayList<Attribute>();
+    		if (this.headers == null){
+				this.headers = new ArrayList<Attribute>();
+			}
     		
-    		for (Attribute att : t.getHeaders())
-    			this.headers.add(new Attribute(att));
+    		for (Attribute att : t.getHeaders()){
+				this.headers.add(new Attribute(att));
+			}
 
-    		if (this.values == null)
-    			this.values = new ArrayList<List<String>>();
+    		if (this.values == null){
+				this.values = new ArrayList<List<String>>();
+			}
 
-    		if (t.getValues() != null)
-    			for (List<String> v : t.getValues())
-    				if (v != null)
-    					values.add(new ArrayList<String>(v));
+    		if (t.getValues() != null){
+				for (List<String> v : t.getValues()){
+					if (v != null){
+						values.add(new ArrayList<String>(v));
+					}
+				}
+			}
     	} else {
     		
     		if (sameHeaders(t)) {
@@ -194,8 +209,9 @@ public class Table {
     			return;
     		}
     		
-    		for (Attribute att : t.getHeaders())
-    			headers.add(new Attribute(att));
+    		for (Attribute att : t.getHeaders()){
+				headers.add(new Attribute(att));
+			}
     		
     		int t1Rows = this.getRowsCount();
         	int t2Rows = t.getRowsCount();
@@ -209,17 +225,19 @@ public class Table {
         		
         		for (int j = 0; j < t1Cols; j++) {
         			int index = t1Rows == 0 ? -1 : i % t1Rows;
-        			if (index == -1 || this.values == null || this.values.get(index) == null)
-        				row.add(null);
-        			else
-        				row.add(this.values.get(index).get(j));
+        			if (index == -1 || this.values == null || this.values.get(index) == null){
+						row.add(null);
+					}else{
+						row.add(this.values.get(index).get(j));
+					}
         		}
         		for (int j = 0; j < t2Cols; j++) {
         			int index = t2Rows == 0 ? -1 : i % t2Rows;
-        			if (index == -1 || t.getValues() == null || t.getValues().get(index) == null)
-        				row.add(null);
-        			else
-        				row.add(t.getValues().get(index).get(j));
+        			if (index == -1 || t.getValues() == null || t.getValues().get(index) == null){
+						row.add(null);
+					}else{
+						row.add(t.getValues().get(index).get(j));
+					}
         		}
         		
         		values.add(row);
@@ -238,8 +256,9 @@ public class Table {
 	
     public static Table union(List<Table> srcTables) {
     	
-    	if (srcTables == null)
-    		return null;
+    	if (srcTables == null){
+			return null;
+		}
     	
     	Table resultTable = new Table();
     	
@@ -279,8 +298,9 @@ public class Table {
 			
 			rawAttributes = srcAttributes.get(i);
 			rawAttributeIDs.clear();
-			for (Attribute p : rawAttributes)
+			for (Attribute p : rawAttributes){
 				rawAttributeIDs.add(p.getId());
+			}
 			
 //			logger.debug("table " + i);
 			for (int j = 0; j < srcValues.get(i).size(); j++) {
@@ -292,18 +312,20 @@ public class Table {
 				for (int k = 0; k < resultAttributes.size(); k++) {
 //					logger.debug("\t\t column " + k);
 					int index = rawAttributeIDs.indexOf(resultAttributes.get(k).getId());
-					if (index == -1)
+					if (index == -1){
 						singleValue = null;
 //						singleValue = "";
-					else
+					}else{
 						singleValue = rawValues.get(index);
+					}
 					populatedValues.add(singleValue);
 				}
 				
 				if (srcRowIds != null && srcRowIds.size() > 0 &&
 						srcRowIds.get(i) != null && srcRowIds.get(i).size() > 0 &&  
-						srcRowIds.get(i).get(j) != null)
+						srcRowIds.get(i).get(j) != null){
 					resultRowIds.add(srcRowIds.get(i).get(j));
+				}
 				resultValues.add(populatedValues);
 			}
 			
@@ -322,16 +344,23 @@ public class Table {
 
 	public String asCSV(Character separator, Character quotechar, Character endlinechar) {
 		String csv = "";
-		if (separator == null) separator = ',';
-		if (quotechar == null) quotechar = '"';
-		if (endlinechar == null) endlinechar = '\n';
+		if (separator == null){
+			separator = ',';
+		}
+		if (quotechar == null){
+			quotechar = '"';
+		}
+		if (endlinechar == null){
+			endlinechar = '\n';
+		}
 		
 		try {
 			
 			if (this.headers != null && this.headers.size() > 0) {
 				for (int i = 0; i < this.headers.size(); i++) {
-					if (i != 0)
+					if (i != 0){
 						csv += separator.charValue();
+					}
 					csv += quotechar + this.headers.get(i).getName() + quotechar;
 				}
 				csv += endlinechar;
@@ -346,8 +375,9 @@ public class Table {
 			
 			for (int i = 0; i < this.values.size(); i++) {
 				for (int j = 0; j < this.values.get(i).size(); j++) {
-					if (j != 0)
+					if (j != 0){
 						csv += separator;
+					}
 					csv += quotechar + values.get(i).get(j) + quotechar;
 				}
 				csv += endlinechar;

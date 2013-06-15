@@ -18,11 +18,12 @@ public class Section implements GrammarTreeNode {
 		pair = p;
 		this.orgStrings = orgStrings;
 		this.tarStrings = tarStrings;
-		if(itInterpretor==null)
+		if(itInterpretor==null){
 			itInterpretor =  new Interpretor();
-		if(supermode == 0)
+		}
+		if(supermode == 0){
 			this.createTotalOrderVector();
-		else
+		}else
 		{
 			this.reiniteRules();
 		}
@@ -65,9 +66,9 @@ public class Section implements GrammarTreeNode {
 		Section sec = (Section)a;
 		Position x = this.pair[0].mergewith(sec.pair[0]);
 		Position y = this.pair[1].mergewith(sec.pair[1]);
-		if(x== null || y == null)
+		if(x== null || y == null){
 			return null;
-		else
+		}else
 		{
 			Position[] pa = {x,y};
 			boolean loop = this.isinloop || sec.isinloop;
@@ -166,8 +167,9 @@ public class Section implements GrammarTreeNode {
 	}
 	public String getRule(long index)
 	{
-		if(index > this.rules.size())
+		if(index > this.rules.size()){
 			return "null";
+		}
 		String rule = "";
 		int[] loc = this.rules.get(((int)index));
 		pair[0].isinloop = this.isinloop;

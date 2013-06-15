@@ -274,16 +274,18 @@ public class CommandHistory {
 			Command redoComm = redoStack.get(i);
 			redoComm.generateJson(prefix, pw, vWorkspace,
 					Command.HistoryType.redo);
-			if(i != 0)
+			if(i != 0){
 				pw.println(prefix + ",");
+			}
 		}
 	}
 
 	public void removeCommands(CommandTag tag) {
 		List<Command> commandsToBeRemoved = new ArrayList<Command>();
 		for(Command command: history) {
-			if(command.hasTag(tag))
+			if(command.hasTag(tag)){
 				commandsToBeRemoved.add(command);
+			}
 		}
 		history.removeAll(commandsToBeRemoved);
 	}

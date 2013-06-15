@@ -84,8 +84,9 @@ public class OntologyHierarchyUpdate extends AbstractUpdate {
 					addChildren(node, childrenArray, steinerTreeNodeIds);
 				}
 				// Add the graph nodes
-				if (addSteinerTreeNodesAsChildren && alignment!=null)
+				if (addSteinerTreeNodesAsChildren && alignment!=null){
 					addSteinerTreeNodes(node, childrenArray, steinerTreeNodeIds);
+				}
 
 				resourceObject = getResourceObject(node, childrenArray, steinerTreeNodeIds);
 				dataArray.put(resourceObject);

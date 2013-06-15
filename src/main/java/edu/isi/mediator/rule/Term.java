@@ -105,16 +105,19 @@ public abstract class Term{
 		Visible v;
 		if(b==true){
 			v=Visible.TRUE;
+		}else{
+			v=Visible.FALSE;
 		}
-		else v=Visible.FALSE;
 		
 		if(isAllowedAfterUAC==Visible.NOT_SET || isAllowedAfterUAC==Visible.FALSE)
+		 {
 			isAllowedAfterUAC=v;
 		//else if I already determined that it is allowed just leave it alone
 		//it will be allowed even if it is not allowed from other concepts
 		//if not allowed from a _none_ concept I will see only vals from the visible concept
 		//if from _none_but_joinable_ it will join, so I will see only the joined values, so OK
 		//same if I have partial values visible, there will be a join
+		}
 	}
 	
 	/**
@@ -123,9 +126,11 @@ public abstract class Term{
 	 * 		false otherwise
 	 */
 	public boolean isAllowed(){
-		if(isAllowedAfterUAC==Visible.NOT_SET || isAllowedAfterUAC==Visible.TRUE)
+		if(isAllowedAfterUAC==Visible.NOT_SET || isAllowedAfterUAC==Visible.TRUE){
 			return true;
-		else return false;
+		}else{
+			return false;
+		}
 	}
 	/////////////////////////////////////////////
 	
@@ -183,8 +188,9 @@ public abstract class Term{
 	 * 		an integer used to construct the name.
 	 */
 	public void changeVarName(int index){
-		if(var!=null)
+		if(var!=null){
 			var = var + "_unique" + index;
+		}
 	}
 	
 	/**

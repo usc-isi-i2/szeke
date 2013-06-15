@@ -179,23 +179,26 @@ public class JSONUtil {
 			JSONArray a1 = (JSONArray) obj1;
 			JSONArray a2 = (JSONArray) obj2;
 			
-			if(a1.length() != a2.length())
+			if(a1.length() != a2.length()){
 				return false;
+			}
 			
 			for (int i=0; i<a1.length(); i++) {
 				Object a = a1.get(i);
 				Object b = a2.get(i);
 				
-				if(!compareJSONObjects(a, b))
+				if(!compareJSONObjects(a, b)){
 					return false;
+				}
 			}
 			
 		} else if (obj1 instanceof JSONObject && obj2 instanceof JSONObject) {
 			JSONObject a1 = (JSONObject) obj1;
 			JSONObject a2 = (JSONObject) obj2;
 			
-			if(a1.length() != a2.length())
+			if(a1.length() != a2.length()){
 				return false;
+			}
 			
 			@SuppressWarnings("rawtypes")
 			Iterator keys = a1.keys();
@@ -208,8 +211,9 @@ public class JSONUtil {
 				} catch (JSONException e) {
 					return false;
 				}
-				if(!compareJSONObjects(val1, val2))
+				if(!compareJSONObjects(val1, val2)){
 					return false;
+				}
 			}
 			
 		} else if (obj1 instanceof String && obj2 instanceof String) {
@@ -224,9 +228,9 @@ public class JSONUtil {
 			return (Boolean)obj1 == (Boolean)obj2;
 		} else if (obj1 == JSONObject.NULL && obj2 == JSONObject.NULL) {
 			return true;
-		}
-		else
+		}else{
 			return false;
+		}
 		
 		return true;
 	}

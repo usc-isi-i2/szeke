@@ -30,10 +30,12 @@ public class SingleValue extends Value{
 	
 	public String getValueString() {
 		valueString = valueString.trim();
-		if (this.valueString.startsWith("\""))
+		if (this.valueString.startsWith("\"")){
 			valueString = valueString.substring(1);
-		if (this.valueString.endsWith("\""))
+		}
+		if (this.valueString.endsWith("\"")){
 			valueString = valueString.substring(0, valueString.length() - 1);
+		}
 		return this.valueString;
 	}
 }

@@ -261,8 +261,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 				pre = update[1];
 			}
 		}
-		if(org.length() > pre)
+		if(org.length() > pre){
 			orgdis += org.substring(pre);
+		}
 		dict.put("Org", org);
 		dict.put("Tar", tar);
 		dict.put("Orgdis", orgdis);
@@ -289,8 +290,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		wk.getDataTable().collectNodes(selectedPath, nodes);
 		for (Node node : nodes) {
 			String id = node.getId();
-			if (!this.nodeIds.contains(id))
+			if (!this.nodeIds.contains(id)){
 				continue;
+			}
 			String originalVal = node.getValue().asString();
 			rows.put(id, originalVal);
 			this.compResultString += originalVal + "\n";
@@ -323,8 +325,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 			long _time5 = System.currentTimeMillis();
 			String tpid = iter.next();
 			ValueCollection rvco = rtf.getTransformedValues_debug(tpid);
-			if (rvco == null)
+			if (rvco == null){
 				continue;
+			}
 			long _time6 = System.currentTimeMillis();
 			// constructing displaying data
 			HashMap<String, String[]> xyzHashMap = new HashMap<String, String[]>();
@@ -363,8 +366,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 				}
 				resdata.put(key, dict);
 			}
-			if(!rtf.nullRule)
+			if(!rtf.nullRule){
 				keys.add(getBestExample(xyzHashMap, expFeData));
+			}
 			long _time7 = System.currentTimeMillis();
 			time6 += _time6 - _time5;
 			time7 = _time7 - _time6;
@@ -403,8 +407,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 			for (String key : values.keySet()) {
 				JSONArray jsonArray = new JSONArray();
 				HashSet<String> vs = values.get(key);
-				for (String v : vs)
+				for (String v : vs){
 					jsonArray.put(v);
+				}
 				jsobj.put(key, jsonArray);
 			}
 		} catch (Exception e) {
@@ -419,8 +424,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		Vector<TNode> tNodes = ruler.vec;
 		int tcnt = 1;
 		for (int i = 0; i < tNodes.size(); i++) {
-			if (tNodes.get(i).text.compareTo(" ") == 0)
+			if (tNodes.get(i).text.compareTo(" ") == 0){
 				continue;
+			}
 			for (int j = 0; j > i && j < tNodes.size(); j++) {
 				if (tNodes.get(j).sameNode(tNodes.get(i))) {
 					tcnt++;
@@ -456,8 +462,9 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 			HashMap<String, HashMap<String, Integer>> values, boolean sw) {
 
 		int topKsize = 1;
-		if (sw)
+		if (sw){
 			topKsize = Integer.MAX_VALUE;
+		}
 		HashMap<String, Double> topK = new HashMap<String, Double>();
 		Iterator<String> iditer = dicts.keySet().iterator();
 		while (iditer.hasNext()) {

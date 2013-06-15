@@ -67,8 +67,9 @@ public class DataCollection {
 				stats.get(fname)[0] += f.learnTime;
 				stats.get(fname)[2] += f.genTime;
 				stats.get(fname)[4] += f.execTime;
-				if(stats.get(fname)[6] < f.exp_cnt)
+				if(stats.get(fname)[6] < f.exp_cnt){
 					stats.get(fname)[6] = (double) f.exp_cnt;
+				}
 				stats.get(fname)[7] += f.ruleNo;
 				stats.get(fname)[8] += f.checkedrow;
 			}

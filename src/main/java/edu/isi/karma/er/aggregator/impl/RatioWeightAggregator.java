@@ -101,8 +101,9 @@ public class RatioWeightAggregator implements Aggregator {
 	 */
 	private double calcRatio(List<Score> sList) {
 		double finalScore = 0;
-		if (sList == null || sList.size() <= 0)
+		if (sList == null || sList.size() <= 0){
 			return finalScore;
+		}
 		
 		double sim, ratio, weight, totalSim = 0, totalWeight = 0;
 		for (Score s : sList) {

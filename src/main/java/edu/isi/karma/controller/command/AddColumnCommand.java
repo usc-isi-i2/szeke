@@ -115,8 +115,9 @@ public class AddColumnCommand extends WorksheetCommand {
 		try{
 			if(hTableId==null || hTableId.isEmpty()){
 				//get table id based on the hNodeId
-				if(hNodeId==null)
+				if(hNodeId==null){
 					throw new KarmaException("TableId and NodeId are empty. Can't add column.");
+				}
 				hTableId = vWorkspace.getRepFactory().getHNode(hNodeId).getHTableId();
 			}
 						

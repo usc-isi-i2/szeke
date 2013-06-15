@@ -100,12 +100,15 @@ public class PostRequestManager extends LinkedApiRequestManager {
 		
 		listOfInputAttValues = serviceInputModel.findModelDataInJenaData(this.inputJenaModel, null);
 		
-		if (listOfInputAttValues == null)
+		if (listOfInputAttValues == null){
 			return false;
+		}
 		
-		for (Map<String, String> m : listOfInputAttValues)
-			for (String s : m.keySet())
+		for (Map<String, String> m : listOfInputAttValues){
+			for (String s : m.keySet()){
 				logger.debug(s + "-->" + m.get(s));
+			}
+		}
 		
 		//for (String s : serviceIdsAndMappings.)
 		return true;
@@ -123,8 +126,9 @@ public class PostRequestManager extends LinkedApiRequestManager {
 		
 		logger.debug(url);
 		
-		for (Attribute att : missingAttributes)
+		for (Attribute att : missingAttributes){
 			logger.debug("missing: " + att.getName() + ", grounded in:" + att.getGroundedIn());
+		}
 
 		return url;
 	}
@@ -174,14 +178,16 @@ public class PostRequestManager extends LinkedApiRequestManager {
 				
 				// creating a blank node
 				r = model.createResource();
-				if (classAtom.getClassPredicate().getPrefix() != null && classAtom.getClassPredicate().getNs() != null)
+				if (classAtom.getClassPredicate().getPrefix() != null && classAtom.getClassPredicate().getNs() != null){
 					model.setNsPrefix(classAtom.getClassPredicate().getPrefix(), classAtom.getClassPredicate().getNs());
+				}
 				predicateUri = classAtom.getClassPredicate().getUri();
 				
 				// creating the class resource
 				Resource classResource = model.getResource(predicateUri);
-				if (classResource == null)
+				if (classResource == null){
 					classResource = model.createResource(predicateUri);
+				}
 
 				argument1 = classAtom.getArgument1().getId();
 				outputVariablesToResource.put(argument1, r);
@@ -194,14 +200,16 @@ public class PostRequestManager extends LinkedApiRequestManager {
 			if (atom instanceof IndividualPropertyAtom) {
 				IndividualPropertyAtom propertyAtom = (IndividualPropertyAtom)atom;
 				
-				if (propertyAtom.getPropertyPredicate().getPrefix() != null && propertyAtom.getPropertyPredicate().getNs() != null)
+				if (propertyAtom.getPropertyPredicate().getPrefix() != null && propertyAtom.getPropertyPredicate().getNs() != null){
 					model.setNsPrefix(propertyAtom.getPropertyPredicate().getPrefix(), propertyAtom.getPropertyPredicate().getNs());
+				}
 				predicateUri = propertyAtom.getPropertyPredicate().getUri();
 
 				// creating the property resource
 				Property propertyResource = model.getProperty(predicateUri);
-				if (propertyResource == null)
+				if (propertyResource == null){
 					propertyResource = model.createProperty(predicateUri);
+				}
 
 				argument1 = propertyAtom.getArgument1().getId();
 				argument2 = propertyAtom.getArgument2().getId();
@@ -322,7 +330,9 @@ public class PostRequestManager extends LinkedApiRequestManager {
 				for (List<String> values : table.getValues()) {
 					for (int i = 0; i < table.getColumnsCount(); i++) {
 						String attId = outputAttNameToAttIds.get(table.getHeaders().get(i).getName());
-						if (attId == null) continue;
+						if (attId == null){
+							continue;
+						}
 						String value = values.get(i);
 						outputAttValues.put(attId, value);
 					}
@@ -362,7 +372,9 @@ public class PostRequestManager extends LinkedApiRequestManager {
 				for (List<String> values : table.getValues()) {
 					for (int i = 0; i < table.getColumnsCount(); i++) {
 						String attId = outputAttNameToAttIds.get(table.getHeaders().get(i).getName());
-						if (attId == null) continue;
+						if (attId == null){
+							continue;
+						}
 						String value = values.get(i);
 						outputAttValues.put(attId, value);
 					}
@@ -371,12 +383,13 @@ public class PostRequestManager extends LinkedApiRequestManager {
 			}
 		}
 		
-		if (getFormat().equalsIgnoreCase(SerializationLang.XML))
-			getResponse().setContentType(MimeType.APPLICATION_XML); 
-		else if (getFormat().equalsIgnoreCase(SerializationLang.XML_ABBREV))
-			getResponse().setContentType(MimeType.APPLICATION_XML); 
-		else
+		if (getFormat().equalsIgnoreCase(SerializationLang.XML)){
+			getResponse().setContentType(MimeType.APPLICATION_XML);
+		}else if (getFormat().equalsIgnoreCase(SerializationLang.XML_ABBREV)){
+			getResponse().setContentType(MimeType.APPLICATION_XML);
+		}else{
 			getResponse().setContentType(MimeType.TEXT_PLAIN);
+		}
 
 //		getResponse().setContentType(MimeType.TEXT_PLAIN);
 //		pw.write("Success.");

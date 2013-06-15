@@ -58,14 +58,15 @@ public class ResetKarmaCommand extends Command {
 
 	@Override
 	public String getDescription() {
-		if (forgetSemanticTypes && forgetModels)
+		if (forgetSemanticTypes && forgetModels){
 			return "Semantic Types and Models";
-		else if (forgetModels)
+		}else if (forgetModels){
 			return "Models";
-		else if(forgetSemanticTypes)
+		}else if(forgetSemanticTypes){
 			return "Semantic Types";
-		else
+		}else{
 			return "";
+		}
 	}
 
 	@Override
@@ -77,10 +78,11 @@ public class ResetKarmaCommand extends Command {
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
 		if (forgetSemanticTypes) {
 			boolean deletTypes = vWorkspace.getWorkspace().getCrfModelHandler().removeAllLabels();
-			if (!deletTypes && forgetModels)
+			if (!deletTypes && forgetModels){
 				return new UpdateContainer(new ErrorUpdate("Error occured while removing semantic types. Models have also not been reset."));
-			else if (!deletTypes)
+			}else if (!deletTypes){
 				return new UpdateContainer(new ErrorUpdate("Error occured while removing semantic types."));
+			}
 		}
 		
 		if (forgetModels) {
@@ -89,9 +91,10 @@ public class ResetKarmaCommand extends Command {
 			File historyDir = new File(ServletContextParameterMap.getParameterValue(ContextParameter.USER_DIRECTORY_PATH) + "publish/History/");
 			if (!historyDir.exists() || !historyDir.isDirectory()) {
 				logger.error("Directory not found where the model histories are stored.");
-				if (forgetSemanticTypes)
+				if (forgetSemanticTypes){
 					return new UpdateContainer(new ErrorUpdate("Error occured while removing model histories." +
 							" Learned Semantic types have been reset."));
+				}
 				return new UpdateContainer(new ErrorUpdate("Error occured while removing model histories."));
 			}
 			

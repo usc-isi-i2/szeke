@@ -48,8 +48,9 @@ public class TagsContainer {
 
 	public Tag getTag(TagName tagName) {
 		for (Tag tag : tags) {
-			if(tag.getLabel().name().equals(tagName.name()))
+			if(tag.getLabel().name().equals(tagName.name())){
 				return tag;
+			}
 		}
 		return null;
 	}

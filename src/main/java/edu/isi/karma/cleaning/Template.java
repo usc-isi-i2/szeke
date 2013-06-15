@@ -61,8 +61,9 @@ public class Template implements GrammarTreeNode {
 	public void getCrossIndex(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
-	    for (int i = 0; i < k; i++) 
-	    		com[i] = 0;
+	    for (int i = 0; i < k; i++){
+			com[i] = 0;
+		}
 	    while (com[k - 1] < indexs.get(k-1)) {
 	    		Vector<Integer> res = new Vector<Integer>();
 	        for (int i = 0; i < k; i++)
@@ -75,15 +76,17 @@ public class Template implements GrammarTreeNode {
 				return;
 			}
 	        int t = k - 1;
-	        while (t != 0 && com[t] == indexs.get(t)-1) 
-	        		t--;
+	        while (t != 0 && com[t] == indexs.get(t)-1){
+				t--;
+			}
 	        com[t]++;
 	        if(t==0 && com[t] >= indexs.get(0))
 	        {
 	        		break;
 	        }
-	        for (int i = t + 1; i < k; i++) 
-	        		com[i] = 0;
+	        for (int i = t + 1; i < k; i++){
+				com[i] = 0;
+			}
 	    }
 	}
 	public String prog1(){
@@ -94,14 +97,16 @@ public class Template implements GrammarTreeNode {
 			if (gt.getNodeType().compareTo("segment") == 0) {
 				Segment seg = (Segment)gt;
 				String s = seg.verifySpace();
-				if (s.indexOf("null")!= -1)
+				if (s.indexOf("null")!= -1){
 					return "null";
+				}
 				res += s+"+";
 			} else if (gt.getNodeType().compareTo("loop") == 0) {
 				Loop p = (Loop) gt;
 				String x = p.verifySpace();
-				if(x.indexOf("null")!= -1)
+				if(x.indexOf("null")!= -1){
 					return "null";
+				}
 				if (p.looptype == Loop.LOOP_START) {
 					res += "loop(value,r\"" + x + "+";
 				} else if (p.looptype == Loop.LOOP_END) {
@@ -138,8 +143,9 @@ public class Template implements GrammarTreeNode {
 	}
 	public String prog0() {
 		while (true) {
-			if (curState >= indexes.size())
+			if (curState >= indexes.size()){
 				return "null";
+			}
 			Vector<Integer> xIntegers = indexes.get(curState);
 			String res = "";
 			for (int i = 0; i < xIntegers.size(); i++) {

@@ -98,8 +98,9 @@ public class Matrix {
 	}
 	
 	public Matrix add(Matrix otherMatrix) {
-		if(numOfRows != otherMatrix.numOfRows || numOfCols != otherMatrix.numOfCols)
+		if(numOfRows != otherMatrix.numOfRows || numOfCols != otherMatrix.numOfCols){
 			Prnt.endIt("dims dont match") ;
+		}
 		Matrix resultMatrix = new Matrix(numOfRows, numOfCols) ;
 		for(int row = 0 ; row < numOfRows ; row++) {
 			for(int col = 0 ; col < numOfCols ; col++) {
@@ -110,8 +111,9 @@ public class Matrix {
 	}
 	
 	public Matrix subtract(Matrix otherMatrix) {
-		if(numOfRows != otherMatrix.numOfRows || numOfCols != otherMatrix.numOfCols)
+		if(numOfRows != otherMatrix.numOfRows || numOfCols != otherMatrix.numOfCols){
 			Prnt.endIt("dims dont match") ;
+		}
 		Matrix resultMatrix = new Matrix(numOfRows, numOfCols) ;
 		for(int row = 0 ; row < numOfRows ; row++) {
 			for(int col = 0 ; col < numOfCols ; col++) {
@@ -142,8 +144,9 @@ public class Matrix {
 	}
 	
 	public static double norm(Matrix m) {
-		if(m.numOfCols != 1)
+		if(m.numOfCols != 1){
 			Prnt.endIt("Matrix.norm got a non-vector matrix") ;
+		}
 		double sum = 0.0 ;
 		for(int i = 0 ; i < m.numOfRows ; i++) {
 			sum = sum + m.data[i][0] * m.data[i][0] ;
@@ -153,21 +156,24 @@ public class Matrix {
 	}
 	
 	public static void plusEquals(double[] x, double[] y, double m) {
-		for(int i=0;i<x.length;i++)
+		for(int i=0;i<x.length;i++){
 			x[i] = x[i] + m * y[i] ;
+		}
 	}
 	
 	public static double dotProduct(double[] x, double[] y) {
 		double s = 0.0 ;
-		for(int i=0;i<x.length;i++) 
+		for(int i=0;i<x.length;i++){
 			s+=(x[i] * y[i]) ;
+		}
 		return s ;
 	}
 	
 	public static double norm(double[] x) {
 		double s = 0.0 ;
-		for(int i=0;i<x.length;i++)
+		for(int i=0;i<x.length;i++){
 			s+=(x[i]*x[i]) ;
+		}
 		s = Math.sqrt(s) ;
 		return s ;
 	}
