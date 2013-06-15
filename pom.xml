@@ -175,8 +175,9 @@
     </dependency>
         <dependency>
     	<groupId>org.antlr</groupId>
-    	<artifactId>antlr</artifactId>
+    	<artifactId>antlr-runtime</artifactId>
     	<version>3.2</version>
+    	<scope>compile</scope>
     </dependency>
         <dependency>
         	<groupId>com.healthmarketscience.jackcess</groupId>
@@ -414,6 +415,18 @@
 	          <target>1.6</target>
 	        </configuration>
 	    </plugin>
+	<plugin>
+		<groupId>org.antlr</groupId>
+		<artifactId>antlr3-maven-plugin</artifactId>
+		<version>3.2</version>
+		<executions>
+		  <execution>
+		    <goals>
+		      <goal>antlr</goal>
+		    </goals>
+		  </execution>
+		</executions>
+	</plugin>
       <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
