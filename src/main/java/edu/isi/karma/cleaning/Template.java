@@ -212,7 +212,7 @@ public class Template implements GrammarTreeNode {
 	}
 
 	@Override
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		// TODO Auto-generated method stub
 
 	}

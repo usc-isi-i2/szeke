@@ -129,7 +129,7 @@ public class Program implements GrammarTreeNode {
 		return "Program";
 	}
 	@Override
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		// TODO Auto-generated method stub
 		
 	}

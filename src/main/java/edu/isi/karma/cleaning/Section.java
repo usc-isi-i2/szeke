@@ -22,7 +22,7 @@ public class Section implements GrammarTreeNode {
 		if(itInterpretor==null)
 			itInterpretor =  new Interpretor();
 		if(supermode == 0)
-			this.createTotalOrderList();
+			this.createTotalOrderVector();
 		else
 		{
 			this.reiniteRules();
@@ -115,7 +115,7 @@ public class Section implements GrammarTreeNode {
 	}
 
 	@Override
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		for(int i = 0; i< pair[0].rules.size(); i++)
 		{
 			for(int j = 0; j< pair[1].rules.size(); j++)

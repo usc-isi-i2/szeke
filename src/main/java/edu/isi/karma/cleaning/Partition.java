@@ -131,7 +131,7 @@ public class Partition implements GrammarTreeNode {
 		return "Partition";
 	}
 	@Override
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		// TODO Auto-generated method stub
 		
 	}

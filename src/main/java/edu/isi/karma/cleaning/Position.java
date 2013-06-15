@@ -36,7 +36,7 @@ public class Position implements GrammarTreeNode {
 		this.leftContextNodes = lcxt;
 		this.rightContextNodes = rcxt;
 		this.isinloop = loop;
-		createTotalOrderList();
+		createTotalOrderVector();
 	}
 
 	public Position(Position p, boolean loop) {
@@ -47,7 +47,7 @@ public class Position implements GrammarTreeNode {
 		this.leftContextNodes = p.leftContextNodes;
 		this.rightContextNodes = p.rightContextNodes;
 		this.isinloop = loop;
-		createTotalOrderList();
+		createTotalOrderVector();
 	}
 
 	public void getString(List<TNode> x, int cur, String path, Double value,
@@ -363,7 +363,7 @@ public class Position implements GrammarTreeNode {
 		}
 		return "null";
 	}
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		HashMap<String, Double> lMap = new HashMap<String, Double>();
 		HashMap<String, Double> rMap = new HashMap<String, Double>();
 		if (this.leftContextNodes != null) {

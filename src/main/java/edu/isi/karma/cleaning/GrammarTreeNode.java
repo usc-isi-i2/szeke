@@ -7,7 +7,7 @@ public interface GrammarTreeNode {
 	public String getNodeType();
 	public double getScore();
 	public String getrepString(); // return a string represent the type info of the grammar tree node
-	public void createTotalOrderList(); // use the predefined partial order to creat a total order vector
+	public void createTotalOrderVector(); // use the predefined partial order to create a total order vector
 	public void emptyState();
 	public long size();
 }

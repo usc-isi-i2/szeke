@@ -24,10 +24,10 @@ public class Traces implements GrammarTreeNode {
 		this.orgNodes = org;
 		this.tarNodes = tar;
 		this.createTraces();
-		createTotalOrderList();
+		createTotalOrderVector();
 	}
 
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		ArrayList<Integer> xArrayList = new ArrayList<Integer>();
 		xArrayList.addAll(traceline.keySet());
 		xArrayList.addAll(loopline.keySet());
@@ -47,7 +47,7 @@ public class Traces implements GrammarTreeNode {
 			HashMap<Integer,HashMap<String, Template>> l) {
 		this.traceline = t;
 		this.loopline = l;
-		createTotalOrderList();
+		createTotalOrderVector();
 	}
 
 	// initialize the tree to represent the grammar tree

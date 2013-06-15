@@ -87,7 +87,7 @@ public class Loop implements GrammarTreeNode {
 		return this.loopbody.getrepString();
 	}
 	@Override
-	public void createTotalOrderList() {
+	public void createTotalOrderVector() {
 		// TODO Auto-generated method stub
 		
 	}

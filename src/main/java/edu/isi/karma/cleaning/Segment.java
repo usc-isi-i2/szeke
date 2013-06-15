@@ -27,20 +27,20 @@ public class Segment implements GrammarTreeNode {
 	public Segment(List<TNode> cont)
 	{
 		constNodes = cont;
-		createTotalOrderList();
+		createTotalOrderVector();
 	}
 	public Segment(int start, int end, List<TNode> cont)
 	{
 		this.start = start;
 		this.end = end;
 		this.constNodes = cont;
-		this.createTotalOrderList();
+		this.createTotalOrderVector();
 	}
 	public Segment(List<Section> sections,boolean loop)
 	{
 		this.section = sections;
 		this.isinloop = loop;
-		this.createTotalOrderList();
+		this.createTotalOrderVector();
 	}
 	public Segment(int start, int end, List<int[]> mapping,List<TNode> orgNodes,List<TNode> tarNodes)
 	{
@@ -63,7 +63,7 @@ public class Segment implements GrammarTreeNode {
 			if(end >start+1)
 				repString += tarNodes.get(this.end-1).getType();
 		}
-		this.createTotalOrderList();
+		this.createTotalOrderVector();
 	}
 /*	public void setSections(List<Position[]> sections)
 	{
@@ -297,7 +297,7 @@ public class Segment implements GrammarTreeNode {
 		return r;
 	}
 	public List<Integer> rules = new ArrayList<Integer>();
-	public void createTotalOrderList()
+	public void createTotalOrderVector()
 	{
 		SortedMap<Double,List<Integer>> xmap = new TreeMap<Double, List<Integer>>();
 		for(int i=0; i< section.size(); i++)
