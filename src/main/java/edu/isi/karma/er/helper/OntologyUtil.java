@@ -1,7 +1,7 @@
 package edu.isi.karma.er.helper;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -22,7 +22,7 @@ public class OntologyUtil {
 		Property RDF = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		ResIterator iter = model.listResourcesWithProperty(RDF);
 		
-		List<Ontology> list = new Vector<Ontology>();
+		List<Ontology> list = new ArrayList<Ontology>();
 		while (iter.hasNext()) {
 			Resource res = iter.next();
 			StmtIterator siter = res.listProperties();

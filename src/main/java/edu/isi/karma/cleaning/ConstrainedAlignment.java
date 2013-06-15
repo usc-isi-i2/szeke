@@ -1,16 +1,17 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConstrainedAlignment {
-	public Vector<Vector<TNode>> olist;
-	public Vector<Vector<TNode>> tlist;
+	public List<List<TNode>> olist;
+	public List<List<TNode>> tlist;
 	public int expnum;
 	public ConstrainedAlignment()
 	{
 		
 	}
-	public Vector<Integer> findAll(TNode t,Vector<TNode> x)
+	public List<Integer> findAll(TNode t,List<TNode> x)
 	{
 		return null;
 	}
@@ -18,7 +19,7 @@ public class ConstrainedAlignment {
 	public void traverse()
 	{
 		//inite
-		Vector<Integer> spos = new Vector<Integer>();
+		List<Integer> spos = new ArrayList<Integer>();
 		for(int i = 0; i<expnum;i++)
 		{
 			spos.add(0);
@@ -42,11 +43,11 @@ class LatentState{
 	static final int ANC = 3;//a anchor state
 	public int StateType;
 	public LatentState nextState;
-	public Vector<int[]> segments;
-	public LatentState(Vector<Integer> spos)
+	public List<int[]> segments;
+	public LatentState(List<Integer> spos)
 	{
 		this.StateType = LatentState.UND;
-		segments = new Vector<int[]>();
+		segments = new ArrayList<int[]>();
 		if(segments.size() !=spos.size())
 		{
 			System.out.println("Length different");
@@ -67,7 +68,7 @@ class LatentState{
 	{
 		segments.get(lindex)[1] = e;
 	}
-	public void createNewState(Vector<Integer> spos)
+	public void createNewState(List<Integer> spos)
 	{
 		LatentState nState =new LatentState(spos);
 		this.nextState = nState;

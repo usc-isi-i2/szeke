@@ -8,7 +8,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.tdb.TDB;
@@ -238,7 +237,7 @@ public class CreateOntologyRepositoryUsingJena {
 		onto.setComment(comment);
 		onto.setCreator(creator);
 		onto.setFinalScore(finalScore);
-		List<Score> list = new Vector<Score>();
+		List<Score> list = new ArrayList<Score>();
 		for (int i= 0; i < srcAttr1.length; i++) {
 			Score s = new Score();
 			s.setPredicate(srcAttr1[i]);
@@ -258,7 +257,7 @@ public class CreateOntologyRepositoryUsingJena {
 	}
 	
 	public static List<MatchResultOntology> loadBuildingOntologyFromCSV() {
-		List<MatchResultOntology> mlist = new Vector<MatchResultOntology>();
+		List<MatchResultOntology> mlist = new ArrayList<MatchResultOntology>();
 		String filename = "BuildingMatchResult.csv";
 		File file = new File(Constants.PATH_SCORE_BOARD_FILE + filename);
 		if (!file.exists())
@@ -291,7 +290,7 @@ public class CreateOntologyRepositoryUsingJena {
 							onto.setComment("Not Match (" + onto.getFinalScore() + ")");
 						}
 						
-						sList = new Vector<Score>();
+						sList = new ArrayList<Score>();
 						s = new Score();
 						s.setPredicate("NAME");
 						s.setSrcObj(arr[1]);

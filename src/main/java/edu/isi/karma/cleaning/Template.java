@@ -1,20 +1,19 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
-
-import org.python.antlr.PythonParser.return_stmt_return;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Template implements GrammarTreeNode {
 	public static int temp_limit = 2048;
 	public static int supermode = 0;
-	public Vector<GrammarTreeNode> body = new Vector<GrammarTreeNode>();
-	public Vector<Vector<Integer>> indexes = new Vector<Vector<Integer>>();
+	public List<GrammarTreeNode> body = new ArrayList<GrammarTreeNode>();
+	public List<List<Integer>> indexes = new ArrayList<List<Integer>>();
 	public int curState = 0;
 	public long size = 1;
 
-	public Template(Vector<GrammarTreeNode> body) {
+	public Template(List<GrammarTreeNode> body) {
 		this.body = body;
-		Vector<Long> x = new Vector<Long>();
+		List<Long> x = new ArrayList<Long>();
 		for (GrammarTreeNode g : body) {
 			x.add(g.size());
 		}
@@ -32,15 +31,15 @@ public class Template implements GrammarTreeNode {
 		return str;
 	}
 
-/*	public void getCrossIndex(Vector<Long> indexs, int cur, String path,
-			Vector<Vector<Integer>> configs) {
+/*	public void getCrossIndex(List<Long> indexs, int cur, String path,
+			List<List<Integer>> configs) {
 		String tpath = path;
 		if (configs.size() > temp_limit) {
 			return;
 		}
 		if (cur >= indexs.size()) {
 			String[] elems = tpath.split(",");
-			Vector<Integer> line = new Vector<Integer>();
+			List<Integer> line = new ArrayList<Integer>();
 			for (String s : elems) {
 				String x = s.trim();
 				if (x.length() > 0) {
@@ -58,13 +57,13 @@ public class Template implements GrammarTreeNode {
 		}
 	} */
 	//iteratively generate combinations
-	public void getCrossIndex(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
+	public void getCrossIndex(List<Long> indexs,List<List<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
 	    for (int i = 0; i < k; i++) 
 	    		com[i] = 0;
 	    while (com[k - 1] < indexs.get(k-1)) {
-	    		Vector<Integer> res = new Vector<Integer>();
+	    		List<Integer> res = new ArrayList<Integer>();
 	        for (int i = 0; i < k; i++)
 	        {
 	        		//System.out.print(""+com[i]);
@@ -140,7 +139,7 @@ public class Template implements GrammarTreeNode {
 		while (true) {
 			if (curState >= indexes.size())
 				return "null";
-			Vector<Integer> xIntegers = indexes.get(curState);
+			List<Integer> xIntegers = indexes.get(curState);
 			String res = "";
 			for (int i = 0; i < xIntegers.size(); i++) {
 				GrammarTreeNode gt = body.get(i);
@@ -177,9 +176,9 @@ public class Template implements GrammarTreeNode {
 
 	@Override
 	public GrammarTreeNode mergewith(GrammarTreeNode a) {
-		Vector<GrammarTreeNode> line2 = ((Template) a).body;
-		Vector<GrammarTreeNode> line1 = this.body;
-		Vector<GrammarTreeNode> nLine = new Vector<GrammarTreeNode>();
+		List<GrammarTreeNode> line2 = ((Template) a).body;
+		List<GrammarTreeNode> line1 = this.body;
+		List<GrammarTreeNode> nLine = new ArrayList<GrammarTreeNode>();
 		if (line1.size() != line2.size()) {
 			return null;
 		}
@@ -213,7 +212,7 @@ public class Template implements GrammarTreeNode {
 	}
 
 	@Override
-	public void createTotalOrderVector() {
+	public void createTotalOrderList() {
 		// TODO Auto-generated method stub
 
 	}

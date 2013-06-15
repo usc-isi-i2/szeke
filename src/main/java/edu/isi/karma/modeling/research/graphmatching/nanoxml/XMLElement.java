@@ -37,9 +37,12 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
+
+import edu.isi.karma.util.Iterator2Enumeration;
 
 
 /**
@@ -85,7 +88,7 @@ public class XMLElement
      *     <li>The keys and the values are strings.
      * </ul></dd></dl>
      */
-    private Hashtable attributes;
+    private Hashtable<String, String> attributes;
 
 
     /**
@@ -98,7 +101,7 @@ public class XMLElement
      *         or a subclass of <code>XMLElement</code>.
      * </ul></dd></dl>
      */
-    private Vector children;
+    private List<XMLElement> children;
 
 
     /**
@@ -419,8 +422,8 @@ public class XMLElement
         this.ignoreCase = ignoreCase;
         this.name = null;
         this.contents = "";
-        this.attributes = new Hashtable();
-        this.children = new Vector();
+        this.attributes = new Hashtable<String, String>();
+        this.children = new ArrayList<XMLElement>();
         this.entities = entities;
         this.lineNr = 0;
         Enumeration enume = this.entities.keys();
@@ -468,7 +471,7 @@ public class XMLElement
      */
     public void addChild(XMLElement child)
     {
-        this.children.addElement(child);
+        this.children.add(child);
     }
 
 
@@ -776,27 +779,21 @@ public class XMLElement
      */
     public Enumeration enumerateChildren()
     {
-        return this.children.elements();
+        return new Iterator2Enumeration<XMLElement>(this.children.iterator());
     }
 
 
     /**
-	 * Returns the child elements as a Vector. It is safe to modify this Vector. <dl><dt><b>Postconditions:</b></dt><dd> <ul><li><code>result != null</code> </ul></dd></dl>
+	 * Returns the child elements as a List. It is safe to modify this List. <dl><dt><b>Postconditions:</b></dt><dd> <ul><li><code>result != null</code> </ul></dd></dl>
 	 * @see nanoxml.XMLElement#addChild(nanoxml.XMLElement)   addChild(XMLElement)
 	 * @see nanoxml.XMLElement#countChildren()
 	 * @see nanoxml.XMLElement#enumerateChildren()
 	 * @see nanoxml.XMLElement#removeChild(nanoxml.XMLElement)   removeChild(XMLElement)
 	 * @uml.property   name="children"
 	 */
-    public Vector getChildren()
+    public List<XMLElement> getChildren()
     {
-        try {
-            return (Vector) this.children.clone();
-        } catch (Exception e) {
-            // this never happens, however, some Java compilers are so
-            // braindead that they require this exception clause
-            return null;
-        }
+    	return new ArrayList<XMLElement>(this.children);
     }
 
 
@@ -1887,7 +1884,7 @@ public class XMLElement
      */
     public void removeChild(XMLElement child)
     {
-        this.children.removeElement(child);
+        this.children.remove(child);
     }
 
 

@@ -23,13 +23,14 @@ package edu.isi.karma.cleaning;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 public class DataCollection {
 	public static String config = "";
-	Vector<FileStat> fstates = new Vector<FileStat>();
+	List<FileStat> fstates = new ArrayList<FileStat>();
 	public DataCollection()
 	{
 		MyLogger myLogger = new MyLogger();
@@ -105,7 +106,7 @@ class FileStat
 	public String program = "" ;// the correct program
 	public long ruleNo = 0; // order of the first consistent rule
 	public long checkedrow = 0;
-	public FileStat(String fname, long l,long g,long e,int exp,Vector<String[]> exps,long ruleNo,long checkedrow, String program)
+	public FileStat(String fname, long l,long g,long e,int exp,List<String[]> exps,long ruleNo,long checkedrow, String program)
 	{
 		this.fileNameString = fname;
 		this.learnTime = l;

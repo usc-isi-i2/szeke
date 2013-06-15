@@ -4,7 +4,7 @@ package edu.isi.karma.modeling.research.graphmatching.xml;
 
 import java.io.FileReader;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import edu.isi.karma.modeling.research.graphmatching.nanoxml.XMLElement;
 import edu.isi.karma.modeling.research.graphmatching.util.Edge;
@@ -35,7 +35,7 @@ public class XMLParser {
 		FileReader reader = new FileReader(filename);
 		xml.parseFromReader(reader);
 		GraphSet graphSet = new GraphSet();
-		Vector<XMLElement> children = xml.getChildren();
+		List<XMLElement> children = xml.getChildren();
 		XMLElement root = children.get(0);
 		Enumeration<XMLElement> enumerator = root.enumerateChildren();
 		int i = 1;
@@ -62,7 +62,7 @@ public class XMLParser {
 		xml.parseFromReader(reader);
 		reader.close();
 		Graph graph1 = new Graph();
-		Vector children = xml.getChildren();
+		List children = xml.getChildren();
 		XMLElement root = (XMLElement) children.get(0);
 		String id = (String) root.getAttribute("id", null);
 		String edgemode = (String) root.getAttribute("edgemode", "undirected");
@@ -85,7 +85,7 @@ public class XMLParser {
 					XMLElement child1 = (XMLElement) enum1.nextElement();
 					if (child1.getName().equals("attr")) {
 						String key = (String) child1.getAttribute("name", null);
-						Vector children2 = child1.getChildren();
+						List children2 = child1.getChildren();
 						XMLElement child2 = (XMLElement) children2.get(0);
 						String value = child2.getContent();
 						node.put(key, value);
@@ -115,7 +115,7 @@ public class XMLParser {
 					if (child1.getName().equals("attr")) {
 						String key = (String) child1.getAttribute("name",
 								"key failed!");
-						Vector children2 = child1.getChildren();
+						List children2 = child1.getChildren();
 						XMLElement child2 = (XMLElement) children2.get(0);
 						String value = child2.getContent();
 						edge.put(key, value);
@@ -157,7 +157,7 @@ public class XMLParser {
 		XMLElement xml = new XMLElement();
 		xml.parseString(graph);
 		Graph graph1 = new Graph();
-		Vector children = xml.getChildren();
+		List children = xml.getChildren();
 		XMLElement root = (XMLElement) children.get(0);
 		String id = (String) root.getAttribute("id", null);
 		String edgemode = (String) root.getAttribute("edgemode", "undirected");
@@ -180,7 +180,7 @@ public class XMLParser {
 					XMLElement child1 = (XMLElement) enum1.nextElement();
 					if (child1.getName().equals("attr")) {
 						String key = (String) child1.getAttribute("name", null);
-						Vector children2 = child1.getChildren();
+						List children2 = child1.getChildren();
 						XMLElement child2 = (XMLElement) children2.get(0);
 						String value = child2.getContent();
 						node.put(key, value);
@@ -210,7 +210,7 @@ public class XMLParser {
 					if (child1.getName().equals("attr")) {
 						String key = (String) child1.getAttribute("name",
 								"key failed!");
-						Vector children2 = child1.getChildren();
+						List children2 = child1.getChildren();
 						XMLElement child2 = (XMLElement) children2.get(0);
 						String value = child2.getContent();
 						edge.put(key, value);

@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
@@ -66,7 +65,7 @@ public class SubmitCleaningCommand extends Command {
 	private String columnName;
 	
 	private static Logger logger =Logger.getLogger(SubmitCleaningCommand.class);
-	private Vector<TransformationExample> examples = new Vector<TransformationExample>();
+	private List<TransformationExample> examples = new ArrayList<TransformationExample>();
 	
 	public SubmitCleaningCommand(String id, String hNodeId, String vWorkSheetId, String Examples) {
 		super(id);
@@ -211,7 +210,7 @@ public class SubmitCleaningCommand extends Command {
 				
 			}
 			Iterator<String> iter = rtf.getTransformations().keySet().iterator();
-			Vector<ValueCollection> vvc = new Vector<ValueCollection>();
+			List<ValueCollection> vvc = new ArrayList<ValueCollection>();
 			String tpid = iter.next();
 			ValueCollection rvco = rtf.getTransformedValues(tpid);
 			vvc.add(rvco);

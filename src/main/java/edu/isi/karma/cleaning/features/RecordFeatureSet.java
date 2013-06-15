@@ -21,12 +21,10 @@
 
 package edu.isi.karma.cleaning.features;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Vector;
-
-import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIConversion.Static;
+import java.util.List;
 
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
@@ -49,7 +47,7 @@ public class RecordFeatureSet {
 	}
 
 	// convert the records to tokensequences and then construct the vocabulary
-	public void initialize(Vector<String> Records) {
+	public void initialize(List<String> Records) {
 		HashSet<String> hSet = new HashSet<String>();
 		for (String s : Records) {
 			Ruler r = new Ruler();
@@ -64,7 +62,7 @@ public class RecordFeatureSet {
 	}
 
 	public Collection<Feature> computeFeatures(String record, String label) {
-		Vector<Feature> xCollection = new Vector<Feature>();
+		List<Feature> xCollection = new ArrayList<Feature>();
 		for (String c : xStrings) {
 			Feature f = new RecordCntFeatures(c, record, c);
 			xCollection.add(f);
@@ -82,7 +80,7 @@ public class RecordFeatureSet {
 	}
 
 	public Collection<String> getFeatureNames() {
-		Vector<String> x = new Vector<String>();
+		List<String> x = new ArrayList<String>();
 		int cnt = 0;
 		for (String s : xStrings) {
 			x.add("attr_" + cnt);

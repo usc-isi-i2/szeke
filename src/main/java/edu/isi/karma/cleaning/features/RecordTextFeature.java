@@ -21,7 +21,8 @@
 
 package edu.isi.karma.cleaning.features;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
@@ -30,7 +31,7 @@ import edu.isi.karma.cleaning.TNode;
 public class RecordTextFeature implements Feature {
 	public double score = 1.0;
 	public String text = "";
-	public Vector<TNode> nodes = new Vector<TNode>();
+	public List<TNode> nodes = new ArrayList<TNode>();
 	public String value = "";
 	public RecordTextFeature(String text,String value)
 	{

@@ -1,12 +1,13 @@
 package edu.isi.karma.cleaning;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
 
 public class Segment implements GrammarTreeNode {
-	public Vector<Section> section = new Vector<Section>();
+	public List<Section> section = new ArrayList<Section>();
 	public static int cxtsize_limit = 2;
 	public static int time_limit = 5;
 	public String tarString = "";
@@ -16,32 +17,32 @@ public class Segment implements GrammarTreeNode {
 	public static final int UNDFN = -2;
 	public int start = 0; // start position in tarNodes
 	public int end = 0; // end position in tarNodes
-	public Vector<int[]> mappings; // corresponding areas in org
+	public List<int[]> mappings; // corresponding areas in org
 	public boolean isinloop = false;
-	public Vector<TNode> constNodes = new Vector<TNode>();
+	public List<TNode> constNodes = new ArrayList<TNode>();
 	public String repString = "";
 	private int curState = -1;
-	public Vector<String> segStrings = new Vector<String>();
+	public List<String> segStrings = new ArrayList<String>();
 	public int VersionSP_size = 0;
-	public Segment(Vector<TNode> cont)
+	public Segment(List<TNode> cont)
 	{
 		constNodes = cont;
-		createTotalOrderVector();
+		createTotalOrderList();
 	}
-	public Segment(int start, int end, Vector<TNode> cont)
+	public Segment(int start, int end, List<TNode> cont)
 	{
 		this.start = start;
 		this.end = end;
 		this.constNodes = cont;
-		this.createTotalOrderVector();
+		this.createTotalOrderList();
 	}
-	public Segment(Vector<Section> sections,boolean loop)
+	public Segment(List<Section> sections,boolean loop)
 	{
 		this.section = sections;
 		this.isinloop = loop;
-		this.createTotalOrderVector();
+		this.createTotalOrderList();
 	}
-	public Segment(int start, int end, Vector<int[]> mapping,Vector<TNode> orgNodes,Vector<TNode> tarNodes)
+	public Segment(int start, int end, List<int[]> mapping,List<TNode> orgNodes,List<TNode> tarNodes)
 	{
 		this.start = start;
 		this.end = end;
@@ -62,23 +63,23 @@ public class Segment implements GrammarTreeNode {
 			if(end >start+1)
 				repString += tarNodes.get(this.end-1).getType();
 		}
-		this.createTotalOrderVector();
+		this.createTotalOrderList();
 	}
-/*	public void setSections(Vector<Position[]> sections)
+/*	public void setSections(List<Position[]> sections)
 	{
-		Vector<Section> s = new Vector<Section>();
+		List<Section> s = new ArrayList<Section>();
 		for(Position[] p:sections)
 		{
 			Section sx = new Section(p,this.isinloop);
 			s.add(sx);
 		}
 		this.section = s;
-		this.createTotalOrderVector();
+		this.createTotalOrderList();
 	}*/
-	public Vector<TNode> getLeftCxt(int c, Vector<TNode> x)
+	public List<TNode> getLeftCxt(int c, List<TNode> x)
 	{
 		int i = Segment.cxtsize_limit;
-		Vector<TNode> res = new Vector<TNode>();
+		List<TNode> res = new ArrayList<TNode>();
 		while(i>0)
 		{
 			if((c-i)<0)
@@ -91,10 +92,10 @@ public class Segment implements GrammarTreeNode {
 		}
 		return res;
 	}
-	public Vector<TNode> getRightCxt(int c, Vector<TNode> x)
+	public List<TNode> getRightCxt(int c, List<TNode> x)
 	{
 		int i = 0;
-		Vector<TNode> res = new Vector<TNode>();
+		List<TNode> res = new ArrayList<TNode>();
 		while(i<Segment.cxtsize_limit)
 		{
 			if((c+i)>=x.size())
@@ -136,15 +137,15 @@ public class Segment implements GrammarTreeNode {
 		return ruleString;
 	}
 	//
-	public void initSections(Vector<TNode> orgNodes)
+	public void initSections(List<TNode> orgNodes)
 	{
 		for (int[] elem: mappings)
 		{
 			int s = elem[0];
 			int e = elem[1];
 			//record the data
-			Vector<String> orgStrings = new Vector<String>();
-			Vector<String> tarStrings = new Vector<String>();
+			List<String> orgStrings = new ArrayList<String>();
+			List<String> tarStrings = new ArrayList<String>();
 			String org = "";
 			for(int i = 0; i<orgNodes.size(); i++)
 			{
@@ -153,16 +154,16 @@ public class Segment implements GrammarTreeNode {
 			orgStrings.add(org);
 			tarStrings.add(tarString);
 			//create the startPosition
-			Vector<Integer> sset = new Vector<Integer>();
+			List<Integer> sset = new ArrayList<Integer>();
 			sset = UtilTools.getStringPos(s, orgNodes);
-			Vector<String> tars = new Vector<String>();
+			List<String> tars = new ArrayList<String>();
 			tars.add(sset.get(0).toString());
 			Position sPosition = new Position(sset, getLeftCxt(s, orgNodes), getRightCxt(s, orgNodes),orgStrings,tars,this.isinloop);
 			sPosition.isinloop = this.isinloop;
 			//create the endPosition
-			Vector<Integer> eset = new Vector<Integer>();
+			List<Integer> eset = new ArrayList<Integer>();
 			eset = UtilTools.getStringPos(e, orgNodes);
-			Vector<String> tars1 = new Vector<String>();
+			List<String> tars1 = new ArrayList<String>();
 			tars1.add(eset.get(0).toString());
 			Position ePosition = new Position(eset, getLeftCxt(e, orgNodes), getRightCxt(e, orgNodes),orgStrings,tars1,this.isinloop);
 			ePosition.isinloop = this.isinloop;
@@ -184,7 +185,7 @@ public class Segment implements GrammarTreeNode {
 			pair.isinloop = res;
 		}
 	}
-	public void setCnt(Vector<TNode> cnst)
+	public void setCnt(List<TNode> cnst)
 	{
 		for(TNode t:cnst)
 		{
@@ -231,7 +232,7 @@ public class Segment implements GrammarTreeNode {
 		}
 		//merge the position
 		HashSet<String> uniqueKeys = new HashSet<String>();
-		Vector<Section> newSections = new Vector<Section>();
+		List<Section> newSections = new ArrayList<Section>();
 		for(Section x:this.section)
 		{
 			for(Section y:s.section)
@@ -295,10 +296,10 @@ public class Segment implements GrammarTreeNode {
 		this.score = 0.0;
 		return r;
 	}
-	public Vector<Integer> rules = new Vector<Integer>();
-	public void createTotalOrderVector()
+	public List<Integer> rules = new ArrayList<Integer>();
+	public void createTotalOrderList()
 	{
-		SortedMap<Double,Vector<Integer>> xmap = new TreeMap<Double, Vector<Integer>>();
+		SortedMap<Double,List<Integer>> xmap = new TreeMap<Double, List<Integer>>();
 		for(int i=0; i< section.size(); i++)
 		{
 			Double double1 = 0.0;
@@ -311,7 +312,7 @@ public class Segment implements GrammarTreeNode {
 			}
 			else
 			{
-				Vector<Integer> vi = new Vector<Integer>();
+				List<Integer> vi = new ArrayList<Integer>();
 				vi.add(i);
 				xmap.put(key, vi);
 			}
@@ -319,7 +320,7 @@ public class Segment implements GrammarTreeNode {
 		while(!xmap.isEmpty())
 		{
 			Double x = xmap.firstKey();
-			Vector<Integer> v = xmap.get(x);
+			List<Integer> v = xmap.get(x);
 			//add the vth pair's rules
 			for(Integer e:v)
 			{

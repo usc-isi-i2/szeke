@@ -20,7 +20,8 @@
  ******************************************************************************/
 package edu.isi.karma.rep.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.isi.karma.cleaning.InterpreterType;
 import edu.isi.karma.cleaning.ProgramRule;
@@ -29,7 +30,7 @@ import edu.isi.karma.cleaning.ProgramRule;
 
 public class RamblerTransformation implements Transformation {
 
-	private Vector<String> rules = new Vector<String>();
+	private List<String> rules = new ArrayList<String>();
 	public String signature = "";
 	private ProgramRule prog;
 	public RamblerTransformation(ProgramRule prog)

@@ -33,8 +33,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 
 /**
@@ -168,7 +169,7 @@ public class XMLWriter
       } else {
          this.writer.print('<');
          this.writer.print(xml.getFullName());
-         Vector nsprefixes = new Vector();
+         List nsprefixes = new ArrayList();
 
          if (xml.getNamespace() != null) {
             if (xml.getName().equals(xml.getFullName())) {
@@ -176,7 +177,7 @@ public class XMLWriter
             } else {
                String prefix = xml.getFullName();
                prefix = prefix.substring(0, prefix.indexOf(':'));
-               nsprefixes.addElement(prefix);
+               nsprefixes.add(prefix);
                this.writer.print(" xmlns:" + prefix);
                this.writer.print("=\"" + xml.getNamespace() + "\"");
             }
@@ -197,7 +198,7 @@ public class XMLWriter
                   if (! nsprefixes.contains(prefix)) {
                      this.writer.print(" xmlns:" + prefix);
                      this.writer.print("=\"" + namespace + '"');
-                     nsprefixes.addElement(prefix);
+                     nsprefixes.add(prefix);
                   }
                }
             }

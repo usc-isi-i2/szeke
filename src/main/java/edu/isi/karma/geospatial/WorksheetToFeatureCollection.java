@@ -77,9 +77,9 @@ import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
+import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Style;
-import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import edu.isi.karma.modeling.Namespaces;
 import edu.isi.karma.modeling.ontology.OntologyManager;
 import edu.isi.karma.rep.HNode;
@@ -95,9 +95,9 @@ public class WorksheetToFeatureCollection {
 	private Worksheet worksheet;
 	private OntologyManager om;
 
-	List<SimpleFeature> pointFeatureList = new ArrayList<SimpleFeature>();
-	List<SimpleFeature> lineFeatureList = new ArrayList<SimpleFeature>();
-	List<SimpleFeature> polygonFeatureList = new ArrayList<SimpleFeature>();
+	List<SimpleFeature> pointFeatureVector = new ArrayList<SimpleFeature>();
+	List<SimpleFeature> lineFeatureVector = new ArrayList<SimpleFeature>();
+	List<SimpleFeature> polygonFeatureVector = new ArrayList<SimpleFeature>();
 	List<AttributeDescriptor> featureSchema = new ArrayList<AttributeDescriptor>();
 	List<String> geomHNodeIdList = new ArrayList<String>();
 	List<String> modeledHNodeIds = new ArrayList<String>();
@@ -202,17 +202,17 @@ public class WorksheetToFeatureCollection {
 		prepareFeatureSchema();
 		if (pointFeatureHNodeId != "")
 			populateSimpleFeatures(pointFeatureHNodeId,
-					"", getRows(), pointFeatureList, Point.class);
+					"", getRows(), pointFeatureVector, Point.class);
 		if (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != "")
 			populateSimpleFeatures(pointFeatureLonHNodeId,
-					pointFeatureLatHNodeId, getRows(), pointFeatureList,
+					pointFeatureLatHNodeId, getRows(), pointFeatureVector,
 					Point.class);
 		if (lineFeatureHNodeId != "")
 			populateSimpleFeatures(lineFeatureHNodeId, "",
-					getRows(), lineFeatureList, LineString.class);
+					getRows(), lineFeatureVector, LineString.class);
 		if (polygonFeatureHNodeId != "")
 			populateSimpleFeatures(polygonFeatureHNodeId,
-					"", getRows(), polygonFeatureList, Polygon.class);
+					"", getRows(), polygonFeatureVector, Polygon.class);
 	}
 	private void prepareFeatureSchema() {
 		List<String> spatialHNodeIds = new ArrayList<String>();
@@ -409,13 +409,13 @@ public class WorksheetToFeatureCollection {
 		File kml = publishKML(spatialDataFolder, fileName);
 		if (pointFeatureHNodeId != ""
 				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != ""))
-			saveShapefile(pointFeatureList, spatialDataFolder, fileName
+			saveShapefile(pointFeatureVector, spatialDataFolder, fileName
 					+ "_point");
 		if (lineFeatureHNodeId != "")
-			saveShapefile(lineFeatureList, spatialDataFolder, fileName
+			saveShapefile(lineFeatureVector, spatialDataFolder, fileName
 					+ "_line");
 		if (polygonFeatureHNodeId != "")
-			saveShapefile(polygonFeatureList, spatialDataFolder, fileName
+			saveShapefile(polygonFeatureVector, spatialDataFolder, fileName
 					+ "_polygon");
 
 		saveSpatialDataToZip(spatialDataFolder, fileName);
@@ -457,13 +457,13 @@ public class WorksheetToFeatureCollection {
 		File kml = publishKML(spatialDataFolder, fileName);
 		if (pointFeatureHNodeId != ""
 				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != ""))
-			saveShapefile(pointFeatureList, spatialDataFolder, fileName
+			saveShapefile(pointFeatureVector, spatialDataFolder, fileName
 					+ "_point");
 		if (lineFeatureHNodeId != "")
-			saveShapefile(lineFeatureList, spatialDataFolder, fileName
+			saveShapefile(lineFeatureVector, spatialDataFolder, fileName
 					+ "_line");
 		if (polygonFeatureHNodeId != "")
-			saveShapefile(polygonFeatureList, spatialDataFolder, fileName
+			saveShapefile(polygonFeatureVector, spatialDataFolder, fileName
 					+ "_polygon");
 
 		saveSpatialDataToZip(spatialDataFolder, fileName);
@@ -619,7 +619,7 @@ public class WorksheetToFeatureCollection {
 		 * )); style.createAndSetLineStyle().withColor("501400FF").withWidth(2);
 		 * style.createAndSetPolyStyle().withColor("5014F000");
 		 */
-		for (SimpleFeature pointFeature : pointFeatureList) {
+		for (SimpleFeature pointFeature : pointFeatureVector) {
 
 			CoordinateReferenceSystem sourceCRS = pointFeature.getType()
 					.getCoordinateReferenceSystem();
@@ -660,7 +660,7 @@ public class WorksheetToFeatureCollection {
 			kmlLookAtX += p.getX();
 			kmlLookAtY += p.getY();
 		}
-		for (SimpleFeature lineFeature : lineFeatureList) {
+		for (SimpleFeature lineFeature : lineFeatureVector) {
 			String htmlDescription = getHTMLDescription(lineFeature);
 
 			CoordinateReferenceSystem sourceCRS = lineFeature.getType()
@@ -700,7 +700,7 @@ public class WorksheetToFeatureCollection {
 					.withAltitudeMode(AltitudeMode.CLAMP_TO_GROUND)
 					.setCoordinates(coordsList);
 		}
-		for (SimpleFeature polygonFeature : polygonFeatureList) {
+		for (SimpleFeature polygonFeature : polygonFeatureVector) {
 			
 
 			CoordinateReferenceSystem sourceCRS = polygonFeature.getType()
@@ -896,8 +896,8 @@ public class WorksheetToFeatureCollection {
 	}
 
 	public boolean hasNoGeospatialData() {
-		if (pointFeatureList.size() == 0 && lineFeatureList.size() == 0
-				&& polygonFeatureList.size() == 0)
+		if (pointFeatureVector.size() == 0 && lineFeatureVector.size() == 0
+				&& polygonFeatureVector.size() == 0)
 			return true;
 		return false;
 	}

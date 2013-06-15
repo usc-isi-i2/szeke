@@ -21,12 +21,13 @@
 package edu.isi.karma.cleaning.features;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
-
-import com.sun.istack.logging.Logger;
+import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import com.sun.istack.logging.Logger;
 
 public class Main {
 	public static void main(String[] args)
@@ -39,9 +40,9 @@ public class Main {
 			boolean isfirstRun = true;
 			for(int i = 0 ; i<flist.length;i++)
 			{
-				Vector<String> row = new Vector<String>();
-				Vector<String> examples = new Vector<String>();
-				Vector<String> oexamples = new Vector<String>();
+				List<String> row = new ArrayList<String>();
+				List<String> examples = new ArrayList<String>();
+				List<String> oexamples = new ArrayList<String>();
 				if(!flist[i].getName().contains(".csv"))
 					continue;
 				CSVReader re = new CSVReader(new FileReader(flist[i]), '\t');
@@ -65,7 +66,7 @@ public class Main {
 						row.add(x[l].getName());
 					}
 					isfirstRun = false;
-					row = new Vector<String>();
+					row = new ArrayList<String>();
 				}
 				if(!isfirstRun)
 				{

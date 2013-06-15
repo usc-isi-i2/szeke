@@ -1,9 +1,9 @@
 package edu.isi.karma.er.helper.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -61,7 +61,7 @@ public class NYTimes {
 	
 	public List<NYTimes> listAll() {
 		Model model = loadNytimesModel();
-		List<NYTimes> list = new Vector<NYTimes>();
+		List<NYTimes> list = new ArrayList<NYTimes>();
 		ResIterator resList = model.listSubjectsWithProperty(NameSpace.RDF_TYPE);
 		
 		Resource subj;

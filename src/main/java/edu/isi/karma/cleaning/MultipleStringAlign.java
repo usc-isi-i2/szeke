@@ -20,25 +20,26 @@
  ******************************************************************************/
 
 package edu.isi.karma.cleaning;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultipleStringAlign {
-	public MultipleStringAlign(Vector<String[]> strs)
+	public MultipleStringAlign(List<String[]> strs)
 	{
 		
 	}
 	// generate all the possible next state in DFA
 	public void generateChildren(ANode a)
 	{
-		Vector<Vector<int[]>> multiSeqMapping = new Vector<Vector<int[]>>();
-		Vector<Long> indexes = new Vector<Long>();
+		List<List<int[]>> multiSeqMapping = new ArrayList<List<int[]>>();
+		List<Long> indexes = new ArrayList<Long>();
 		for(int i = 0; i < a.exps.size(); i++)
 		{
 			String[] example = a.exps.get(i);
 			int pos = a.orgPos.get(i);
-			Vector<int[]> mappings = findNext(example[0], example[1], pos);
+			List<int[]> mappings = findNext(example[0], example[1], pos);
 			// tarpos, orgstartpos, orgendpos
-			Vector<int[]> nmapping = new Vector<int[]>();
+			List<int[]> nmapping = new ArrayList<int[]>();
 			for(int[] elem: mappings)
 			{
 				int[] el = {pos, elem[0],elem[1]};
@@ -48,15 +49,15 @@ public class MultipleStringAlign {
 			multiSeqMapping.add(nmapping);
 		}
 		// generate combinations
-		Vector<Vector<Integer>> configs = new Vector<Vector<Integer>>();
+		List<List<Integer>> configs = new ArrayList<List<Integer>>();
 		getCrossIndex(indexes, configs);
 		// using a combination to generate the ANode
 		for(int i=0; i<configs.size(); i++)
 		{
-			Vector<Integer> poses = configs.get(i);
-			Vector<Integer> orgPos = new Vector<Integer>();
-			Vector<Integer> tarPos = new Vector<Integer>();
-			Vector<Integer> length = new Vector<Integer>();
+			List<Integer> poses = configs.get(i);
+			List<Integer> orgPos = new ArrayList<Integer>();
+			List<Integer> tarPos = new ArrayList<Integer>();
+			List<Integer> length = new ArrayList<Integer>();
 			for(int j = 0; j< poses.size(); j++)
 			{
 				int[] e = multiSeqMapping.get(j).get(poses.get(j));
@@ -70,13 +71,13 @@ public class MultipleStringAlign {
 		}
 	}
 	// iteratively generate the combinations
-	public void getCrossIndex(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
+	public void getCrossIndex(List<Long> indexs,List<List<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
 	    for (int i = 0; i < k; i++) 
 	    		com[i] = 0;
 	    while (com[k - 1] < indexs.get(k-1)) {
-	    		Vector<Integer> res = new Vector<Integer>();
+	    		List<Integer> res = new ArrayList<Integer>();
 	        for (int i = 0; i < k; i++)
 	        {
 	        		//System.out.print(""+com[i]);
@@ -96,9 +97,9 @@ public class MultipleStringAlign {
 	    }
 	}
 	//{[orgstartPos, orgendPos ], ...}
-	public Vector<int[]> findNext(String org, String tar, int pos)
+	public List<int[]> findNext(String org, String tar, int pos)
 	{
-		Vector<int[]> segs = new Vector<int[]>();
+		List<int[]> segs = new ArrayList<int[]>();
 		if(tar.length() == 0)
 		{
 			int[] elem = {-1,0};
@@ -132,14 +133,14 @@ public class MultipleStringAlign {
 			for (int j = pos; j <= i; j++) {
 				tvec += tar.charAt(j);
 			}
-			Vector<Integer> mappings = new Vector<Integer>();
+			List<Integer> mappings = new ArrayList<Integer>();
 			int r = org.indexOf(tvec);
 			while (r != -1) {
 				mappings.add(r);
 				r = org.indexOf(tvec,r+1);
 			}
 			if (mappings.size() > 1) {
-				Vector<int[]> corrm = new Vector<int[]>();
+				List<int[]> corrm = new ArrayList<int[]>();
 				for (int t : mappings) {
 					int[] m = { t, t + tvec.length() };
 					corrm.add(m);
@@ -148,7 +149,7 @@ public class MultipleStringAlign {
 				segs.addAll(corrm);
 				continue;
 			} else if (mappings.size() == 1) {
-				Vector<int[]> corrm = new Vector<int[]>();
+				List<int[]> corrm = new ArrayList<int[]>();
 				// creating based on whether can find segment with one more
 				// token
 				if (i >= (tar.length() - 1)) {
@@ -184,7 +185,7 @@ public class MultipleStringAlign {
 	}
 	public static void main(String[] args)
 	{
-		Vector<String[]> strs = new Vector<String[]>();
+		List<String[]> strs = new ArrayList<String[]>();
 		MultipleStringAlign msa = new MultipleStringAlign(strs);
 		String org = "hello world";
 		String tar = "world";
@@ -192,7 +193,7 @@ public class MultipleStringAlign {
 		for(int i = 0; i<tar.length(); i++)
 		{
 			System.out.println("starting pos: "+i);
-			Vector<int[]> result = msa.findNext(org, tar, i);
+			List<int[]> result = msa.findNext(org, tar, i);
 			for(int[] seg:result)
 			{
 				System.out.println(""+org.substring(seg[0],seg[1]));

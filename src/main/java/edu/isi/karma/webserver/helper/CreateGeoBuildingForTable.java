@@ -5,10 +5,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -38,14 +38,14 @@ public class CreateGeoBuildingForTable {
 	}
 
 	private <T> List<T> castList(Class<T> clazz, Collection<?> c) {
-		List<T> list = new Vector<T>(c.size());
+		List<T> list = new ArrayList<T>(c.size());
 		for (Object object : c) {
 			list.add(clazz.cast(object));
 		}
 		return list;
 	}
 	private <T> List<T> castIterator(Class<T> clazz, Iterator<?> i) {
-		List<T> list = new Vector<T>();
+		List<T> list = new ArrayList<T>();
 		while(i.hasNext()) {
 			list.add(clazz.cast(i.next()));
 		}

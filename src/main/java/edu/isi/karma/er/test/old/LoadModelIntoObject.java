@@ -1,7 +1,7 @@
 package edu.isi.karma.er.test.old;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -73,7 +73,7 @@ public class LoadModelIntoObject {
 	}
 
 	private static List<SaamPerson> loadOntologies(ResIterator iter) {
-		List<SaamPerson> list = new Vector<SaamPerson>();
+		List<SaamPerson> list = new ArrayList<SaamPerson>();
 		while (iter.hasNext()) {
 			Resource res = iter.next();
 			StmtIterator siter = res.listProperties();

@@ -1,7 +1,8 @@
 package edu.isi.karma.cleaning.features;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataRanking {
-	public Vector<Double> coreVector = new Vector<Double>();
+	public List<Double> coreList = new ArrayList<Double>();
 }

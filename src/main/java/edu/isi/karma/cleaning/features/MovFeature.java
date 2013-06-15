@@ -2,7 +2,7 @@ package edu.isi.karma.cleaning.features;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
@@ -10,21 +10,21 @@ import edu.isi.karma.cleaning.TNode;
 public class MovFeature implements Feature {
 	String name = "";
 	double score = 0.0;
-	Vector<TNode> pa;
-	public MovFeature(ArrayList<Vector<TNode>> v,ArrayList<Vector<TNode>> n,Vector<TNode> t)
+	List<TNode> pa;
+	public MovFeature(ArrayList<List<TNode>> v,ArrayList<List<TNode>> n,List<TNode> t)
 	{
 		pa = t;
 		score= calFeatures(v,n);
 	}
 	// x is the old y is the new example
-	public double calFeatures(ArrayList<Vector<TNode>> x,ArrayList<Vector<TNode>> y)
+	public double calFeatures(ArrayList<List<TNode>> x,ArrayList<List<TNode>> y)
 	{
 		HashMap<Integer,Integer> tmp = new HashMap<Integer,Integer>();
 		for(int i = 0; i<x.size();i++)
 		{
 			int cnt = 0;
-			Vector<TNode> z = x.get(i);
-			Vector<TNode> z1 = y.get(i);
+			List<TNode> z = x.get(i);
+			List<TNode> z1 = y.get(i);
 			int bpos = 0;
 			int p = 0;
 			int bpos1 = 0;

@@ -1,19 +1,20 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Section implements GrammarTreeNode {
 	public Position[] pair;
 	public static int time_limit = 10;
-	public Vector<int[]> rules = new Vector<int[]>();
+	public List<int[]> rules = new ArrayList<int[]>();
 	public int rule_cxt_size = Segment.cxtsize_limit;
 	public int curState = 0;
 	public boolean isinloop = false;
-	public Vector<String> orgStrings = new Vector<String>();
-	public Vector<String> tarStrings = new Vector<String>();
+	public List<String> orgStrings = new ArrayList<String>();
+	public List<String> tarStrings = new ArrayList<String>();
 	public static Interpretor itInterpretor = null;
 	public static int supermode = 0;
-	public Section(Position[] p,Vector<String> orgStrings,Vector<String> tarStrings,boolean isinloop)
+	public Section(Position[] p,List<String> orgStrings,List<String> tarStrings,boolean isinloop)
 	{
 		pair = p;
 		this.orgStrings = orgStrings;
@@ -21,7 +22,7 @@ public class Section implements GrammarTreeNode {
 		if(itInterpretor==null)
 			itInterpretor =  new Interpretor();
 		if(supermode == 0)
-			this.createTotalOrderVector();
+			this.createTotalOrderList();
 		else
 		{
 			this.reiniteRules();
@@ -71,8 +72,8 @@ public class Section implements GrammarTreeNode {
 		{
 			Position[] pa = {x,y};
 			boolean loop = this.isinloop || sec.isinloop;
-			Vector<String> strs = new Vector<String>();
-			Vector<String> tars = new Vector<String>();
+			List<String> strs = new ArrayList<String>();
+			List<String> tars = new ArrayList<String>();
 			if(this.orgStrings.size() == sec.orgStrings.size() && this.orgStrings.size() == 1 && this.orgStrings.get(0).compareTo(sec.orgStrings.get(0))==0)
 			{
 				// merge within one example. test the loop expression
@@ -114,7 +115,7 @@ public class Section implements GrammarTreeNode {
 	}
 
 	@Override
-	public void createTotalOrderVector() {
+	public void createTotalOrderList() {
 		for(int i = 0; i< pair[0].rules.size(); i++)
 		{
 			for(int j = 0; j< pair[1].rules.size(); j++)
@@ -126,10 +127,10 @@ public class Section implements GrammarTreeNode {
 	}
 	public void reiniteRules()
 	{
-		Vector<Long> indexs = new Vector<Long>();
+		List<Long> indexs = new ArrayList<Long>();
 		indexs.add((long)16);
 		indexs.add((long)16);
-		Vector<Vector<Integer>> configs = new Vector<Vector<Integer>>();
+		List<List<Integer>> configs = new ArrayList<List<Integer>>();
 		rules.clear();
 		getCrossIndex(indexs, 0, "", configs);
 		for(int i = 0; i<configs.size(); i++)
@@ -138,12 +139,12 @@ public class Section implements GrammarTreeNode {
 			rules.add(elem);
 		}
 	}
-	public void getCrossIndex(Vector<Long> indexs, int cur, String path,
-			Vector<Vector<Integer>> configs) {
+	public void getCrossIndex(List<Long> indexs, int cur, String path,
+			List<List<Integer>> configs) {
 		String tpath = path;
 		if (cur >= indexs.size()) {
 			String[] elems = tpath.split(",");
-			Vector<Integer> line = new Vector<Integer>();
+			List<Integer> line = new ArrayList<Integer>();
 			for (String s : elems) {
 				String x = s.trim();
 				if (x.length() > 0) {

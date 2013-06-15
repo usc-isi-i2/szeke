@@ -29,11 +29,9 @@
 package edu.isi.karma.modeling.research.graphmatching.net.n3.nanoxml;
 
 
-import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 
 /**
@@ -178,7 +176,7 @@ public interface IXMLElement
     *
     * @return the non-null enumeration
     */
-   public Enumeration enumerateChildren();
+   public Enumeration<IXMLElement> enumerateChildren();
 
 
    /**
@@ -210,7 +208,7 @@ public interface IXMLElement
     *
     * @return the vector.
     */
-   public Vector getChildren();
+   public List<IXMLElement> getChildren();
 
 
    /**
@@ -256,7 +254,7 @@ public interface IXMLElement
     *
     * @return the non-null vector of child elements.
     */
-   public Vector getChildrenNamed(String name);
+   public List<IXMLElement> getChildrenNamed(String name);
 
 
    /**
@@ -267,7 +265,7 @@ public interface IXMLElement
     *
     * @return the non-null vector of child elements.
     */
-   public Vector getChildrenNamed(String name,
+   public List<IXMLElement> getChildrenNamed(String name,
                                   String namespace);
 
 
@@ -419,7 +417,7 @@ public interface IXMLElement
     *
     * @return the non-null enumeration.
     */
-   public Enumeration enumerateAttributeNames();
+   public Enumeration<String> enumerateAttributeNames();
 
 
    /**

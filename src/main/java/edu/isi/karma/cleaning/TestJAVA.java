@@ -21,18 +21,19 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
 public class TestJAVA {
-	void generate_combos(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
+	void generate_combos(List<Long> indexs,List<List<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
 	    for (int i = 0; i < k; i++) 
 	    		com[i] = 0;
 	    while (com[k - 1] < indexs.get(k-1)) {
-	    		Vector<Integer> res = new Vector<Integer>();
+	    		List<Integer> res = new ArrayList<Integer>();
 	        for (int i = 0; i < k; i++)
 	        {
 	        		//System.out.print(""+com[i]);
@@ -54,11 +55,11 @@ public class TestJAVA {
 	}
 	public static void main(String[] args)
 	{
-		Vector<Long> x = new Vector<Long>();
+		List<Long> x = new ArrayList<Long>();
 		x.add((long)9);
 		x.add((long)6);
 		x.add((long)4);
-		Vector<Vector<Integer>> cfig = new Vector<Vector<Integer>>();
+		List<List<Integer>> cfig = new ArrayList<List<Integer>>();
 		TestJAVA jx = new TestJAVA();
 		jx.generate_combos(x, cfig);
 		for(int i = 0; i< cfig.size(); i++)

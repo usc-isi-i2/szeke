@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -343,7 +342,7 @@ public class TestRandomFrequency {
 	
 	private List<String> randomStringList(int num, List<SaamPerson> perList) {
 		
-		List<String> list = new Vector<String>();
+		List<String> list = new ArrayList<String>();
 		
 		
 		int len = perList.size();
@@ -450,7 +449,7 @@ public class TestRandomFrequency {
 	}
 
 	private List<SaamPerson> loadOntologies(Model model) {
-		List<SaamPerson> list = new Vector<SaamPerson>();
+		List<SaamPerson> list = new ArrayList<SaamPerson>();
 		Property RDF = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		ResIterator iter = model.listResourcesWithProperty(RDF);
 		int count = 0;
