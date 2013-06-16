@@ -29,12 +29,11 @@
 package edu.isi.karma.modeling.research.graphmatching.net.n3.nanoxml;
 
 
-import java.io.IOException;
-import java.io.CharArrayReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 
 /**
@@ -463,9 +462,9 @@ public class StdXMLParser
          name = name.substring(colonIndex + 1);
       }
 
-      Vector attrNames = new Vector();
-      Vector attrValues = new Vector();
-      Vector attrTypes = new Vector();
+      List<String> attrNames = new ArrayList<String>();
+      List<String> attrValues = new ArrayList<String>();
+      List<String> attrTypes = new ArrayList<String>();
 
       this.validator.elementStarted(fullName,
                                     this.reader.getSystemID(),
@@ -494,15 +493,15 @@ public class StdXMLParser
       while (enume.hasMoreElements()) {
          String key = (String) enume.nextElement();
          String value = extraAttributes.getProperty(key);
-         attrNames.addElement(key);
-         attrValues.addElement(value);
-         attrTypes.addElement("CDATA");
+         attrNames.add(key);
+         attrValues.add(value);
+         attrTypes.add("CDATA");
       }
 
       for (int i = 0; i < attrNames.size(); i++) {
-         String key = (String) attrNames.elementAt(i);
-         String value = (String) attrValues.elementAt(i);
-         String type = (String) attrTypes.elementAt(i);
+         String key = attrNames.get(i);
+         String value = attrValues.get(i);
+         String type = attrTypes.get(i);
 
          if (key.equals("xmlns")) {
             defaultNamespace = value;
@@ -523,14 +522,14 @@ public class StdXMLParser
       }
 
       for (int i = 0; i < attrNames.size(); i++) {
-         String key = (String) attrNames.elementAt(i);
+         String key = attrNames.get(i);
 
          if (key.startsWith("xmlns")) {
             continue;
          }
 
-         String value = (String) attrValues.elementAt(i);
-         String type = (String) attrTypes.elementAt(i);
+         String value = attrValues.get(i);
+         String type = attrTypes.get(i);
          colonIndex = key.indexOf(':');
 
          if (colonIndex > 0) {
@@ -658,9 +657,9 @@ public class StdXMLParser
     * @throws java.lang.Exception
     *     if something went wrong
     */
-   protected void processAttribute(Vector attrNames,
-                                   Vector attrValues,
-                                   Vector attrTypes)
+   protected void processAttribute(List<String> attrNames,
+                                   List<String> attrValues,
+                                   List<String> attrTypes)
       throws Exception
    {
       String key = XMLUtil.scanIdentifier(this.reader);
@@ -675,9 +674,9 @@ public class StdXMLParser
       XMLUtil.skipWhitespace(this.reader, null);
       String value = XMLUtil.scanString(this.reader, '&',
                                         this.entityResolver);
-      attrNames.addElement(key);
-      attrValues.addElement(value);
-      attrTypes.addElement("CDATA");
+      attrNames.add(key);
+      attrValues.add(value);
+      attrTypes.add("CDATA");
       this.validator.attributeAdded(key, value,
                                     this.reader.getSystemID(),
                                     this.reader.getLineNr());

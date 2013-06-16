@@ -23,15 +23,11 @@ package edu.isi.karma.cleaning.features;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
 
 import org.apache.mahout.classifier.sgd.CsvRecordFactory;
 import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
@@ -45,7 +41,7 @@ import com.google.common.io.Closeables;
 import edu.isi.karma.cleaning.PartitionClassifierType;
 
 public class RecordClassifier2 implements PartitionClassifierType {
-	HashMap<String, Vector<String>> trainData = new HashMap<String, Vector<String>>();
+	HashMap<String, List<String>> trainData = new HashMap<String, List<String>>();
 	RecordFeatureSet rf = new RecordFeatureSet();
 	OnlineLogisticRegression cf;
 	List<String> labels = new ArrayList<String>();
@@ -55,7 +51,7 @@ public class RecordClassifier2 implements PartitionClassifierType {
 	}
 
 	public OnlineLogisticRegression train(
-			HashMap<String, Vector<String>> traindata) throws Exception {
+			HashMap<String, List<String>> traindata) throws Exception {
 		String csvTrainFile = "./target/tmp/csvtrain.csv";
 		Data2Features.Traindata2CSV(traindata, csvTrainFile, rf);
 		lmp = new LogisticModelParameters();
@@ -136,7 +132,7 @@ public class RecordClassifier2 implements PartitionClassifierType {
 		if (trainData.containsKey(label)) {
 			trainData.get(label).add(value);
 		} else {
-			Vector<String> vsStrings = new Vector<String>();
+			List<String> vsStrings = new ArrayList<String>();
 			vsStrings.add(value);
 			trainData.put(label, vsStrings);
 		}
@@ -169,16 +165,16 @@ public class RecordClassifier2 implements PartitionClassifierType {
 
 	public static void main(String[] args) {
 		try {
-			HashMap<String, Vector<String>> trainData = new HashMap<String, Vector<String>>();
-			Vector<String> test = new Vector<String>();
-			Vector<String> par1 = new Vector<String>();
+			HashMap<String, List<String>> trainData = new HashMap<String, List<String>>();
+			List<String> test = new ArrayList<String>();
+			List<String> par1 = new ArrayList<String>();
 			par1.add("1286 adams blvd");
 			par1.add("3711 catalina st");
 			// par1.add("11 w 37th pl, los angeles");
-			Vector<String> par2 = new Vector<String>();
+			List<String> par2 = new ArrayList<String>();
 			par2.add("1142 37st");
 			// par2.add("1 jefferson st");
-			Vector<String> par3 = new Vector<String>();
+			List<String> par3 = new ArrayList<String>();
 			par3.add("710 27");
 			trainData.put("c1", par1);
 			trainData.put("c2", par2);

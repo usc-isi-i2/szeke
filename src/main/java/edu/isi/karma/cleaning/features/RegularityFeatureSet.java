@@ -22,7 +22,7 @@ package edu.isi.karma.cleaning.features;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
@@ -34,23 +34,23 @@ import edu.isi.karma.cleaning.Tokenizer;
 
 public class RegularityFeatureSet implements FeatureSet {
 
-	public ArrayList<Vector<TNode>> tokenseqs;
-	public ArrayList<Vector<TNode>> otokenseqs;
-	public Vector<String> fnames;
+	public ArrayList<List<TNode>> tokenseqs;
+	public ArrayList<List<TNode>> otokenseqs;
+	public List<String> fnames;
 	public static String[] targets = {"#",";",",","!","~","@","$","%","^","&","*","(",")","_","-","{","}","[","]","\"","\'",":","?","<",">",".","bnk","syb","wrd","num"};
 	public RegularityFeatureSet()
 	{
-		tokenseqs = new ArrayList<Vector<TNode>>();
-		otokenseqs= new ArrayList<Vector<TNode>>();
-		fnames = new Vector<String>();
+		tokenseqs = new ArrayList<List<TNode>>();
+		otokenseqs= new ArrayList<List<TNode>>();
+		fnames = new ArrayList<String>();
 	}
-	public Vector<TNode> tokenizer(String Org)
+	public List<TNode> tokenizer(String Org)
 	{
 		CharStream cs =  new ANTLRStringStream(Org);
 		Tokenizer tk = new Tokenizer(cs);
 		Token t;
 		t = tk.nextToken();
-		Vector<TNode> x = new Vector<TNode>();
+		List<TNode> x = new ArrayList<TNode>();
 		while(t.getType()!=-1)
 		{
 			int mytype = -1;
@@ -81,27 +81,27 @@ public class RegularityFeatureSet implements FeatureSet {
 		return x;
 	}
 	public Collection<Feature> computeFeatures(Collection<String> examples,Collection<String> oexamples) {
-		Vector<Feature> r = new Vector<Feature>();
+		List<Feature> r = new ArrayList<Feature>();
 		
 		for(String s:examples)
 		{
-			Vector<TNode> x = this.tokenizer(s);
+			List<TNode> x = this.tokenizer(s);
 			this.tokenseqs.add(x);
 		}
 		for(String s:oexamples)
 		{
-			Vector<TNode> x = this.tokenizer(s);
+			List<TNode> x = this.tokenizer(s);
 			this.otokenseqs.add(x);
 		}
 		//counting feature
 		String[] symbol = {"#",";",",","!","~","@","$","%","^","&","*","(",")","_","-","{","}","[","]","\"","'",":","?","<",">","."};
-		Vector<CntFeature> cntfs = new Vector<CntFeature>(symbol.length);
+		List<CntFeature> cntfs = new ArrayList<CntFeature>(symbol.length);
 		//moving feature
-		Vector<MovFeature> movfs = new Vector<MovFeature>(symbol.length);
+		List<MovFeature> movfs = new ArrayList<MovFeature>(symbol.length);
 		for(int i=0; i<symbol.length;i++)
 		{
 			TNode t = new TNode(TNode.SYBSTYP,symbol[i]);
-			Vector<TNode> li = new Vector<TNode>();
+			List<TNode> li = new ArrayList<TNode>();
 			li.add(t);
 			cntfs.add(i,new CntFeature(this.otokenseqs,this.tokenseqs,li));
 			cntfs.get(i).setName("entr_cnt_"+symbol[i]);
@@ -110,27 +110,27 @@ public class RegularityFeatureSet implements FeatureSet {
 		}
 		//count the blank, symbol  wrd and number token
 		TNode t = new TNode(TNode.BNKTYP,TNode.ANYTOK);
-		Vector<TNode> li = new Vector<TNode>();
+		List<TNode> li = new ArrayList<TNode>();
 		li.add(t);
 		CntFeature cf = new CntFeature(this.otokenseqs,this.tokenseqs,li);
 		cf.setName("entr_cnt_bnk");
 		TNode t1 = new TNode(TNode.SYBSTYP,TNode.ANYTOK);
-		Vector<TNode> li1 = new Vector<TNode>();
+		List<TNode> li1 = new ArrayList<TNode>();
 		li1.add(t1);
 		CntFeature cf1 = new CntFeature(this.otokenseqs,this.tokenseqs,li1);
 		cf1.setName("entr_cnt_syb");
 		TNode t2 = new TNode(TNode.LWRDTYP,TNode.ANYTOK);
-		Vector<TNode> li2 = new Vector<TNode>();
+		List<TNode> li2 = new ArrayList<TNode>();
 		li2.add(t2);
 		CntFeature cf2 = new CntFeature(this.otokenseqs,this.tokenseqs,li2);
 		cf2.setName("entr_cnt_lwrd");
 		TNode t3 = new TNode(TNode.NUMTYP,TNode.ANYTOK);
-		Vector<TNode> li3 = new Vector<TNode>();
+		List<TNode> li3 = new ArrayList<TNode>();
 		li3.add(t3);
 		CntFeature cf3 = new CntFeature(this.otokenseqs,this.tokenseqs,li3);
 		cf3.setName("entr_cnt_num");
 		/*TNode t4 = new TNode(TNode.UWRDTYP,TNode.ANYTOK);
-		Vector<TNode> li4 = new Vector<TNode>();
+		List<TNode> li4 = new ArrayList<TNode>();
 		li3.add(t4);
 		CntFeature cf4 = new CntFeature(this.otokenseqs,this.tokenseqs,li4);
 		cf3.setName("entr_cnt_num");*/

@@ -20,10 +20,11 @@
  ******************************************************************************/
 package edu.isi.karma.rep.cleaning;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import edu.isi.karma.cleaning.ProgSynthesis;
 import edu.isi.karma.cleaning.ProgramRule;
@@ -47,7 +48,7 @@ public class RamblerTransformationOutput implements TransformationOutput {
 	private void learnTransformation() throws Exception
 	{
 		Collection<TransformationExample> exs =  input.getExamples();
-		Vector<String[]> exps = new Vector<String[]>();
+		List<String[]> exps = new ArrayList<String[]>();
 		Iterator<TransformationExample> iter = exs.iterator();
 		while(iter.hasNext())
 		{
@@ -63,7 +64,7 @@ public class RamblerTransformationOutput implements TransformationOutput {
 			ProgramRule r = new ProgramRule(ProgramRule.IDENTITY);
 			r.nullRule = true;
 			this.nullRule = true;
-			rules = new Vector<ProgramRule>();
+			rules = new ArrayList<ProgramRule>();
 			rules.add(r);
 			//return;
 		}

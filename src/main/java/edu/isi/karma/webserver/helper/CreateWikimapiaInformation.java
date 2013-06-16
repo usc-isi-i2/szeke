@@ -35,7 +35,7 @@ public class CreateWikimapiaInformation {
 	}
 
 //	private <T> List<T> castList(Class<T> clazz, Collection<?> c) {
-//		List<T> list = new Vector<T>(c.size());
+//		List<T> list = new ArrayList<T>(c.size());
 //		for (Object object : c) {
 //			list.add(clazz.cast(object));
 //		}
@@ -43,7 +43,7 @@ public class CreateWikimapiaInformation {
 //	}
 //
 //	private <T> List<T> castIterator(Class<T> clazz, Iterator<?> i) {
-//		List<T> list = new Vector<T>();
+//		List<T> list = new ArrayList<T>();
 //		while (i.hasNext()) {
 //			list.add(clazz.cast(i.next()));
 //		}
@@ -86,7 +86,7 @@ public class CreateWikimapiaInformation {
 			Document document = saxReadering.read(new File(this.osmFile_path));
 			// Document document=saxReadering.read(new
 			// File("/Users/yzhang/Downloads/USC_wikimapia.xml"));
-			 List list = document.selectNodes("//folder/place");
+			List list = document.selectNodes("//folder/place");
 			Iterator iter = list.iterator();
 			System.out.println("begin");
 			// String backid=null;

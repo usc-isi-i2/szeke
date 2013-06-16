@@ -1,7 +1,7 @@
 package edu.isi.karma.er.test.old;
 
 import java.text.DecimalFormat;
-import java.util.Vector;
+import java.util.List;
 
 import edu.isi.karma.er.helper.ScoreBoardFileUtil;
 import edu.isi.karma.er.helper.entity.ScoreBoard;
@@ -14,13 +14,13 @@ public class DrawDiagramFromScoreBoard {
 	public static void main(String[] args) {
 		String filename = "result2012-10-19-15-29.csv";
 		ScoreBoardFileUtil util = new ScoreBoardFileUtil();
-		Vector<ScoreBoard> list = util.loadScoreBoardFile(filename);
+		List<ScoreBoard> list = util.loadScoreBoardFile(filename);
 		sortByScoreDesc(list);
 		
 		drawGraphData(list);
 	}
 
-	private static void drawGraphData(Vector<ScoreBoard> list) {
+	private static void drawGraphData(List<ScoreBoard> list) {
 		System.out.println("size:" + list.size());
 		DecimalFormat df = new DecimalFormat("#.0000");
 		double found = 0, count  = 0, total = 175, lastResult = -1;
@@ -38,7 +38,7 @@ public class DrawDiagramFromScoreBoard {
 		
 	}
 
-	private static void sortByScoreDesc(Vector<ScoreBoard> list) {
+	private static void sortByScoreDesc(List<ScoreBoard> list) {
 		int i,j, len = list.size();
 		ScoreBoard s1, s2;
 		

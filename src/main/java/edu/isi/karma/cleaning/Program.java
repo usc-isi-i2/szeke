@@ -1,13 +1,14 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Program implements GrammarTreeNode {
-	public Vector<Partition> partitions = new Vector<Partition>();
+	public List<Partition> partitions = new ArrayList<Partition>();
 	public String cls = "";
 	public double score = 0.0;
 	public PartitionClassifierType classifier;
-	public Program(Vector<Partition> pars)
+	public Program(List<Partition> pars)
 	{
 		this.partitions = pars;
 		for(int i=0;i<this.partitions.size();i++)

@@ -21,14 +21,15 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 //type count feature
 public class Feature2 implements RecFeature {
 
 	public int type;
-	public Vector<TNode> xNodes =new Vector<TNode>();
-	public Feature2(int type,Vector<TNode> xNodes)
+	public List<TNode> xNodes =new ArrayList<TNode>();
+	public Feature2(int type,List<TNode> xNodes)
 	{
 		this.type = type;
 		this.xNodes = xNodes;

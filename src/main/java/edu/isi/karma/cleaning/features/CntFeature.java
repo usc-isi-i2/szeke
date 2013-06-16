@@ -1,8 +1,7 @@
 package edu.isi.karma.cleaning.features;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
@@ -10,25 +9,25 @@ import edu.isi.karma.cleaning.TNode;
 public class CntFeature implements Feature{
 		String name = "";
 		double score = 0.0;
-		Vector<TNode> pa;
+		List<TNode> pa;
 		public void setName(String name)
 		{
 			this.name = name;
 		}
-		public CntFeature(ArrayList<Vector<TNode>> v,ArrayList<Vector<TNode>> n,Vector<TNode> t)
+		public CntFeature(List<List<TNode>> v,List<List<TNode>> n,List<TNode> t)
 		{
 			pa = t;
 			score= calFeatures(v,n);
 		}
 		// x is the old y is the new example
-		public double calFeatures(ArrayList<Vector<TNode>> x,ArrayList<Vector<TNode>> y)
+		public double calFeatures(List<List<TNode>> v,List<List<TNode>> n)
 		{
 			HashMap<Integer,Integer> tmp = new HashMap<Integer,Integer>();
-			for(int i = 0; i<y.size();i++)
+			for(int i = 0; i<n.size();i++)
 			{
 				int cnt = 0;
-				Vector<TNode> z = x.get(i);
-				Vector<TNode> z1 = y.get(i);
+				List<TNode> z = v.get(i);
+				List<TNode> z1 = n.get(i);
 				int bpos = 0;
 				int p = 0;
 				int bpos1 = 0;
@@ -69,7 +68,7 @@ public class CntFeature implements Feature{
 			{
 				b[i] = a[i].intValue();
 			}
-			double res = RegularityFeatureSet.calShannonEntropy(b)*1.0/Math.log(x.size());
+			double res = RegularityFeatureSet.calShannonEntropy(b)*1.0/Math.log(v.size());
 			return res;
 		}
 		public String getName() {

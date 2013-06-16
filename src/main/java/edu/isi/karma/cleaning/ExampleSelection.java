@@ -21,18 +21,13 @@
 
 package edu.isi.karma.cleaning;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
-
-import org.apache.xpath.axes.AxesWalker;
-import org.geotools.filter.expression.ThisPropertyAccessorFactory;
-import org.python.antlr.PythonParser.return_stmt_return;
-
-import uk.ac.shef.wit.simmetrics.TestArbitrators;
+import java.util.List;
 
 public class ExampleSelection {
-	public HashMap<String, Vector<TNode>> org = new HashMap<String, Vector<TNode>>();
-	public HashMap<String, Vector<TNode>> tran = new HashMap<String, Vector<TNode>>();
+	public HashMap<String, List<TNode>> org = new HashMap<String, List<TNode>>();
+	public HashMap<String, List<TNode>> tran = new HashMap<String, List<TNode>>();
 	public HashMap<String, String[]> raw = new HashMap<String, String[]>();
 	public OutlierDetector out;
 	// testdata rowid:{tar, tarcolor}
@@ -78,12 +73,12 @@ public class ExampleSelection {
 	// exps: rowId: {org, tar, tarcode,classlabel}
 	// example: partition id: [{tar,tarcode}]
 	public void inite(HashMap<String, String[]> exps,
-			HashMap<String, Vector<String[]>> examples) {
+			HashMap<String, List<String[]>> examples) {
 		// inite the class center vector
 	
 		if (way >= 6) {
 			out = new OutlierDetector();
-			out.buildMeanVector(examples);
+			out.buildMeanList(examples);
 		}
 		Ruler ruler = new Ruler();
 		for (String keyString : exps.keySet()) {
@@ -152,7 +147,7 @@ public class ExampleSelection {
 		return ID;
 	}
 
-	public int ambiguityScore(Vector<TNode> vec) {
+	public int ambiguityScore(List<TNode> vec) {
 		HashMap<String, Integer> d = new HashMap<String, Integer>();
 		int score = 0;
 		for (int i = 0; i < vec.size(); i++) {
@@ -191,13 +186,13 @@ public class ExampleSelection {
 
 	public String way6() {
 		String row = "";
-		if (out.rVectors.size() == 0) {
+		if (out.rLists.size() == 0) {
 			return this.way2();
 		}
 		double max = -1;
 		for (String key : this.testdata.keySet()) {
 			String trowid = out.getOutliers(testdata.get(key),
-					out.rVectors.get(key), max);
+					out.rLists.get(key), max);
 			max = out.currentMax;
 			if (trowid.length() > 0) {
 				row = trowid;
@@ -211,7 +206,7 @@ public class ExampleSelection {
 			firsttime = false;
 			return this.way2();
 		}
-		Vector<String> examples = new Vector<String>();
+		List<String> examples = new ArrayList<String>();
 		for (String key : raw.keySet()) {
 			int cnt = 0;
 			int spos = 0;
@@ -242,7 +237,7 @@ public class ExampleSelection {
 			double tmax = -1;
 			for (String key : this.testdata.keySet()) {
 				String trowid = out.getOutliers(testdata.get(key),
-						out.rVectors.get(key), tmax);
+						out.rLists.get(key), tmax);
 				tmax = out.currentMax;
 				if (trowid.length() > 0) {
 					row = trowid;

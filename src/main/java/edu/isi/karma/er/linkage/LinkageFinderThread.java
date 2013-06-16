@@ -1,7 +1,7 @@
 package edu.isi.karma.er.linkage;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -16,7 +16,7 @@ public class LinkageFinderThread extends Thread {
 	List<Ontology> dstList = null;
 	Aggregator aver = null;
 	JSONArray confArr = null;
-	List<ResultRecord> resultList = new Vector<ResultRecord>();
+	List<ResultRecord> resultList = new ArrayList<ResultRecord>();
 
 	public LinkageFinderThread(List<Ontology> srcList, List<Ontology> dstList, Aggregator aver, JSONArray confArr) {
 		this.srcList = srcList;

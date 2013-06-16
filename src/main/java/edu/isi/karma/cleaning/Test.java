@@ -2,17 +2,17 @@ package edu.isi.karma.cleaning;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Vector;
+import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 public class Test {
 	public static void test1()
 	{
-		Vector<String[]> examples = new Vector<String[]>();
+		List<String[]> examples = new ArrayList<String[]>();
 		String[] xStrings = {"<_START>Jan<_END>", ""};
 		String[] yStrings = {"<_START>Feb<_END>", "02"};
 		String[] zStrings = {"<_START>Mar<_END>", "03"};
@@ -21,7 +21,7 @@ public class Test {
 		examples.add(zStrings);
 		ProgSynthesis psProgSynthesis = new ProgSynthesis();
 		psProgSynthesis.inite(examples);
-		Vector<ProgramRule> pls = new Vector<ProgramRule>();
+		List<ProgramRule> pls = new ArrayList<ProgramRule>();
 		Collection<ProgramRule> ps = psProgSynthesis.run_main();
 		ProgramRule pr = ps.iterator().next();
 		String val = "Jan";
@@ -33,16 +33,16 @@ public class Test {
 		
 	}
 	public static void test4(String dirpath) {
-		HashMap<String, Vector<String>> records = new HashMap<String, Vector<String>>();
+		HashMap<String, List<String>> records = new HashMap<String, List<String>>();
 		File nf = new File(dirpath);
 		File[] allfiles = nf.listFiles();
 		// statistics
 		DataCollection dCollection = new DataCollection();
 		// list all the csv file under the dir
 		for (File f : allfiles) {
-			Vector<String[]> examples = new Vector<String[]>();
-			Vector<String[]> addExamples = new Vector<String[]>();
-			Vector<String[]> entries = new Vector<String[]>();
+			List<String[]> examples = new ArrayList<String[]>();
+			List<String[]> addExamples = new ArrayList<String[]>();
+			List<String[]> entries = new ArrayList<String[]>();
 			try {
 				
 				if (f.getName().indexOf(".csv") == (f.getName().length() - 4)) {
@@ -71,12 +71,12 @@ public class Test {
 					while (true) // repeat as no correct answer appears.
 					{
 						long checknumber = 1;
-						HashMap<String, Vector<String[]>> expFeData = new HashMap<String, Vector<String[]>>();
-						Vector<String> resultString = new Vector<String>();
+						HashMap<String, List<String[]>> expFeData = new HashMap<String, List<String[]>>();
+						List<String> resultString = new ArrayList<String>();
 						xHashMap = new HashMap<String, String[]>();
 						ProgSynthesis psProgSynthesis = new ProgSynthesis();
 						psProgSynthesis.inite(examples);
-						Vector<ProgramRule> pls = new Vector<ProgramRule>();
+						List<ProgramRule> pls = new ArrayList<ProgramRule>();
 						Collection<ProgramRule> ps = psProgSynthesis.run_main();
 						if (ps != null)
 							pls.addAll(ps);
@@ -117,7 +117,7 @@ public class Test {
 										String[] exp = {s,tmps};
 										if(!expFeData.containsKey(classlabel))
 										{
-											Vector<String[]> vstr = new Vector<String[]>();
+											List<String[]> vstr = new ArrayList<String[]>();
 											vstr.add(exp);
 											expFeData.put(classlabel, vstr);
 										}
@@ -135,7 +135,7 @@ public class Test {
 										String[] exp = {s,tmps};
 										if(!expFeData.containsKey(classlabel))
 										{
-											Vector<String[]> vstr = new Vector<String[]>();
+											List<String[]> vstr = new ArrayList<String[]>();
 											vstr.add(exp);
 											expFeData.put(classlabel, vstr);
 										}
@@ -212,7 +212,7 @@ public class Test {
 		dCollection.print1();
 		//hashResultPrint(records);
 	}
-	public static void hashResultPrint(HashMap<String, Vector<String>> res)
+	public static void hashResultPrint(HashMap<String, List<String>> res)
 	{
 		String s = "";
 		for(String key:res.keySet())
@@ -225,8 +225,8 @@ public class Test {
 		}
 		System.out.println(""+s);
 	}
-	public static void test0_sub(Vector<String[]> all, Vector<String[]> cand,
-			Vector<String[]> examples, int cnt) {
+	public static void test0_sub(List<String[]> all, List<String[]> cand,
+			List<String[]> examples, int cnt) {
 		if (cand.size() <= 0) {
 			if (cnt > Test.MaximalNumber) {
 				MaximalNumber = cnt;
@@ -240,16 +240,16 @@ public class Test {
 			return;
 		}
 		for (int p = 0; p < cand.size(); p++) {
-			Vector<String[]> tmp = new Vector<String[]>();
+			List<String[]> tmp = new ArrayList<String[]>();
 			tmp.addAll(examples);
 			String[] x = { "<_START>" + cand.get(p)[0] + "<_END>",
 					cand.get(p)[1] };
 			tmp.add(x);
-			Vector<String[]> tmpxStrings = new Vector<String[]>();
+			List<String[]> tmpxStrings = new ArrayList<String[]>();
 
 			ProgSynthesis psProgSynthesis = new ProgSynthesis();
 			psProgSynthesis.inite(tmp);
-			Vector<ProgramRule> pls = new Vector<ProgramRule>();
+			List<ProgramRule> pls = new ArrayList<ProgramRule>();
 			Collection<ProgramRule> ps = psProgSynthesis.run_main();
 			if (ps != null)
 				pls.addAll(ps);
@@ -286,8 +286,8 @@ public class Test {
 
 	public static int MaximalNumber = -1;
 	public static int MinimalNumber = 100;
-	public static Vector<String[]> larexamples = new Vector<String[]>();
-	public static Vector<String[]> smalexamples = new Vector<String[]>();
+	public static List<String[]> larexamples = new ArrayList<String[]>();
+	public static List<String[]> smalexamples = new ArrayList<String[]>();
 
 	public static void test0(String dirpath) {
 		File nf = new File(dirpath);
@@ -296,8 +296,8 @@ public class Test {
 		DataCollection dCollection = new DataCollection();
 		// list all the csv file under the dir
 		for (File f : allfiles) {
-			Vector<String[]> examples = new Vector<String[]>();
-			Vector<String[]> entries = new Vector<String[]>();
+			List<String[]> examples = new ArrayList<String[]>();
+			List<String[]> entries = new ArrayList<String[]>();
 			try {
 				if (f.getName().indexOf(".csv") == (f.getName().length() - 4)) {
 					CSVReader cr = new CSVReader(new FileReader(f), ',', '"',
@@ -311,7 +311,7 @@ public class Test {
 					if (entries.size() <= 1)
 						continue;
 					int cnt = 0;
-					Vector<String[]> candStrings = new Vector<String[]>();
+					List<String[]> candStrings = new ArrayList<String[]>();
 					candStrings.addAll(entries);
 					test0_sub(entries, candStrings, examples, cnt);
 					System.out.println("File " + f.getName() + "\n");
@@ -331,9 +331,9 @@ public class Test {
 					System.out.println("Smallest: " + str1);
 					//clear
 					Test.MaximalNumber = -1;
-					Test.larexamples = new Vector<String[]>();
+					Test.larexamples = new ArrayList<String[]>();
 					Test.MinimalNumber = 200;
-					Test.smalexamples = new Vector<String[]>();
+					Test.smalexamples = new ArrayList<String[]>();
 				}
 				//
 			} catch (Exception e) {

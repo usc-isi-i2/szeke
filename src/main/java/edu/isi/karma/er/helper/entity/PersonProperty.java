@@ -1,15 +1,16 @@
 package edu.isi.karma.er.helper.entity;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonProperty {
 
 	private String predicate;
 	
-	private Vector<String> value = null;
+	private List<String> value = null;
 	
 	public PersonProperty() {
-		this.value = new Vector<String>();
+		this.value = new ArrayList<String>();
 	}
 
 	public String getPredicate() {
@@ -20,7 +21,7 @@ public class PersonProperty {
 		this.predicate = predicate;
 	}
 
-	public Vector<String> getValue() {
+	public List<String> getValue() {
 		return value;
 	}
 

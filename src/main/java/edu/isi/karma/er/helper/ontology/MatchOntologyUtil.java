@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -542,7 +542,7 @@ public class MatchOntologyUtil {
 	 */
 	public List<Resource> listLatestMatchResultResources() {
 		Model model = this.getModel();
-		List<Resource> list = new Vector<Resource>();
+		List<Resource> list = new ArrayList<Resource>();
 		String sparql = "PREFIX match:<" + NameSpace.PREFIX_MATCH + ">\n" +
 				"PREFIX prov:<" + NameSpace.PREFIX_PROV + ">\n" +
 				"PREFIX rdfs:<" + NameSpace.PREFIX_RDFS + ">" + "\n" +
@@ -594,7 +594,7 @@ public class MatchOntologyUtil {
 	public List<MatchResultOntology> listLatestMatchResultObjects(String sortBy, String creator) {
 		Model model = this.getModel();
 		MatchResultOntology onto = null;
-		List<MatchResultOntology> list = new Vector<MatchResultOntology>();
+		List<MatchResultOntology> list = new ArrayList<MatchResultOntology>();
 		String sparql = "PREFIX match:<" + NameSpace.PREFIX_MATCH + ">\n" +
 				"PREFIX prov:<" + NameSpace.PREFIX_PROV + ">\n" +
 				"PREFIX rdf:<" + NameSpace.PREFIX_RDF + ">" + "\n" +
@@ -823,7 +823,7 @@ public class MatchOntologyUtil {
 	}
 
 	private List<Score> getScoreListFromResource(Resource res) {
-		List<Score> scoreList = new Vector<Score>();
+		List<Score> scoreList = new ArrayList<Score>();
 		Resource actRes = res.listProperties(NameSpace.PROV_WAS_GENERATED_BY).next().getObject().asResource();
 		Resource srcRes = actRes.listProperties(NameSpace.MATCH_HAS_MATCH_SOURCE).next().getObject().asResource();
 		Resource dstRes = actRes.listProperties(NameSpace.MATCH_HAS_MATCH_TARGET).next().getObject().asResource();
@@ -873,7 +873,7 @@ public class MatchOntologyUtil {
 	}
 	
 	public List<MatchResultOntology> listMatchResultObjectWithGiven(String srcUri, String dstUri) {
-		List<MatchResultOntology> list = new Vector<MatchResultOntology>();
+		List<MatchResultOntology> list = new ArrayList<MatchResultOntology>();
 		Model model = this.getModel();
 		MatchResultOntology onto = null;
 		String sparql = "PREFIX match:<" + NameSpace.PREFIX_MATCH + ">\n" +
@@ -1148,7 +1148,7 @@ public class MatchOntologyUtil {
 	}
 	
 	public static List<String> listRepositories() {
-		List<String> list = new Vector<String>();
+		List<String> list = new ArrayList<String>();
 		String repoListFile = Constants.PATH_REPOSITORY + "repository_list.txt";
 		
 		File file = new File(repoListFile);
@@ -1183,7 +1183,7 @@ public class MatchOntologyUtil {
 		
 		RandomAccessFile raf = null;
 		String line = null;
-		List<String> list = new Vector<String>();
+		List<String> list = new ArrayList<String>();
 		try {
 			raf = new RandomAccessFile(file, "rw");
 			while ((line = raf.readLine()) != null) {

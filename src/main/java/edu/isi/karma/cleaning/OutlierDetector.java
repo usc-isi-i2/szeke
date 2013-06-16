@@ -22,16 +22,10 @@
 package edu.isi.karma.cleaning;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Vector;
-
-import org.geotools.filter.expression.ThisPropertyAccessorFactory;
-import org.python.antlr.PythonParser.return_stmt_return;
-
-import com.hp.hpl.jena.sparql.function.library.max;
+import java.util.List;
 
 public class OutlierDetector {
-	public HashMap<String,double[]> rVectors = new HashMap<String,double[]>();
+	public HashMap<String,double[]> rLists = new HashMap<String,double[]>();
 	public double currentMax = -1;
 	public OutlierDetector()
 	{
@@ -51,22 +45,22 @@ public class OutlierDetector {
 	// find outliers for one partition
 	//simple 2d distance
 	//testdata rowid:{tar, tarcolor}
-	public String getOutliers(HashMap<String,String[]> testdata,double[] meanVector,double Max)
+	public String getOutliers(HashMap<String,String[]> testdata,double[] meanList,double Max)
 	{
 		String Id = "";
 		for(String key: testdata.keySet())
 		{
 			String[] vpair = testdata.get(key);
 			FeatureVector fvFeatureVector = new FeatureVector();
-			Vector<RecFeature> vRecFeatures = fvFeatureVector.createVector(vpair[0], vpair[1]);
+			List<RecFeature> vRecFeatures = fvFeatureVector.createList(vpair[0], vpair[1]);
 			double[] x = new double[fvFeatureVector.size()];
 			for(int i = 0; i< vRecFeatures.size(); i++)
 			{
 				x[i] = vRecFeatures.get(i).computerScore();
 			}
-			double value = this.getDistance(x, meanVector);
+			double value = this.getDistance(x, meanList);
 			/*System.out.println("current: "+ vpair[0]+ " "+Max);
-			System.out.println("=======\n"+this.test(x)+"\n"+this.test(meanVector));
+			System.out.println("=======\n"+this.test(x)+"\n"+this.test(meanList));
 			System.out.println("distance: "+value);*/
 			if(value > Max)
 			{
@@ -78,21 +72,21 @@ public class OutlierDetector {
 		return Id;
 	}
 	// pid: [{rawstring, code}]
-	public void buildMeanVector(HashMap<String,Vector<String[]>> data)
+	public void buildMeanList(HashMap<String,List<String[]>> data)
 	{
 		if(data == null)
 			return;
 		for(String key:data.keySet())
 		{
-			Vector<String[]> vs = data.get(key);
-			FeatureVector fVector = new FeatureVector();
-			double[] dvec = new double[fVector.size()];
+			List<String[]> vs = data.get(key);
+			FeatureVector fList = new FeatureVector();
+			double[] dvec = new double[fList.size()];
 			for (int i = 0; i < dvec.length; i++) {
 				dvec[i] = 0;
 			}
 			for(String[] elem:vs)
 			{
-				Vector<RecFeature> sFeatures = fVector.createVector(elem[0], elem[1]);
+				List<RecFeature> sFeatures = fList.createList(elem[0], elem[1]);
 				for(int j = 0; j<sFeatures.size();j++)
 				{
 					dvec[j] += sFeatures.get(j).computerScore();
@@ -103,7 +97,7 @@ public class OutlierDetector {
 			{
 				dvec[i] = dvec[i]*1.0/ vs.size();
 			}
-			rVectors.put(key, dvec);
+			rLists.put(key, dvec);
 		}
 	}
 	public String test(double[] row)

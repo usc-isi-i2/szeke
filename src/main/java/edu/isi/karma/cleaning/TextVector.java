@@ -21,10 +21,10 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.List;
 
 public class TextVector {
-	public TextVector(Vector<String> lines)
+	public TextVector(List<String> lines)
 	{
 		
 	}

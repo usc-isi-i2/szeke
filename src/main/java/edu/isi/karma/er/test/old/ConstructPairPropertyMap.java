@@ -180,7 +180,7 @@ public class ConstructPairPropertyMap {
 		Property RDF = ResourceFactory.createProperty(RDF_TYPE);
 		ResIterator iter = model.listSubjectsWithProperty(RDF);
 		
-		List<SaamPerson> list = new Vector<SaamPerson>();
+		List<SaamPerson> list = new ArrayList<SaamPerson>();
 		while (iter.hasNext()) {
 			Resource res = iter.next();
 			StmtIterator siter = res.listProperties();

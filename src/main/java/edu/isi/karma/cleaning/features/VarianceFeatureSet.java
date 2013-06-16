@@ -20,9 +20,10 @@
  ******************************************************************************/
 package edu.isi.karma.cleaning.features;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 class Varfeature implements Feature {
 
 	String name = "";
@@ -51,7 +52,7 @@ public class VarianceFeatureSet implements FeatureSet {
 	}
 	public Collection<Feature> computeFeatures(Collection<String> oldexamples,Collection<String> newexamples) {
 		
-		Vector<Feature> fs = new Vector<Feature>();
+		List<Feature> fs = new ArrayList<Feature>();
 		RegularityFeatureSet rf1 = new RegularityFeatureSet();
 		Collection<Feature> x = rf1.computeFeatures(oldexamples,newexamples);
 		RegularityFeatureSet rf2 = new RegularityFeatureSet();

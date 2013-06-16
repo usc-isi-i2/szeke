@@ -1,8 +1,8 @@
 package edu.isi.karma.er.web.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import edu.isi.karma.er.helper.ScoreBoardFileUtil;
 import edu.isi.karma.er.helper.entity.MultiScore;
@@ -112,7 +112,7 @@ public class ResultService {
 	}
 
 	public List<String> getPredicateList(List<MatchResultOntology> resultList) {
-		List<String> predList = new Vector<String>();
+		List<String> predList = new ArrayList<String>();
 		if (resultList != null && resultList.size() > 0) {
 			List<Score> scList = resultList.get(0).getMemberList();
 			for (int i = 0; i < scList.size(); i++) {

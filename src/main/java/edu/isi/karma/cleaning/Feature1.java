@@ -21,13 +21,14 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 //counting  text feature
 public class Feature1 implements RecFeature{
 	public String target;
-	public Vector<TNode> xNodes =new Vector<TNode>();
-	public Feature1(String tar,Vector<TNode> xNodes)
+	public List<TNode> xNodes =new ArrayList<TNode>();
+	public Feature1(String tar,List<TNode> xNodes)
 	{
 		target = tar;
 		this.xNodes = xNodes;

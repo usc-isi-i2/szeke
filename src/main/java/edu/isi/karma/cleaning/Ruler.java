@@ -19,11 +19,12 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 package edu.isi.karma.cleaning;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
@@ -33,25 +34,25 @@ public class Ruler {
 	String Trgt = "";
 	StringTokenizer st = null;
 	String[] seperator = {" ",","};
-	public Vector<TNode> vec;
+	public List<TNode> vec;
 	int curPos = 0;
-	Vector<Object[]> operators = new Vector<Object[]>();
-	Vector<Integer> positions;
-	Vector<TNode> whats;
-	Vector<Integer> consPos;
+	List<Object[]> operators = new ArrayList<Object[]>();
+	List<Integer> positions;
+	List<TNode> whats;
+	List<Integer> consPos;
 	public Ruler()
 	{
-		positions = new Vector<Integer>();
-		consPos = new Vector<Integer>();
-		whats = new Vector<TNode>();
+		positions = new ArrayList<Integer>();
+		consPos = new ArrayList<Integer>();
+		whats = new ArrayList<TNode>();
 	}
 	public Ruler(String x)
 	{
-		positions = new Vector<Integer>();
-		consPos = new Vector<Integer>();
-		whats = new Vector<TNode>();
+		positions = new ArrayList<Integer>();
+		consPos = new ArrayList<Integer>();
+		whats = new ArrayList<TNode>();
 		this.initConstantPosition();
-		vec = new Vector<TNode>();
+		vec = new ArrayList<TNode>();
 		Org = x;
 		tokenize();
 	}
@@ -71,22 +72,22 @@ public class Ruler {
 	{
 		this.Org = x;
 		this.Trgt = "";
-		this.vec = new Vector<TNode>();
+		this.vec = new ArrayList<TNode>();
 		this.curPos = 0;
 		this.tokenize();
 		this.initConstantPosition();
 	}
-	public void setNewInput(Vector<TNode> x)
+	public void setNewInput(List<TNode> x)
 	{
 		this.Org = x.toString();
 		this.Trgt = "";
-		this.vec = new Vector<TNode>();
+		this.vec = new ArrayList<TNode>();
 		this.curPos = 0;
 		this.vec = x;
 		this.initConstantPosition();
 	}
 	//in current data,search the position of the tvec
-	public static int Search(Vector<TNode> xvec,Vector<TNode> tvec,int bpos)
+	public static int Search(List<TNode> xvec,List<TNode> tvec,int bpos)
 	{
 		boolean isFind = false;
 		int p1 = -1;
@@ -115,7 +116,7 @@ public class Ruler {
 		return -1;
 	}
 	//evalPos()
-	public int evalPos(String input,Vector<TNode> t, String option)
+	public int evalPos(String input,List<TNode> t, String option)
 	{
 		boolean incld = false;
 		if(input.contains("first"))
@@ -156,7 +157,7 @@ public class Ruler {
 			}
 			else
 			{
-				Vector<TNode> tmpvec = (Vector<TNode>)this.vec.clone();
+				List<TNode> tmpvec = new ArrayList<TNode>(this.vec);
 				Collections.reverse(tmpvec);
 				int pos = Ruler.Search(tmpvec,t, 0);
 				if(pos == -1)
@@ -305,7 +306,7 @@ public class Ruler {
 		}
 		return res;
 	}
-	public void doOperation(String oper,String num,Vector<TNode> x,int spos,int epos)
+	public void doOperation(String oper,String num,List<TNode> x,int spos,int epos)
 	{
 		int quan = 0 ;
 		if(num==null||num.compareTo("anynumber")==0)
@@ -356,7 +357,7 @@ public class Ruler {
 	}
 	//toks is the token sequence that needed to be inserted into original token sequence
 	//dpos is the position start of the insertion
-	public void ins(Vector<TNode> toks,int dpos)
+	public void ins(List<TNode> toks,int dpos)
 	{
 		if(dpos<vec.size())
 		{
@@ -371,7 +372,7 @@ public class Ruler {
 	//toks specify the tokens need to be moved
 	//spos is the start position of the segment
 	//epos is the end position of the segment
-	public void mov(Vector<TNode> toks, int dpos, int spos,int epos)
+	public void mov(List<TNode> toks, int dpos, int spos,int epos)
 	{
 		int pos = 0;
 		int size = 0;
@@ -399,7 +400,7 @@ public class Ruler {
 		ListIterator<TNode> l = this.vec.listIterator(pos);
 		//ListIterator<TNode> dl = this.vec.listIterator(dpos);
 		int c = 0;
-		Vector<TNode> x = new Vector<TNode>();
+		List<TNode> x = new ArrayList<TNode>();
 		for(c = 0;c<size;c++)
 		{
 			//this.collectPoss(pos);
@@ -430,7 +431,7 @@ public class Ruler {
 			this.vec.addAll(dpos, x);
 		}
 	}
-	public void det(int n,Vector<TNode> toks, int start, int end)
+	public void det(int n,List<TNode> toks, int start, int end)
 	{
 		int cnt = 0;
 		int pos = 0;

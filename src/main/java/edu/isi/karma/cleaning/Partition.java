@@ -1,13 +1,14 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Partition implements GrammarTreeNode {
 	public Traces trace;
-	public Vector<Vector<TNode>> orgNodes;
-	public Vector<Vector<TNode>> tarNodes;
-	public Vector<String> mapping = new Vector<String>();
+	public List<List<TNode>> orgNodes;
+	public List<List<TNode>> tarNodes;
+	public List<String> mapping = new ArrayList<String>();
 	public String label; // the class label of current partition
 	public String cls;
 	public Partition()
@@ -18,11 +19,11 @@ public class Partition implements GrammarTreeNode {
 	{
 		return trace.size();
 	}
-	public Partition(Vector<Vector<TNode>> org,Vector<Vector<TNode>> tar)
+	public Partition(List<List<TNode>> org,List<List<TNode>> tar)
 	{
 		this.orgNodes = org;
 		this.tarNodes = tar;
-		Vector<Traces> ts = new Vector<Traces>();
+		List<Traces> ts = new ArrayList<Traces>();
 		for(int i = 0; i<orgNodes.size();i++)
 		{
 			Traces t = new Traces(orgNodes.get(i),tarNodes.get(i));
@@ -39,7 +40,7 @@ public class Partition implements GrammarTreeNode {
 	{
 		this.trace = t;
 	}
-	public void setExamples(Vector<Vector<TNode>> orgNodes,Vector<Vector<TNode>> tarNodes)
+	public void setExamples(List<List<TNode>> orgNodes,List<List<TNode>> tarNodes)
 	{
 		this.orgNodes = orgNodes;
 		this.tarNodes = tarNodes;
@@ -52,8 +53,8 @@ public class Partition implements GrammarTreeNode {
 	{
 		Traces mt = this.trace.mergewith(b.trace);
 		//add the examples
-		Vector<Vector<TNode>> norg = new Vector<Vector<TNode>>();
-		Vector<Vector<TNode>> ntar = new Vector<Vector<TNode>>();
+		List<List<TNode>> norg = new ArrayList<List<TNode>>();
+		List<List<TNode>> ntar = new ArrayList<List<TNode>>();
 		norg.addAll(this.orgNodes);
 		norg.addAll(b.orgNodes);
 		ntar.addAll(this.tarNodes);

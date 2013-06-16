@@ -1,6 +1,6 @@
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
@@ -36,7 +36,7 @@ public class PartitionClassifier {
         interpreter.exec("from IDCTClassifier import *");  
         interpreterClass = interpreter.get("IDCTClassifier");
 	}
-	public PartitionClassifierType create(Vector<Partition> pars)
+	public PartitionClassifierType create(List<Partition> pars)
 	{
 		PyObject buildingObject = interpreterClass.__call__();
 		PartitionClassifierType ele =  (PartitionClassifierType)buildingObject.__tojava__(PartitionClassifierType.class);
@@ -54,7 +54,7 @@ public class PartitionClassifier {
 		this.clssettingString = ele.learnClassifer();
 		return ele;
 	}
-	public PartitionClassifierType create2(Vector<Partition> pars)
+	public PartitionClassifierType create2(List<Partition> pars)
 	{
 		RecordClassifier2 ele = new RecordClassifier2();
 		for(int i = 0; i<pars.size(); i++)

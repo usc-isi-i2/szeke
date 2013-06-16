@@ -21,14 +21,13 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
-
-import edu.isi.mediator.domain.parser.grammar.DomainModelParser.in_comparison_return;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FeatureVector {
 	String[] symbol = {"#",";",",","!","~","@","$","%","^","&","*","(",")","_","-","{","}","[","]","\"","'",":","?","<",">","."};
 	int[] types = {TNode.NUMTYP,TNode.SYBSTYP,TNode.LWRDTYP,TNode.UWRDTYP};
-	Vector<RecFeature> x = new Vector<RecFeature>();
+	List<RecFeature> x = new ArrayList<RecFeature>();
 	public int size;
 	
 	public FeatureVector()
@@ -40,17 +39,17 @@ public class FeatureVector {
 	{
 		return symbol.length+types.length+1;
 	}
-	public Vector<RecFeature> createVector(String raw,String color)
+	public List<RecFeature> createList(String raw,String color)
 	{
-		Vector<RecFeature> v = new Vector<RecFeature>();
+		List<RecFeature> v = new ArrayList<RecFeature>();
 		Ruler r = new Ruler();
 		r.setNewInput(raw);
-		Vector<TNode> vt = new Vector<TNode>();
+		List<TNode> vt = new ArrayList<TNode>();
 		vt = r.vec;
-		constructVector(vt,color,v);
+		constructList(vt,color,v);
 		return v;
 	}
-	public void constructVector(Vector<TNode> t,String color,Vector<RecFeature> v)
+	public void constructList(List<TNode> t,String color,List<RecFeature> v)
 	{
 		
 		for(String s:symbol)

@@ -21,17 +21,16 @@
 
 package edu.isi.karma.cleaning;
 
-import java.util.Vector;
-
-import org.python.antlr.PythonParser.return_stmt_return;
+import java.util.ArrayList;
+import java.util.List;
 //used in alignment
 public class ANode {
-	public Vector<Integer> orgPos = new Vector<Integer>();
-	public Vector<Integer> tarPos = new Vector<Integer>();
-	public Vector<Integer> length = new Vector<Integer>();
-	public Vector<String[]> exps = new Vector<String[]>();
-	public Vector<ANode> children = new Vector<ANode>();
-	public ANode(Vector<Integer> orgPos, Vector<Integer> tarPos, Vector<Integer>length, Vector<String[]> exps)
+	public List<Integer> orgPos = new ArrayList<Integer>();
+	public List<Integer> tarPos = new ArrayList<Integer>();
+	public List<Integer> length = new ArrayList<Integer>();
+	public List<String[]> exps = new ArrayList<String[]>();
+	public List<ANode> children = new ArrayList<ANode>();
+	public ANode(List<Integer> orgPos, List<Integer> tarPos, List<Integer>length, List<String[]> exps)
 	{
 		this.orgPos = orgPos;
 		this.tarPos = tarPos;

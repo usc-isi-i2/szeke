@@ -23,15 +23,12 @@ package edu.isi.karma.cleaning;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
-
-import com.hp.hpl.jena.tdb.store.Hash;
 
 //select the most reprentative records from a huge list of rows
 //to ensure that the program learned from the subset could work correctly on the whole dataset
@@ -41,7 +38,7 @@ public class RecordDistiller {
 	public static int cxt_limit = 3;
 	public int totalnumber = 0;
 	public HashMap<String,Anchor> anchors = new  HashMap<String,Anchor>(); 
-	public void readRecord(String ID, Vector<TNode> record)
+	public void readRecord(String ID, List<TNode> record)
 	{
 		HashMap<String, Integer> curIndices = new HashMap<String, Integer>();
 		for(int i = 1; i< record.size()-1; i++) // skip the start and end token
@@ -82,7 +79,7 @@ public class RecordDistiller {
 			}
 			else
 			{
-				Vector<String> Ids = new Vector<String>();
+				List<String> Ids = new ArrayList<String>();
 				Ids.add(ID);
 				HashMap<String,String> vlcxt = new HashMap<String,String>();
 				vlcxt.put(ID,lcxt);
@@ -96,7 +93,7 @@ public class RecordDistiller {
 	//identify the anchor tokens 
 	public void idenAnchor(int total)
 	{
-		Vector<String> dels = new Vector<String>();
+		List<String> dels = new ArrayList<String>();
 		for(String a:anchors.keySet())
 		{
 			int count = anchors.get(a).count;
@@ -115,8 +112,8 @@ public class RecordDistiller {
 	//minimal set 
 	public HashSet<String> idenAnchorRecords(String anchor)
 	{
-		HashMap<String,Vector<String>> lcxt2ids = new HashMap<String, Vector<String>>();
-		HashMap<String,Vector<String>> rcxt2ids = new HashMap<String, Vector<String>>();
+		HashMap<String,List<String>> lcxt2ids = new HashMap<String, List<String>>();
+		HashMap<String,List<String>> rcxt2ids = new HashMap<String, List<String>>();
 		for(String Id: this.anchors.get(anchor).lefCxt.keySet())
 		{
 			String s  =this.anchors.get(anchor).lefCxt.get(Id);
@@ -131,7 +128,7 @@ public class RecordDistiller {
 			}
 			if(isnew)
 			{
-				Vector<String> vs = new Vector<String>();
+				List<String> vs = new ArrayList<String>();
 				vs.add(Id);
 				lcxt2ids.put(s, vs);
 			}
@@ -154,7 +151,7 @@ public class RecordDistiller {
 			}
 			if(isnew)
 			{
-				Vector<String> vs = new Vector<String>();
+				List<String> vs = new ArrayList<String>();
 				vs.add(Id);
 				rcxt2ids.put(s, vs);
 			}
@@ -252,13 +249,13 @@ public class RecordDistiller {
 
 class Anchor{
 	public String name;
-	public Vector<String> IDs;
+	public List<String> IDs;
 	public int count;
 	// id 2 the left context
 	public HashMap<String, String> lefCxt = new HashMap<String, String>();
 	// id 2 the right context
 	public HashMap<String, String> rigCxt =new HashMap<String, String>();
-	public Anchor(String anchor,Vector<String> Ids,int count, HashMap<String, String> lcxt, HashMap<String, String> rcxt)
+	public Anchor(String anchor,List<String> Ids,int count, HashMap<String, String> lcxt, HashMap<String, String> rcxt)
 	{
 		this.name = anchor;
 		this.IDs = Ids;

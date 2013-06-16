@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
@@ -43,7 +41,6 @@ import edu.isi.karma.cleaning.DataCollection;
 import edu.isi.karma.cleaning.ExampleSelection;
 import edu.isi.karma.cleaning.Ruler;
 import edu.isi.karma.cleaning.TNode;
-import edu.isi.karma.cleaning.UtilTools;
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.WorksheetCommand;
 import edu.isi.karma.controller.update.CleaningResultUpdate;
@@ -58,12 +55,10 @@ import edu.isi.karma.rep.cleaning.RamblerValueCollection;
 import edu.isi.karma.rep.cleaning.TransformationExample;
 import edu.isi.karma.rep.cleaning.ValueCollection;
 import edu.isi.karma.view.VWorkspace;
-import edu.isi.karma.webserver.ServletContextParameterMap;
-import edu.isi.karma.webserver.ServletContextParameterMap.ContextParameter;
 
 public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	final String hNodeId;
-	private Vector<TransformationExample> examples;
+	private List<TransformationExample> examples;
 	private HashSet<String> nodeIds = new HashSet<String>();
 	RamblerTransformationInputs inputs;
 	public String compResultString = "";
@@ -102,8 +97,8 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		return tSet;
 	}
 
-	public static Vector<TransformationExample> parseExample(String example) {
-		Vector<TransformationExample> x = new Vector<TransformationExample>();
+	public static List<TransformationExample> parseExample(String example) {
+		List<TransformationExample> x = new ArrayList<TransformationExample>();
 		try {
 			JSONArray jsa = new JSONArray(example);
 			for (int i = 0; i < jsa.length(); i++) {
@@ -126,14 +121,14 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	}
 
 	private String getBestExample(HashMap<String, String[]> xHashMap,
-			HashMap<String, Vector<String[]>> expFeData) {
+			HashMap<String, List<String[]>> expFeData) {
 		String ID = "";
 		ExampleSelection es = new ExampleSelection();
 		es.inite(xHashMap, expFeData);
 		return es.Choose();
 	}
 
-/*	private static Vector<String> getTopK(Set<String> res, int k, String cmpres) {
+/*	private static List<String> getTopK(Set<String> res, int k, String cmpres) {
 		String dirpathString = ServletContextParameterMap
 				.getParameterValue(ContextParameter.USER_DIRECTORY_PATH);
 		if (dirpathString.compareTo("") == 0) {
@@ -144,12 +139,12 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 		//
 		String[] x = (String[]) res.toArray(new String[res.size()]);
 		System.out.println("" + x);
-		// Vector<Double> scores = UtilTools.getScores(x, trainPath);
-		Vector<Double> scores = UtilTools.getScores2(x, cmpres);
+		// List<Double> scores = UtilTools.getScores(x, trainPath);
+		List<Double> scores = UtilTools.getScores2(x, cmpres);
 		System.out.println("Scores: " + scores);
-		Vector<Integer> ins = UtilTools.topKindexs(scores, k);
+		List<Integer> ins = UtilTools.topKindexs(scores, k);
 		System.out.println("Indexs: " + ins);
-		Vector<String> y = new Vector<String>();
+		List<String> y = new ArrayList<String>();
 		for (int i = 0; i < k && i < ins.size(); i++) {
 			y.add(x[ins.get(i)]);
 		}
@@ -180,7 +175,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	public void StringColorCode(String org, String res,
 			HashMap<String, String> dict) {
 		int segmentCnt = 0;
-		Vector<int[]> allUpdates = new Vector<int[]>();
+		List<int[]> allUpdates = new ArrayList<int[]>();
 		String pat = "((?<=\\{_L\\})|(?=\\{_L\\}))";
 		String pat1 = "((?<=\\{_S\\})|(?=\\{_S\\}))";
 		String orgdis = "";
@@ -297,7 +292,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 			calAmbScore(id, originalVal, amb);
 		}
 		RamblerValueCollection vc = new RamblerValueCollection(rows);
-		HashMap<String, Vector<String[]>> expFeData = new HashMap<String, Vector<String[]>>();
+		HashMap<String, List<String[]>> expFeData = new HashMap<String, List<String[]>>();
 		inputs = new RamblerTransformationInputs(examples, vc);
 		// generate the program
 		boolean results = false;
@@ -344,7 +339,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 				for (TransformationExample exp : examples) {
 					if (exp.getNodeId().compareTo(key) == 0) {
 						if (!expFeData.containsKey(classLabel)) {
-							Vector<String[]> vstr = new Vector<String[]>();
+							List<String[]> vstr = new ArrayList<String[]>();
 							String[] texp = {dict.get("Tar"), pretar};
 							vstr.add(texp);
 							expFeData.put(classLabel, vstr);
@@ -416,7 +411,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 	public void calAmbScore(String id, String org, HashMap<String, Integer> amb) {
 		Ruler ruler = new Ruler();
 		ruler.setNewInput(org);
-		Vector<TNode> tNodes = ruler.vec;
+		List<TNode> tNodes = ruler.vec;
 		int tcnt = 1;
 		for (int i = 0; i < tNodes.size(); i++) {
 			if (tNodes.get(i).text.compareTo(" ") == 0)
@@ -510,7 +505,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 					int isadded = 0;
 					HashMap<String, String> tx = new HashMap<String, String>();
 					int i = 0;
-					Vector<TransformationExample> vrt = new Vector<TransformationExample>();
+					List<TransformationExample> vrt = new ArrayList<TransformationExample>();
 					while ((pair = cr.readNext()) != null) {
 
 						pair[0] = "<_START>" + pair[0] + "<_END>";
@@ -529,10 +524,10 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 					// generate the program
 					RamblerTransformationOutput rtf = new RamblerTransformationOutput(
 							inputs);
-					HashMap<String, Vector<String>> js2tps = new HashMap<String, Vector<String>>();
+					HashMap<String, List<String>> js2tps = new HashMap<String, List<String>>();
 					Iterator<String> iter = rtf.getTransformations().keySet()
 							.iterator();
-					Vector<ValueCollection> vvc = new Vector<ValueCollection>();
+					List<ValueCollection> vvc = new ArrayList<ValueCollection>();
 					while (iter.hasNext()) {
 						String tpid = iter.next();
 						ValueCollection rvco = rtf.getTransformedValues(tpid);
@@ -542,7 +537,7 @@ public class GenerateCleaningRulesCommand extends WorksheetCommand {
 							js2tps.get(reps).add(tpid); // update the variance
 														// dic
 						} else {
-							Vector<String> tps = new Vector<String>();
+							List<String> tps = new ArrayList<String>();
 							tps.add(tpid);
 							js2tps.put(reps, tps);
 						}

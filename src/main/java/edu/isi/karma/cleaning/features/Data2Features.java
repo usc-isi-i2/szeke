@@ -2,9 +2,10 @@ package edu.isi.karma.cleaning.features;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -27,7 +28,7 @@ public class Data2Features {
 		}
 	}*/
 
-	public static void Testdata2CSV(Vector<String> tests, String fpath,RecordFeatureSet rf) {
+	public static void Testdata2CSV(List<String> tests, String fpath,RecordFeatureSet rf) {
 		try {
 			CSVWriter writer = new CSVWriter(new FileWriter(new File(fpath)));
 			// get attribute names
@@ -37,7 +38,7 @@ public class Data2Features {
 			attr_names[attr_names.length - 1] = "label";
 			writer.writeNext(attr_names);
 			for (String Record : tests) {
-				Vector<String> row = new Vector<String>();
+				List<String> row = new ArrayList<String>();
 				Collection<Feature> cf = rf.computeFeatures(Record,"");
 				Feature[] x = cf.toArray(new Feature[cf.size()]);
 				// row.add(f.getName());
@@ -57,11 +58,11 @@ public class Data2Features {
 
 	// class: records convert them into csv file
 	public static void Traindata2CSV(
-			HashMap<String, Vector<String>> class2Records, String fpath,RecordFeatureSet rf) {
+			HashMap<String, List<String>> class2Records, String fpath,RecordFeatureSet rf) {
 		try {
 			CSVWriter writer = new CSVWriter(new FileWriter(new File(fpath)));
-			Vector<String> vsStrings = new Vector<String>();
-			for(Vector<String> vecs:class2Records.values())
+			List<String> vsStrings = new ArrayList<String>();
+			for(List<String> vecs:class2Records.values())
 			{
 				vsStrings.addAll(vecs);
 			}
@@ -74,7 +75,7 @@ public class Data2Features {
 			for (String label : class2Records.keySet()) {
 				
 				for (String Record : class2Records.get(label)) {
-					Vector<String> row = new Vector<String>();
+					List<String> row = new ArrayList<String>();
 					Collection<Feature> cf = rf.computeFeatures(Record, label);
 					Feature[] x = cf.toArray(new Feature[cf.size()]);
 					// row.add(f.getName());
