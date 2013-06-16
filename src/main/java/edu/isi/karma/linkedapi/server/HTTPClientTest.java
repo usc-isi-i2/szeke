@@ -100,8 +100,9 @@ public class HTTPClientTest {
 			} catch (IOException e) {
 				throw new Exception("IOException while posting data", e);
 			} finally {
-				if (out != null)
+				if (out != null){
 					out.close();
+				}
 			}
 	 
 			InputStream in = urlc.getInputStream();
@@ -112,15 +113,17 @@ public class HTTPClientTest {
 			} catch (IOException e) {
 				throw new Exception("IOException while reading response", e);
 			} finally {
-				if (in != null)
+				if (in != null){
 					in.close();
+				}
 			}
 	 
 		} catch (IOException e) {
 			throw new Exception("Connection error (is server running at " + endpoint + " ?): " + e);
 		} finally {
-			if (urlc != null)
-			urlc.disconnect();
+			if (urlc != null){
+				urlc.disconnect();
+			}
 		}
 	}
 	 
@@ -174,8 +177,9 @@ public class HTTPClientTest {
 		} catch (IOException e) {
 			throw new Exception("Connection error (is server running at " + endpoint + " ?): " + e);
 		} finally {
-			if (urlc != null)
-			urlc.disconnect();
+			if (urlc != null){
+				urlc.disconnect();
+			}
 		}
 	}
 	 

@@ -49,21 +49,25 @@ public class RankedSteinerSet implements Comparable<RankedSteinerSet>{
 
 	public String getCohesionString() {
 		String s = "";
-		for (Integer i : this.cohesion)
+		for (Integer i : this.cohesion){
 			s += String.valueOf(i);
+		}
 		return s;
 	}
 	
 	private List<Integer> computeCohesion() {
 		
-		if (nodes == null)
+		if (nodes == null){
 			return null;
+		}
 		  
 		List<String> patternIds = new ArrayList<String>();
 		
-		for (Node n : nodes) 
-			for (String s : n.getPatternIds())
+		for (Node n : nodes){
+			for (String s : n.getPatternIds()){
 				patternIds.add(s);
+			}
+		}
 		
 		Function<String, String> stringEqualiy = new Function<String, String>() {
 		  @Override public String apply(final String s) {
@@ -86,21 +90,26 @@ public class RankedSteinerSet implements Comparable<RankedSteinerSet>{
 	}
 
 	private int compareCohesions(List<Integer> c1, List<Integer> c2) {
-		if (c1 == null || c2 == null)
+		if (c1 == null || c2 == null){
 			return 0;
+		}
 		
 		for (int i = 0; i < c1.size(); i++) {
 			if (i < c2.size()) {
-				if (c1.get(i) > c2.get(i)) return 1;
-				else if (c1.get(i) < c2.get(i)) return -1;
+				if (c1.get(i) > c2.get(i)){
+					return 1;
+				}else if (c1.get(i) < c2.get(i)){
+					return -1;
+				}
 			}
 		}
-		if (c1.size() < c2.size())
+		if (c1.size() < c2.size()){
 			return 1;
-		else if (c2.size() < c1.size())
+		}else if (c2.size() < c1.size()){
 			return -1;
-		else
+		}else{
 			return 0;
+		}
 	}
 	
 	@Override
@@ -109,12 +118,13 @@ public class RankedSteinerSet implements Comparable<RankedSteinerSet>{
 		int size1 = this.nodes == null ? 0 : this.nodes.size();
 		int size2 = s.getNodes() == null ? 0 : s.getNodes().size();
 		
-		if (size1 < size2)
+		if (size1 < size2){
 			return -1;
-		else if (size1 > size2)
+		}else if (size1 > size2){
 			return 1;
-		else
+		}else{
 			return -compareCohesions(this.cohesion, s.cohesion);
+		}
 		}
 	
 }

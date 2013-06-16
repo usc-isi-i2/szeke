@@ -92,8 +92,9 @@ public class AlignmentForest implements TForest {
 			List<TNode> nodes, Collection<TNode> columnTnodes) {
 		for (TNode node : nodes) {
 			AlignmentNode alNode = (AlignmentNode) node;
-			if (columnTnodes.contains(node))
+			if (columnTnodes.contains(node)){
 				finalOrder.add(TNodeToHNodeMap.get(node));
+			}
 
 			if (alNode.hasChildren()) {
 				addToFinalOrderFromChildren(finalOrder, alNode.getChildren(),
@@ -186,8 +187,9 @@ public class AlignmentForest implements TForest {
 			int seqIndex = nodeIndexMap.get(child);
 			logger.debug("Working on " + child.getId() + " Index:" + seqIndex);
 
-			if (seqIndex < minSeqIndex)
+			if (seqIndex < minSeqIndex){
 				minSeqIndex = seqIndex;
+			}
 
 			for (int j = i - 1; j >= 0; j--) {
 				TNode currChild = children.get(j);
@@ -251,8 +253,9 @@ public class AlignmentForest implements TForest {
 			if (alNode.hasChildren()) {
 				TNode nodeC = getAlignmentNodeWithHNodeId(alNode.getChildren(),
 						hNodeId);
-				if (nodeC != null)
+				if (nodeC != null){
 					return nodeC;
+				}
 			}
 		}
 		return null;

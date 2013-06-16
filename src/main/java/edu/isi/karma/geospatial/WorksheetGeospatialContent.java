@@ -177,7 +177,9 @@ public class WorksheetGeospatialContent {
 						.getValue().asString();
 		        WKTReader reader = new WKTReader();
 		        Polygon JTSPolygon = (Polygon)reader.read(posList);
-		        if(JTSPolygon == null) continue;
+		        if(JTSPolygon == null){
+					continue;
+				}
 		        polygons.add(JTSPolygon);
 				FeatureTable featureTable = new FeatureTable();
 				Collection<Node> nodes = row.getNodes();
@@ -205,7 +207,9 @@ public class WorksheetGeospatialContent {
 		        WKTReader reader = new WKTReader();
 		        
 		        LineString JTSLine = (LineString)reader.read(posList);
-		        if(JTSLine == null) continue;
+		        if(JTSLine == null){
+					continue;
+				}
 		        int lineLength = JTSLine.getNumPoints();
 				List<Coordinate> coordsList = new ArrayList<Coordinate>();
 				for (int i=0;i<lineLength;i++) {
@@ -214,8 +218,9 @@ public class WorksheetGeospatialContent {
 					coordsList.add(coord);
 				}
 
-				if (coordsList.size() == 0)
+				if (coordsList.size() == 0){
 					continue;
+				}
 
 				edu.isi.karma.geospatial.LineString line = new edu.isi.karma.geospatial.LineString(coordsList);
 				Collection<Node> nodes = row.getNodes();
@@ -265,7 +270,9 @@ public class WorksheetGeospatialContent {
 					//	lat = coordinateSplit[1];
 						WKTReader reader = new WKTReader();
 						Point JTSPoint = (Point)reader.read(coordinate);
-						if(JTSPoint == null) continue;
+						if(JTSPoint == null){
+							continue;
+						}
 						lng = Double.toString(JTSPoint.getX());
 						lat = Double.toString(JTSPoint.getY());
 					} catch (Exception e) {
@@ -285,8 +292,9 @@ public class WorksheetGeospatialContent {
 				}
 
 				if (lng == null || lng.trim().equals("") || lat == null
-						|| lat.trim().equals(""))
+						|| lat.trim().equals("")){
 					continue;
+				}
 
 				double lngF = Double.parseDouble(lng.trim());
 				double latF = Double.parseDouble(lat.trim());
@@ -334,10 +342,11 @@ public class WorksheetGeospatialContent {
 
 		Style style = folder.createAndAddStyle().withId("karma");
 		
-		if(randomCounter++%2 == 0)
+		if(randomCounter++%2 == 0){
 			style.createAndSetIconStyle().withScale(1.399999976158142).withIcon(new Icon().withHref("http://maps.google.com/mapfiles/ms/icons/blue-pushpin.png"));
-		else
+		}else{
 			style.createAndSetIconStyle().withScale(1.399999976158142).withIcon(new Icon().withHref("http://maps.google.com/mapfiles/ms/icons/red-pushpin.png"));
+		}
 
 		for (edu.isi.karma.geospatial.Point point : points) {
 			folder.createAndAddPlacemark()
@@ -396,8 +405,9 @@ public class WorksheetGeospatialContent {
 				List<Coordinate> innercoord = new ArrayList<Coordinate>();
 				innerlinearring.setCoordinates(innercoord);
 				int numOfPoints = polygon.getInteriorRingN(i).getNumPoints();
-				for(int j=0;j<numOfPoints;j++)
+				for(int j=0;j<numOfPoints;j++){
 					innercoord.add(new Coordinate(polygon.getInteriorRingN(i).getPointN(j).getX(),polygon.getInteriorRingN(i).getPointN(j).getY()));
+				}
 				
 			}
 			
@@ -410,8 +420,9 @@ public class WorksheetGeospatialContent {
 	}
 
 	public boolean hasNoGeospatialData() {
-		if (points.size() == 0 && lines.size() == 0 && polygons.size()==0)
+		if (points.size() == 0 && lines.size() == 0 && polygons.size()==0){
 			return true;
+		}
 		return false;
 	}
 }

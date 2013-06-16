@@ -59,8 +59,9 @@ public class Segment implements GrammarTreeNode {
 		else
 		{
 			repString += tarNodes.get(this.start).getType();
-			if(end >start+1)
+			if(end >start+1){
 				repString += tarNodes.get(this.end-1).getType();
+			}
 		}
 		this.createTotalOrderVector();
 	}
@@ -97,8 +98,9 @@ public class Segment implements GrammarTreeNode {
 		Vector<TNode> res = new Vector<TNode>();
 		while(i<Segment.cxtsize_limit)
 		{
-			if((c+i)>=x.size())
+			if((c+i)>=x.size()){
 				break;
+			}
 			res.add(x.get(c+i));
 			i++;
 		}
@@ -248,8 +250,9 @@ public class Segment implements GrammarTreeNode {
 				}
 			}
 		}
-		if(newSections.size() ==0)
+		if(newSections.size() ==0){
 			return null;
+		}
 		boolean loop = this.isinloop || s.isinloop;
 		Segment res = new Segment(newSections,loop);
 		return res;
@@ -367,8 +370,9 @@ public class Segment implements GrammarTreeNode {
 		while(curState<rules.size() && s.contains("null"))
 		{
 			s = section.get(rules.get(curState)).toProgram();
-			if(s.contains("null"))
+			if(s.contains("null")){
 				curState ++;
+			}
 		}
 		return s;
 	}

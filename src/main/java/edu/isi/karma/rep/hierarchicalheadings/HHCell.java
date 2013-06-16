@@ -113,10 +113,11 @@ public class HHCell {
 	}
 
 	public boolean hasTNode() {
-		if (tNode != null)
+		if (tNode != null){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	}
 	
 	public boolean isDummy() {
@@ -125,12 +126,14 @@ public class HHCell {
 
 	public boolean hasLeafTNode() {
 		if (hasTNode()) {
-			if (tNode.getChildren() != null && tNode.getChildren().size() != 0)
+			if (tNode.getChildren() != null && tNode.getChildren().size() != 0){
 				return false;
-			else
+			}else{
 				return true;
+			}
 
-		} else
+		}else{
 			return false;
+		}
 	}
 }

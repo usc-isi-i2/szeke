@@ -56,8 +56,9 @@ public class BacktrackingLineSearch {
 		double searchDirNorm = Matrix.norm(searchDir) ;
 		if(searchDirNorm > Constants.BACKTRACKINGLINESEARCH_MAX_STEP) {
 			double ratio = Constants.BACKTRACKINGLINESEARCH_MAX_STEP / searchDirNorm ;
-			for(int i=0; i<dim; i++)
+			for(int i=0; i<dim; i++){
 				searchDir[i]*=ratio ;
+			}
 		}
 		
 		slope = Matrix.dotProduct(gradient, searchDir) ;
@@ -66,8 +67,9 @@ public class BacktrackingLineSearch {
 		double tmp = 0.0 ;
 		for(int i=0; i<dim; i++) {
 			tmp = Math.abs(searchDir[i]/Math.max(Math.abs(currWeights[i]), 1.0)) ;
-			if(tmp > test)
+			if(tmp > test){
 				test = tmp ;
+			}
 		}
 		lammin = Constants.TOLX/test ;
 
@@ -76,8 +78,9 @@ public class BacktrackingLineSearch {
 		while(true) {
 //			Prnt.prn("BacktrackingLineSearch iteration #" + iteration + " and lambda = " + lam1) ;
 			
-			for(int i=0;i<dim;i++) 
-				crfModel.weights[i] = currWeights[i] + lam1 * searchDir[i] ; 
+			for(int i=0;i<dim;i++){
+				crfModel.weights[i] = currWeights[i] + lam1 * searchDir[i] ;
+			} 
 
 			for(GraphInterface graph : globalData.trainingGraphs) {
 				graph.computeGraphPotentialAndZ() ;
@@ -96,19 +99,20 @@ public class BacktrackingLineSearch {
 				double rhs2 = f2 - currError - slope*lam2 ;
 				double a = (rhs1/(lam1 * lam1) - rhs2/(lam2 * lam2)) / (lam1 - lam2) ;
 				double b = ((-rhs1 * lam2 / (lam1 * lam1)) + rhs2 * lam1 / (lam2 * lam2)) / (lam1 - lam2) ;
-				if(a == 0.0)
+				if(a == 0.0){
 					tmplam = -slope / (2.0 * b) ;
-				else {
+				}else {
 					double disc = b*b - 3*a*slope ;
 					if(disc < 0) {
 						Prnt.prn("Returning from Backtracking line search because discriminant is negative") ;
 						Prnt.endIt("in backtrackinglinesearch, disc is less than 0. exiting.") ;
-					}
-					else
+					}else{
 						tmplam = (-b + Math.sqrt(disc))/(3*a) ;
+					}
 				}
-				if(tmplam > 0.5 * lam1)
+				if(tmplam > 0.5 * lam1){
 					tmplam = 0.5 * lam1 ;
+				}
 			}
 
 			if(tmplam < lammin) {       // lambda too small. can't move forward

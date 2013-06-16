@@ -100,8 +100,9 @@ public class ProgSynthesis {
 				}
 			}
 		}
-		if (pos[0] != -1 && pos[1] != -1)
+		if (pos[0] != -1 && pos[1] != -1){
 			UpdatePartitions(pos[0], pos[1], pars);
+		}
 	}
 
 	public void UpdatePartitions(int i, int j, Vector<Partition> pars) {
@@ -136,8 +137,9 @@ public class ProgSynthesis {
 		long startTime = System.currentTimeMillis();
 		while (i < prog_cnt) {
 			ProgramRule r = prog.toProgram1();
-			if (r == null)
+			if (r == null){
 				return null;
+			}
 			String xString = "";
 			int termCnt = 0;
 			boolean findRule = true;
@@ -157,9 +159,10 @@ public class ProgSynthesis {
 				for (Partition p : prog.partitions) {
 					if (p.label.compareTo(xString) == 0) {
 						String newRule = p.toProgram();
-						if (ConfigParameters.debug == 1)
+						if (ConfigParameters.debug == 1){
 							System.out.println("updated Rule: " + p.label
 									+ ": " + newRule);
+						}
 						if (newRule.contains("null")) {
 							findRule = false;
 							break;
@@ -169,8 +172,9 @@ public class ProgSynthesis {
 				}
 				termCnt++;
 			}
-			if (findRule)
+			if (findRule){
 				rules.add(r);
+			}
 			this.ruleNo += termCnt; // accumulate the no of rules while the
 			i++;
 		}

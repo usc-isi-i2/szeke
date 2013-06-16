@@ -141,8 +141,9 @@ public class CSVImportPreviewUpdate extends AbstractUpdate {
 						for (String val : rowValues) {
 							vals.add(val);
 						}
-					} else 
+					}else{
 						vals.add("");
+					}
 					// Add the row index
 					vals.add(0, Integer.toString(rowCount + 1));
 

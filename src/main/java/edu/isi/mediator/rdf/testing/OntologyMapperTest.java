@@ -110,11 +110,13 @@ public class OntologyMapperTest {
 				String line = null;
 				while ((line = buff.readLine()) != null) {
 					//System.out.println("line="+line);
-					if (line.startsWith("#") || line.trim().isEmpty())
+					if (line.startsWith("#") || line.trim().isEmpty()){
 						continue;
+					}
 					int ind = line.indexOf("=");
-					if(ind<=0)
+					if(ind<=0){
 						throw new MediatorException("Settings should be of form: PropertyName=PropertyValue " + line);
+					}
 					String name = line.substring(0,ind).trim();
 					String val = line.substring(ind+1).trim();
 
@@ -129,10 +131,11 @@ public class OntologyMapperTest {
 						modelName = val;
 					}
 					else if (name.equals("OUTPUT_FILE")){
-						if(val.toUpperCase().equals("STDOUT"))
+						if(val.toUpperCase().equals("STDOUT")){
 							outputFile=null;
-						else
+						}else{
 							outputFile=val;
+						}
 					}
 				}
 			} catch (IOException e2) {

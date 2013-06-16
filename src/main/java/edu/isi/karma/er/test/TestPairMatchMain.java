@@ -150,8 +150,9 @@ public class TestPairMatchMain {
 				ScoreBoard sb = map.get(rec.getRes().getSubject());
 				//System.out.println(rec.getRes().getURI());
 				String res = null;
-				if (rec.getRankList().size() > 0)
+				if (rec.getRankList().size() > 0){
 					res = rec.getRankList().get(0).getDstSubj().getSubject();
+				}
 				sb.setRankList(rec.getRankList());
 				sb.setKarmaUri(res);
 				sb.setFound(rec.getCurrentMaxScore()); 			// count means valid results with similarity greater than threshold 0.9

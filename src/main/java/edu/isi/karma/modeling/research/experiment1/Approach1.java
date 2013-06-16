@@ -137,13 +137,14 @@ public class Approach1 {
 		
 		Set<String> inputModelSourceLinkTargetTriples = new HashSet<String>();
 		for (Link link : this.inputModel.edgeSet()) {
-			if (link.getTarget() instanceof InternalNode)
+			if (link.getTarget() instanceof InternalNode){
 				inputModelSourceLinkTargetTriples.add(link.getSource().getLabel().getUri() + 
 						link.getLabel().getUri() +
 						link.getTarget().getLabel().getUri() );
-			else
+			}else{
 				inputModelSourceLinkTargetTriples.add(link.getSource().getLabel().getUri() + 
 						link.getLabel().getUri());
+			}
 		}
 		
 		int count;
@@ -154,13 +155,14 @@ public class Approach1 {
 			modelSourceLinkTargetTriples = new HashSet<String>();
 
 			for (Link link : m.edgeSet()) {
-				if (link.getTarget() instanceof InternalNode)
+				if (link.getTarget() instanceof InternalNode){
 					modelSourceLinkTargetTriples.add(link.getSource().getLabel().getUri() + 
 							link.getLabel().getUri() +
 							link.getTarget().getLabel().getUri() );
-				else
+				}else{
 					modelSourceLinkTargetTriples.add(link.getSource().getLabel().getUri() + 
 							link.getLabel().getUri());
+				}
 			}
 			
 			Set<String> commonLinks = 
@@ -209,9 +211,11 @@ public class Approach1 {
 //		Multimap<Integer, String> index = Multimaps.index(this.similarityMap.keySet(), countFunction);
 
 		int totalCommonLinks = 0;
-		for (Integer i : this.similarityMap.values()) 
-			if (i != null)
+		for (Integer i : this.similarityMap.values()){
+			if (i != null){
 				totalCommonLinks += i.intValue();
+			}
+		}
 		
 		int count;
 		for (Entry<String, Integer> entry : this.similarityMap.entrySet()) {
@@ -252,8 +256,11 @@ public class Approach1 {
 						this.sourceTargetToLinkWeightMap.put(key, linkWeight);
 					} else {
 						w = linkWeight.get(link.getLabel().getUri());
-						if (w == null) linkWeight.put(link.getLabel().getUri(), modelWeight);
-						else linkWeight.put(link.getLabel().getUri(), (w.doubleValue() + modelWeight) );
+						if (w == null){
+							linkWeight.put(link.getLabel().getUri(), modelWeight);
+						}else{
+							linkWeight.put(link.getLabel().getUri(), (w.doubleValue() + modelWeight) );
+						}
 					}
 				}
 			}
@@ -267,7 +274,9 @@ public class Approach1 {
 		List<SemanticLabel1> semanticLabels = new ArrayList<SemanticLabel1>();
 
 		for (Node n : model.vertexSet()) {
-			if (!(n instanceof ColumnNode) && !(n instanceof LiteralNode)) continue;
+			if (!(n instanceof ColumnNode) && !(n instanceof LiteralNode)){
+				continue;
+			}
 			
 			Set<Link> incomingLinks = model.incomingEdgesOf(n);
 			if (incomingLinks != null) { // && incomingLinks.size() == 1) {
@@ -277,7 +286,9 @@ public class Approach1 {
 				SemanticLabel1 sl = new SemanticLabel1(domain.getLabel(), link.getLabel(), n.getId());
 				semanticLabels.add(sl);
 				
-				if (!updateNodeToSemanticLabelsMap) continue;
+				if (!updateNodeToSemanticLabelsMap){
+					continue;
+				}
 				
 				List<SemanticLabel1> attachedSLs = this.nodeToSemanticLabels.get(domain);
 				if (attachedSLs == null) {
@@ -301,12 +312,22 @@ public class Approach1 {
 			List<SemanticLabel1> slList1 = null, slList2 = null;
 			for (MatchedSubGraphs m : matchedSubGraphs) {
 				slList1 = getModelSemanticLabels(m.getSubGraph1(), false);
-				if (slList1 != null && slList1.size() == 1) sl1 = slList1.get(0); else sl1 = null;
+				if (slList1 != null && slList1.size() == 1){
+					sl1 = slList1.get(0);
+				}else{
+					sl1 = null;
+				}
 				
 				slList2 = getModelSemanticLabels(m.getSubGraph2(), false);
-				if (slList2 != null && slList2.size() == 1) sl2 = slList2.get(0); else sl2 = null;
+				if (slList2 != null && slList2.size() == 1){
+					sl2 = slList2.get(0);
+				}else{
+					sl2 = null;
+				}
 				
-				if (sl1 == null || sl2 == null) continue;
+				if (sl1 == null || sl2 == null){
+					continue;
+				}
 				
 				if (sl1.compareTo(semanticLabel) == 0) {
 					matchedSemanticLabels.add(sl2); 
@@ -325,8 +346,9 @@ public class Approach1 {
 		
 		// select the most frequent semantic label from the matched list 
 
-		if (matchedSemanticLabels == null || matchedSemanticLabels.size() == 0)
+		if (matchedSemanticLabels == null || matchedSemanticLabels.size() == 0){
 			return null;
+		}
 		
 		int indexOfMostFrequentSemanticLabel = 0;
 		int countOfEqualSemanticLabels = 1;
@@ -372,8 +394,9 @@ public class Approach1 {
 		
 		logger.info("=====================================================================");
 		logger.info("Input Semantic Labels: ");
-		for (SemanticLabel1 sl: inputSemanticLabels)
+		for (SemanticLabel1 sl: inputSemanticLabels){
 			sl.print();
+		}
 		logger.info("=====================================================================");
 		
 		for (SemanticLabel1 sl : inputSemanticLabels) {
@@ -409,8 +432,9 @@ public class Approach1 {
 			}
 			
 			logger.info("Matched Semantic Labels: ");
-			for (SemanticLabel1 matched: matchedSemanticLabels)
+			for (SemanticLabel1 matched: matchedSemanticLabels){
 				matched.print();
+			}
 			logger.info("-------------------------------------------");
 
 			SemanticLabel1 bestMatch = selectBestMatchedSemanticLabel(matchedSemanticLabels);
@@ -431,8 +455,9 @@ public class Approach1 {
 
 		logger.info("=====================================================================");
 		logger.info("Output Semantic Labels: ");
-		for (SemanticLabel1 sl: outputSemanticLabels)
+		for (SemanticLabel1 sl: outputSemanticLabels){
 			sl.print();
+		}
 		logger.info("=====================================================================");
 		
 	}
@@ -444,9 +469,11 @@ public class Approach1 {
 		for (List<SemanticLabel1> slList : this.nodeToSemanticLabels.values()) {
 			
 			List<SemanticLabel1> mappedOutputLabel = new ArrayList<SemanticLabel1>();
-			for (SemanticLabel1 sl : slList)
-				if (this.inputLabelsToOutputLabelsMatching.get(sl) != null)
+			for (SemanticLabel1 sl : slList){
+				if (this.inputLabelsToOutputLabelsMatching.get(sl) != null){
 					mappedOutputLabel.add(this.inputLabelsToOutputLabelsMatching.get(sl));
+				}
+			}
 			
 	
 			Map<String,List<SemanticLabel1>> groupedMappedOutputLabelsByNodeUri =
@@ -529,7 +556,9 @@ public class Approach1 {
 			objectPropertiesWithOnlyRange = ontologyManager.getObjectPropertiesWithOnlyRange(dr.getDomain(), dr.getRange());
 			
 			HashMap<String, Double> linkWeight = this.sourceTargetToLinkWeightMap.get(dr.getDomain() + dr.getRange());
-			if (linkWeight == null || linkWeight.size() == 0) continue;
+			if (linkWeight == null || linkWeight.size() == 0){
+				continue;
+			}
 
 			boolean linkExistInOntology;
 			
@@ -543,16 +572,17 @@ public class Approach1 {
 						
 						linkExistInOntology = false;
 						
-						if (objectPropertiesWithoutDomainAndRange != null && objectPropertiesWithoutDomainAndRange.containsKey(s)) 
+						if (objectPropertiesWithoutDomainAndRange != null && objectPropertiesWithoutDomainAndRange.containsKey(s)){
 							linkExistInOntology = true;
-						else if (objectPropertiesDirect != null && objectPropertiesDirect.contains(s))
+						}else if (objectPropertiesDirect != null && objectPropertiesDirect.contains(s)){
 							linkExistInOntology = true;
-						else if (objectPropertiesIndirect != null && objectPropertiesIndirect.contains(s))
+						}else if (objectPropertiesIndirect != null && objectPropertiesIndirect.contains(s)){
 							linkExistInOntology = true;
-						else if (objectPropertiesWithOnlyDomain != null && objectPropertiesWithOnlyDomain.contains(s))
+						}else if (objectPropertiesWithOnlyDomain != null && objectPropertiesWithOnlyDomain.contains(s)){
 							linkExistInOntology = true;
-						else if (objectPropertiesWithOnlyRange != null && objectPropertiesWithOnlyRange.contains(s))
+						}else if (objectPropertiesWithOnlyRange != null && objectPropertiesWithOnlyRange.contains(s)){
 							linkExistInOntology = true;
+						}
 						
 						if (!linkExistInOntology) {
 //							logger.warn("The link " + s + " from " + dr.getDomain() + " to " + dr.getRange() + 
@@ -563,7 +593,9 @@ public class Approach1 {
 						}
 						
 						linkWeightInTrainingset = linkWeight.get(s);
-						if (linkWeightInTrainingset == null) continue;
+						if (linkWeightInTrainingset == null){
+							continue;
+						}
 						
 						id = LinkIdFactory.getLinkId(s, n1.getId(), n2.getId());
 						label = new Label(s);
@@ -573,7 +605,9 @@ public class Approach1 {
 						graph.addEdge(n1, n2, newLink);
 						
 						weight = ModelingParams.PROPERTY_DIRECT_WEIGHT - 10 * linkWeightInTrainingset.doubleValue();
-						if (weight < 0) weight = 0.0;
+						if (weight < 0){
+							weight = 0.0;
+						}
 						
 						graph.setEdgeWeight(newLink,  weight);
 					}					
@@ -664,7 +698,9 @@ public class Approach1 {
 				ontologyManager.getObjectPropertiesWithoutDomainAndRange();
 		
 		for (Link link : links) {
-			if (!(link instanceof SimpleLink)) continue;
+			if (!(link instanceof SimpleLink)){
+				continue;
+			}
 			
 			// links from source to target
 			sourceUri = link.getSource().getLabel().getUri();
@@ -675,30 +711,46 @@ public class Approach1 {
 
 			if (link.getWeight() == ModelingParams.PROPERTY_DIRECT_WEIGHT) {
 				objectPropertiesDirect = ontologyManager.getObjectPropertiesDirect(sourceUri, targetUri);
-				if (objectPropertiesDirect != null) possibleLinksFromSourceToTarget.addAll(objectPropertiesDirect);
+				if (objectPropertiesDirect != null){
+					possibleLinksFromSourceToTarget.addAll(objectPropertiesDirect);
+				}
 				objectPropertiesDirect = ontologyManager.getObjectPropertiesDirect(targetUri, sourceUri);
-				if (objectPropertiesDirect != null) possibleLinksFromTargetToSource.addAll(objectPropertiesDirect);
+				if (objectPropertiesDirect != null){
+					possibleLinksFromTargetToSource.addAll(objectPropertiesDirect);
+				}
 			}
 			
 			if (link.getWeight() == ModelingParams.PROPERTY_INDIRECT_WEIGHT) {
 				objectPropertiesIndirect = ontologyManager.getObjectPropertiesIndirect(sourceUri, targetUri);
-				if (objectPropertiesIndirect != null) possibleLinksFromSourceToTarget.addAll(objectPropertiesIndirect);
+				if (objectPropertiesIndirect != null){
+					possibleLinksFromSourceToTarget.addAll(objectPropertiesIndirect);
+				}
 				objectPropertiesIndirect = ontologyManager.getObjectPropertiesIndirect(targetUri, sourceUri);
-				if (objectPropertiesIndirect != null) possibleLinksFromTargetToSource.addAll(objectPropertiesIndirect);
+				if (objectPropertiesIndirect != null){
+					possibleLinksFromTargetToSource.addAll(objectPropertiesIndirect);
+				}
 			} 
 
 			if (link.getWeight() == ModelingParams.PROPERTY_WITH_ONLY_DOMAIN_WEIGHT) {
 				objectPropertiesWithOnlyDomain = ontologyManager.getObjectPropertiesWithOnlyDomain(sourceUri, targetUri);
-				if (objectPropertiesWithOnlyDomain != null) possibleLinksFromSourceToTarget.addAll(objectPropertiesWithOnlyDomain);
+				if (objectPropertiesWithOnlyDomain != null){
+					possibleLinksFromSourceToTarget.addAll(objectPropertiesWithOnlyDomain);
+				}
 				objectPropertiesWithOnlyDomain = ontologyManager.getObjectPropertiesWithOnlyDomain(targetUri, sourceUri);
-				if (objectPropertiesWithOnlyDomain != null) possibleLinksFromTargetToSource.addAll(objectPropertiesWithOnlyDomain);
+				if (objectPropertiesWithOnlyDomain != null){
+					possibleLinksFromTargetToSource.addAll(objectPropertiesWithOnlyDomain);
+				}
 			} 
 			
 			if (link.getWeight() == ModelingParams.PROPERTY_WITH_ONLY_RANGE_WEIGHT) {
 				objectPropertiesWithOnlyRange = ontologyManager.getObjectPropertiesWithOnlyRange(sourceUri, targetUri);
-				if (objectPropertiesWithOnlyRange != null) possibleLinksFromSourceToTarget.addAll(objectPropertiesWithOnlyRange);
+				if (objectPropertiesWithOnlyRange != null){
+					possibleLinksFromSourceToTarget.addAll(objectPropertiesWithOnlyRange);
+				}
 				objectPropertiesWithOnlyRange = ontologyManager.getObjectPropertiesWithOnlyRange(targetUri, sourceUri);
-				if (objectPropertiesWithOnlyRange != null) possibleLinksFromTargetToSource.addAll(objectPropertiesWithOnlyRange);
+				if (objectPropertiesWithOnlyRange != null){
+					possibleLinksFromTargetToSource.addAll(objectPropertiesWithOnlyRange);
+				}
 			} 
 			
 			if (link.getWeight() == ModelingParams.PROPERTY_WITHOUT_DOMAIN_RANGE_WEIGHT) {
@@ -709,10 +761,12 @@ public class Approach1 {
 			}
 			
 			if (link.getWeight() == ModelingParams.SUBCLASS_WEIGHT) {
-				if (ontologyManager.isSubClass(sourceUri, targetUri, true)) 
+				if (ontologyManager.isSubClass(sourceUri, targetUri, true)){
 					possibleLinksFromSourceToTarget.add(Uris.RDFS_SUBCLASS_URI);
-				if (ontologyManager.isSubClass(targetUri, sourceUri, true)) 
+				}
+				if (ontologyManager.isSubClass(targetUri, sourceUri, true)){
 					possibleLinksFromTargetToSource.add(Uris.RDFS_SUBCLASS_URI);
+				}
 			}
 
 			if (possibleLinksFromSourceToTarget.size() > 0) {
@@ -721,10 +775,11 @@ public class Approach1 {
 				label = new Label(uri);
 				
 				Link newLink;
-				if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI))
+				if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI)){
 					newLink = new SubClassLink(id);
-				else
+				}else{
 					newLink = new ObjectPropertyLink(id, label);
+				}
 				
 				tree.addEdge(link.getSource(), link.getTarget(), newLink);
 				tree.removeEdge(link);
@@ -735,10 +790,11 @@ public class Approach1 {
 				label = new Label(uri);
 				
 				Link newLink;
-				if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI))
+				if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI)){
 					newLink = new SubClassLink(id);
-				else
+				}else{
 					newLink = new ObjectPropertyLink(id, label);
+				}
 				
 				tree.addEdge(link.getTarget(), link.getSource(), newLink);
 				tree.removeEdge(link);
@@ -756,8 +812,9 @@ public class Approach1 {
 	private static void testApproach() throws IOException {
 		
 		List<ServiceModel1> serviceModels = ModelReader1.importServiceModels();
-		for (ServiceModel1 sm : serviceModels)
+		for (ServiceModel1 sm : serviceModels){
 			sm.computeMatchedSubGraphs(1);
+		}
 
 		List<ServiceModel1> trainingData = new ArrayList<ServiceModel1>();
 		
@@ -782,7 +839,9 @@ public class Approach1 {
 			logger.info("======================================================");
 			
 			for (int j = 0; j < serviceModels.size(); j++) {
-				if (j != inputModelIndex) trainingData.add(serviceModels.get(j));
+				if (j != inputModelIndex){
+					trainingData.add(serviceModels.get(j));
+				}
 			}
 			
 			DirectedWeightedMultigraph<Node, Link> inputModel = sm.getModels().get(0);

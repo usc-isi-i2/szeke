@@ -125,11 +125,13 @@ public class RuleRDFGeneratorCSV extends RuleRDFGenerator {
 				}
 
 				//I need only values used in the rule
-				if(colNamesInHead.contains(colName))
+				if(colNamesInHead.contains(colName)){
 					values.put(colName, val);
+				}
 			}
-			if(l%10000==0)
+			if(l%10000==0){
 				logger.info("Processed " + l + " rows");
+			}
 			//for one row
 			generateTriples(values);
 			//if(row==3) break;

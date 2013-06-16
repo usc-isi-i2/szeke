@@ -127,8 +127,9 @@ public class KR2RMLMappingGenerator {
 			if (subjMap.getTemplate().getAllTerms().size() == 1 &&
 					(subjMap.getTemplate().getAllTerms().get(0) instanceof StringTemplateTerm)) {
 				String str = subjMap.getTemplate().getAllTerms().get(0).getTemplateTermValue();
-				if (str.equals(sourceNamespace)) 
+				if (str.equals(sourceNamespace)){
 					subjMap.setAsBlankNode(true);
+				}
 			}
 		}
 	}
@@ -179,8 +180,9 @@ public class KR2RMLMappingGenerator {
 			if (node instanceof InternalNode) {
 				SubjectMap subj = new SubjectMap(node.getId());
 				
-				if (node.getId().equals(steinerTreeRoot.getId()))
+				if (node.getId().equals(steinerTreeRoot.getId())){
 					subj.setAsSteinerTreeRootNode(true);
+				}
 				
 				// Add the user provided namespace as the first template term
 				subj.getTemplate().addTemplateTermToSet(new StringTemplateTerm(sourceNamespace));
@@ -243,8 +245,9 @@ public class KR2RMLMappingGenerator {
 					if (olink instanceof ObjectPropertySpecializationLink 
 							|| olink instanceof DataPropertyOfColumnLink 
 							|| olink instanceof ClassInstanceLink 
-							|| olink instanceof ColumnSubClassLink)
+							|| olink instanceof ColumnSubClassLink){
 						continue;
+					}
 					
 					PredicateObjectMap poMap = new PredicateObjectMap(subjTrMap);
 					Node target = olink.getTarget();
@@ -275,8 +278,9 @@ public class KR2RMLMappingGenerator {
 									new StringTemplateTerm(olink.getLabel().getUri(), true));
 						}
 						poMap.setPredicate(pred);
-						if (generateInverse)
+						if (generateInverse){
 							addInversePropertyIfExists(subjMap, poMap, olink, subjTrMap);
+						}
 						
 						// Add the links in the graph links data structure
 						TriplesMapLink link = new TriplesMapLink(subjTrMap, objTrMap, poMap);  
@@ -320,8 +324,9 @@ public class KR2RMLMappingGenerator {
 						addSynonymTypesPredicateObjectMaps(subjTrMap, hNodeId);
 					}
 					// Add the predicateobjectmap to the triples map after a sanity check
-					if (poMap.getObject() != null && poMap.getPredicate() != null)
+					if (poMap.getObject() != null && poMap.getPredicate() != null){
 						subjTrMap.addPredicateObjectMap(poMap);
+					}
 				}
 			}
 		}
@@ -378,8 +383,9 @@ public class KR2RMLMappingGenerator {
 			PredicateObjectMap poMap, Link olink, TriplesMap subjTrMap) {
 		String propUri = olink.getLabel().getUri();
 		//this can happen if propertyName is not an Object property; it could be a subclass
-		if (!ontMgr.isObjectProperty(propUri))
+		if (!ontMgr.isObjectProperty(propUri)){
 			return;
+		}
 		
 		Label inversePropLabel = ontMgr.getInverseProperty(propUri);
 		Label inverseOfPropLabel = ontMgr.getInverseOfProperty(propUri);
@@ -428,8 +434,9 @@ public class KR2RMLMappingGenerator {
 			// Check for the object property specialization
 			if (olink instanceof ObjectPropertySpecializationLink ) {
 				ObjectPropertySpecializationLink splLink = (ObjectPropertySpecializationLink) olink;
-				if (splLink.getSpecializedLink().getId().equals(link.getId()))
+				if (splLink.getSpecializedLink().getId().equals(link.getId())){
 					return olink;
+				}
 			}
 			// Check for the data property specialization
 			else if (olink instanceof DataPropertyOfColumnLink) {
@@ -437,8 +444,9 @@ public class KR2RMLMappingGenerator {
 				Node target = link.getTarget();
 				if (target instanceof ColumnNode) {
 					ColumnNode cnode = (ColumnNode) target;
-					if (dlink.getSpecializedColumnHNodeId().equals(cnode.getId()))
+					if (dlink.getSpecializedColumnHNodeId().equals(cnode.getId())){
 						return dlink;
+					}
 				}
 			}
 		}

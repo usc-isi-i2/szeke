@@ -158,9 +158,10 @@ public class OntologyMapper {
 		DomainParser sp = new DomainParser();
 		RDFDomainModel dm = (RDFDomainModel)sp.parseDomain(sourceDesc);
 
-		if(dm.getGAVRules().size()!= dm.getLAVRules().size())
+		if(dm.getGAVRules().size()!= dm.getLAVRules().size()){
 			throw new MediatorException("Number of GAV and LAV rules should be the same." +
 					"There should be a GAV rule that corresponds to every LAV Rule.");
+		}
 		
 		//create the output writer
 		PrintWriter outWriter = getOutWriter(outStr, outFile);
@@ -486,10 +487,11 @@ public class OntologyMapper {
 				}
 			}
 			objectURI.put(var, "o_" + tableName);
-			if(isJoin)
+			if(isJoin){
 				query += " ?o_" + tableName + " vocab:" + tableName + "_" + propertyName + " ?" + var + " .  \n";
-			else
+			}else{
 				query += " OPTIONAL { ?o_" + tableName + " vocab:" + tableName + "_" + propertyName + " ?" + var + " . } \n";
+			}
 		}
 		//System.out.println("PQ=" + query);
 		return query;
@@ -518,11 +520,13 @@ public class OntologyMapper {
 		String var1 = p.getVars().get(0);
 		String var2 = p.getVars().get(1);
 		String obj = keyObjects.get(var1);
-		if(obj != null)
+		if(obj != null){
 			var1 = obj;
+		}
 		obj = keyObjects.get(var2);
-		if(obj != null)
+		if(obj != null){
 			var2 = obj;
+		}
 		//I don't know which way the relationship is, so go both ways
 		query[0] = " ?" + var2 + " vocab:" + dbName + tableName + " ?" + var1 + " .  \n";
 		query[1] = " ?" + var1 + " vocab:" + dbName + tableName + " ?" + var2 + " .  \n";
@@ -542,8 +546,9 @@ public class OntologyMapper {
 	 */
 	private boolean isRelationship(Predicate p) throws MediatorException{
 		//check if properties represented by the column names exist
-		if(p.getName().startsWith("XW_"))
+		if(p.getName().startsWith("XW_")){
 			return true;
+		}
 		return false;
 		
 	}
@@ -574,8 +579,9 @@ public class OntologyMapper {
 		
 		List<Map<String, String>> allRules = JenaUtil.executeQuery(model, q);
 		
-		if(allRules.isEmpty())
+		if(allRules.isEmpty()){
 			throw new MediatorException("No transformation rule found for: " + tableName);
+		}
 		
 		for(int i=0; i<allRules.size(); i++){
 			Map<String, String> oneR = allRules.get(i);

@@ -88,8 +88,9 @@ public class RDFUtil {
 		
 		String tokens[] = uri.split("/");
 		
-		if(tokens.length<2)
+		if(tokens.length<2){
 			throw new MediatorException("The URI must contain a table name either as DBNAME.TableName/ or /TableName/.");
+		}
 		
 		String tableName = tokens[tokens.length-2];
 		
@@ -142,8 +143,9 @@ public class RDFUtil {
 		
 		String tokens[] = uri.split("/");
 		
-		if(tokens.length<2)
+		if(tokens.length<2){
 			throw new MediatorException("The URI must contain a table name either as DBNAME.TableName/ or /TableName/.");
+		}
 		
 		String dbName = tokens[tokens.length-2];
 		
@@ -152,8 +154,9 @@ public class RDFUtil {
 
 		if(ind>0){
 			dbName = dbName.substring(0, ind) + ".";
+		}else{
+			dbName = "";
 		}
-		else dbName = "";
 		
 		logger.debug("Database name=" + dbName);
 		

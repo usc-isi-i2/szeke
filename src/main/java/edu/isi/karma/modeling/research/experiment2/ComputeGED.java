@@ -90,7 +90,9 @@ public class ComputeGED {
 				}					
 			}
 			
-			if (gMain == null) continue;
+			if (gMain == null){
+				continue;
+			}
 			String label; double distance;
 			
 			Map<String, DirectedWeightedMultigraph<Node, Link>> graphs = 

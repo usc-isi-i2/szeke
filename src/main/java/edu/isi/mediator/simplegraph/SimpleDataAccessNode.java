@@ -53,8 +53,9 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 	
 	public ArrayList<SimpleBaseNode> getSubNodes() {
 		ArrayList<SimpleBaseNode> subnodes = new ArrayList<SimpleBaseNode>();
-		if (child != null)
+		if (child != null){
 			subnodes.add(child);
+		}
 		return subnodes;
 	}
 
@@ -76,8 +77,9 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 			ArrayList<String> joinAttrs = source.findCommonAttrs(((SimpleDataAccessNode)dn).source);
 			for(int i=0; i<joinAttrs.size(); i++){
 				String attr = joinAttrs.get(i);
-				if(!commonAttrs.contains(attr))
+				if(!commonAttrs.contains(attr)){
 					commonAttrs.add(attr);
+				}
 			}
 			//System.out.println(" commonAttrs " + commonAttrs);
 		}
@@ -96,8 +98,9 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 		
 		//I already did setSQL() in this node
     	//because of binding patterns there may be 2 ways to this node
-		if(!sqlSelect.isEmpty())
+		if(!sqlSelect.isEmpty()){
 			return;
+		}
 		
 		if(child!=null){
 			child.setSQL();
@@ -110,11 +113,13 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 		String newName = sourceName + "_" + sourceId;
 		//we use endsWith instead of startsWith because for sources that include the OGSA-DAI resource
 		// it looks like: TestR2_`table name`
-		if(sourceName.endsWith("`"))
+		if(sourceName.endsWith("`")){
 			newName = sourceName.substring(0, sourceName.length()-1) + "_" + sourceId + "`";
+		}
 		
-		if(newName.length()>29)
+		if(newName.length()>29){
 			newName = "T"+MediatorConstants.getTableId();
+		}
 		sqlFrom.add(source.getSQLName()+" "+ newName);
 		String tableName = newName;
 		
@@ -141,7 +146,9 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 		ArrayList<String> select = new ArrayList<String>();
 		for(int i=0; i<source.getTerms().size(); i++){
 			Term t = source.getTerms().get(i);
-			if(t.getVar()==null) continue;
+			if(t.getVar()==null){
+				continue;
+			}
 			SourceAttribute sourceAttr = source.getSourceAttribute(i);
 			//I'm adding a space at then end, so it's easier when I have to search for the var name
 			//otherwise if I search for "S" it will return true for any variable that starts with "S"
@@ -177,10 +184,11 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 			}
 			if(t instanceof ConstTerm){
 				String val = ((ConstTerm)t).getSqlVal(sourceAttr.isNumber());
-				if(val.equals(MediatorConstants.NULL_VALUE))
+				if(val.equals(MediatorConstants.NULL_VALUE)){
 					where.add(bindMarker + tableName+"."+sourceAttr.getSQLName()+" IS "+val);
-				else
+				}else{
 					where.add(bindMarker + tableName+"."+sourceAttr.getSQLName()+" = "+val);
+				}
 			}
 			if(t instanceof FunctionTerm){
 				if(child!=null){
@@ -218,13 +226,14 @@ public class SimpleDataAccessNode extends SimpleBaseNode
 		String s = "";
 		s += getPrintName();
 		s += source + "\n";
-		if(child == null)
+		if(child == null){
 			s += "child=NULL\n";
-		else{
-    		if(child.alreadyPrinted)
-    			s += "child=" + child.getPrintName();
-    		else
-    			s += "child="+ child.getString();
+		}else{
+    		if(child.alreadyPrinted){
+				s += "child=" + child.getPrintName();
+			}else{
+				s += "child="+ child.getString();
+			}
 		}
 		s += "-------------------------------------\n";
 		return s;

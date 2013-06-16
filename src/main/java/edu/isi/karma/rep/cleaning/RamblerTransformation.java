@@ -40,10 +40,11 @@ public class RamblerTransformation implements Transformation {
 	public String transform(String value) {
 		InterpreterType worker = prog.getRuleForValue(value);
 		String s = worker.execute(value);
-		if(s.contains("_FATAL_ERROR_"))
+		if(s.contains("_FATAL_ERROR_")){
 			return value;
-		else
+		}else{
 			return s;
+		}
 	}	
 	public String getId() {
 		// TODO Auto-generated method stub
@@ -69,8 +70,9 @@ public class RamblerTransformation implements Transformation {
 	@Override
 	public String transform_debug(String value) {
 		InterpreterType worker = prog.getRuleForValue(value);
-		if(value.length()==0)
+		if(value.length()==0){
 			return "";
+		}
 		String s = worker.execute_debug(value);
 		return s;
 	}

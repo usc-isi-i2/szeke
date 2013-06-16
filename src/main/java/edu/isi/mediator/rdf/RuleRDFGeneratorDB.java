@@ -113,11 +113,13 @@ public class RuleRDFGeneratorDB extends RuleRDFGenerator{
 					val="NULL";
 				}
 				//I need only values used in the rule
-				if(colNamesInHead.contains(colName))
+				if(colNamesInHead.contains(colName)){
 					values.put(colName, val);
+				}
 			}
-			if(row%10000==0)
+			if(row%10000==0){
 				logger.info("Processed " + row + " rows");
+			}
 			//for one row
 			generateTriples(values);
 			//if(row==3) break;

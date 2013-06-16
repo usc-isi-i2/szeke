@@ -132,8 +132,10 @@ public class TemplateTermSetBuilder {
 	}
 	
 	private static String removeR2rmlFormatting(String r2rmlColName) {
-		if (r2rmlColName.startsWith("{\"") && r2rmlColName.endsWith("\"}"))
+		if (r2rmlColName.startsWith("{\"") && r2rmlColName.endsWith("\"}")){
 			return r2rmlColName.substring(2, r2rmlColName.length()-2);
-		else return r2rmlColName;
+		}else{
+			return r2rmlColName;
+		}
 	}
 }

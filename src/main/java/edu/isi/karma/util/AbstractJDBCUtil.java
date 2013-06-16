@@ -176,8 +176,9 @@ public abstract class AbstractJDBCUtil {
 	public ArrayList<String> getColumnNames(String tableName, Connection conn) throws SQLException {
 		ArrayList<String> columnNames = new ArrayList<String>();
 		String query = "select * from " + tableName;
-		if (conn == null)
+		if (conn == null){
 			return columnNames;
+		}
 		try {
 			Statement s = conn.createStatement();
 			ResultSet r = s.executeQuery(query);
@@ -216,8 +217,9 @@ public abstract class AbstractJDBCUtil {
 		// String res = executeQuery(connectString, query);
 		// logger.debug("RES="+res);
 
-		if (conn == null)
+		if (conn == null){
 			return columnTypes;
+		}
 		try {
 			Statement s = conn.createStatement();
 			ResultSet r = s.executeQuery(query);

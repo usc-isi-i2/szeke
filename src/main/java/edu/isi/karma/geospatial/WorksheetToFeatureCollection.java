@@ -192,27 +192,32 @@ public class WorksheetToFeatureCollection {
 		String domainURI = type.getDomain().getUri();
 		if ((typeURI.equals(property) && domainURI.equals(domain))
 				|| (isSubPropertyOf(typeURI, property, true) && isSubClassOf(
-						domainURI, domain, true)))
+						domainURI, domain, true))){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	}
 
 	private void Go() {
 		prepareFeatureSchema();
-		if (pointFeatureHNodeId != "")
+		if (pointFeatureHNodeId != ""){
 			populateSimpleFeatures(pointFeatureHNodeId,
 					"", getRows(), pointFeatureList, Point.class);
-		if (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != "")
+		}
+		if (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != ""){
 			populateSimpleFeatures(pointFeatureLonHNodeId,
 					pointFeatureLatHNodeId, getRows(), pointFeatureList,
 					Point.class);
-		if (lineFeatureHNodeId != "")
+		}
+		if (lineFeatureHNodeId != ""){
 			populateSimpleFeatures(lineFeatureHNodeId, "",
 					getRows(), lineFeatureList, LineString.class);
-		if (polygonFeatureHNodeId != "")
+		}
+		if (polygonFeatureHNodeId != ""){
 			populateSimpleFeatures(polygonFeatureHNodeId,
 					"", getRows(), polygonFeatureList, Polygon.class);
+		}
 	}
 	private void prepareFeatureSchema() {
 		List<String> spatialHNodeIds = new ArrayList<String>();
@@ -256,8 +261,9 @@ public class WorksheetToFeatureCollection {
 							.getSynonymTypesForHNodeId(kmlCategoryHNodeId)
 							.getSynonyms()) {
 						if (hasType(synonymType, KML_LABEL_PROPERTY,
-								KML_CUSTOMIZATION_CLASS))
+								KML_CUSTOMIZATION_CLASS)){
 							kmlLabelHNodeId = kmlCategoryHNodeId;
+						}
 					}
 				}
 			} else if (hasType(type, KML_LABEL_PROPERTY,
@@ -269,8 +275,9 @@ public class WorksheetToFeatureCollection {
 							.getSynonymTypesForHNodeId(kmlLabelHNodeId)
 							.getSynonyms()) {
 						if (hasType(synonymType, KML_CATEGORY_PROPERTY,
-								KML_CUSTOMIZATION_CLASS))
+								KML_CUSTOMIZATION_CLASS)){
 							kmlCategoryHNodeId = kmlLabelHNodeId;
+						}
 					}
 				}
 			}
@@ -293,10 +300,12 @@ public class WorksheetToFeatureCollection {
 					featureSchema.add(descriptor);
 					geomHNodeIdList.add(hNode.getId());
 
-					if (hNode.getId().equals(kmlCategoryHNodeId))
+					if (hNode.getId().equals(kmlCategoryHNodeId)){
 						kmlCategoryColumnName = hNode.getColumnName();
-					if (hNode.getId().equals(kmlLabelHNodeId))
+					}
+					if (hNode.getId().equals(kmlLabelHNodeId)){
 						kmlLabelColumnName = hNode.getColumnName();
+					}
 				}
 			}
 		}
@@ -322,31 +331,36 @@ public class WorksheetToFeatureCollection {
 							.asString();
 					String lat = row.getNode(geometry2HNodeId).getValue()
 							.asString();
-					if (lon.trim().length() == 0 || lat.trim().length() == 0)
+					if (lon.trim().length() == 0 || lat.trim().length() == 0){
 						continue;
+					}
 					posList = "POINT(" + lon + " " + lat + ")";
 				}
 
-				if (posList == null) // no spatial data
+				if (posList == null){
 					continue;
-				else if(!posList.contains("(")) { // assuming the lon, lat case ... we might need to handle additional cases
+				}else if(!posList.contains("(")) { // assuming the lon, lat case ... we might need to handle additional cases
 					posList = "POINT(" + posList.replace(","," ")+")";
 				}
 				posList = posList.toUpperCase();
 				WKTReader reader = new WKTReader();
 				JTSGeometry = reader.read(posList);
 
-				if (JTSGeometry == null) 
+				if (JTSGeometry == null){
 					continue;
+				}
 
 				String srid = "";
-				if (SRIDHNodeId != "")
+				if (SRIDHNodeId != ""){
 					srid = row.getNode(SRIDHNodeId).getValue().asString();
-				else
+				}
+				else {
 					srid = "4326"; // default to WGS84
+				}
 
-				if (!srid.contains(":"))
+				if (!srid.contains(":")){
 					srid = "EPSG:" + srid;
+				}
 				CoordinateReferenceSystem sourceCRS = null;
 
 				try {
@@ -369,9 +383,9 @@ public class WorksheetToFeatureCollection {
 
 				for (String hNodeId : geomHNodeIdList) {
 					Node node = row.getNode(hNodeId);
-					if (node.hasNestedTable())
+					if (node.hasNestedTable()){
 						featureBuilder.add("Nested table");
-					else {
+					}else {
 						String colValue = node.getValue().asString();
 						featureBuilder.add(colValue);
 					}
@@ -408,15 +422,18 @@ public class WorksheetToFeatureCollection {
 
 		File kml = publishKML(spatialDataFolder, fileName);
 		if (pointFeatureHNodeId != ""
-				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != ""))
+				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != "")){
 			saveShapefile(pointFeatureList, spatialDataFolder, fileName
 					+ "_point");
-		if (lineFeatureHNodeId != "")
+		}
+		if (lineFeatureHNodeId != ""){
 			saveShapefile(lineFeatureList, spatialDataFolder, fileName
 					+ "_line");
-		if (polygonFeatureHNodeId != "")
+		}
+		if (polygonFeatureHNodeId != ""){
 			saveShapefile(polygonFeatureList, spatialDataFolder, fileName
 					+ "_polygon");
+		}
 
 		saveSpatialDataToZip(spatialDataFolder, fileName);
 		return fileToString(kml);
@@ -456,15 +473,18 @@ public class WorksheetToFeatureCollection {
 
 		File kml = publishKML(spatialDataFolder, fileName);
 		if (pointFeatureHNodeId != ""
-				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != ""))
+				|| (pointFeatureLatHNodeId != "" && pointFeatureLonHNodeId != "")){
 			saveShapefile(pointFeatureList, spatialDataFolder, fileName
 					+ "_point");
-		if (lineFeatureHNodeId != "")
+		}
+		if (lineFeatureHNodeId != ""){
 			saveShapefile(lineFeatureList, spatialDataFolder, fileName
 					+ "_line");
-		if (polygonFeatureHNodeId != "")
+		}
+		if (polygonFeatureHNodeId != ""){
 			saveShapefile(polygonFeatureList, spatialDataFolder, fileName
 					+ "_polygon");
+		}
 
 		saveSpatialDataToZip(spatialDataFolder, fileName);
 		return kml;
@@ -499,8 +519,9 @@ public class WorksheetToFeatureCollection {
 			 */
 			CoordinateReferenceSystem crs = features.get(0).getFeatureType()
 					.getCoordinateReferenceSystem();
-			if (crs == null)
+			if (crs == null){
 				newDataStore.forceSchemaCRS(DefaultGeographicCRS.WGS84);
+			}
 			
 			for (int i=1;i<features.size();i++) {
 				
@@ -509,8 +530,9 @@ public class WorksheetToFeatureCollection {
 				CoordinateReferenceSystem crs2 = feature.getFeatureType()
 				.getCoordinateReferenceSystem();
 				
-				if(crs2==null)
+				if(crs2==null){
 					continue;
+				}
 				
 				if(!crs.equals(crs2)) {
 					remainingFeatures.add(feature);
@@ -556,9 +578,10 @@ public class WorksheetToFeatureCollection {
 		} catch (Exception e) {
 			logger.error("Shapefile file published failed! Do you have multiple SRID in a single worksheet?");
 		}
-		if(!remainingFeatures.isEmpty())
+		if(!remainingFeatures.isEmpty()){
 			saveShapefile(remainingFeatures,
 				spatialDataFolder, fileName+"_");
+		}
 				
 		logger.info("Shapefile file published. Location:"
 				+ outputFile.getAbsolutePath());
@@ -566,8 +589,9 @@ public class WorksheetToFeatureCollection {
 	}
 
 	public String getKMLStyle(String label, Folder folder) {
-		if (kmlStyles.containsKey(label))
+		if (kmlStyles.containsKey(label)){
 			return (String) kmlStyles.get(label);
+		}
 
 		int pushpingLinkCounter = kmlStylesCounter % kmlPushPings.length;
 		int colorCounter = kmlStylesCounter % kmlColors.length;
@@ -813,10 +837,11 @@ public class WorksheetToFeatureCollection {
 		for (Property property : simpleFeature.getProperties()) {
 			if (property.getName().toString() != GEOM) {
 				str.append("<b>" + property.getName() + "</b>: ");
-				if (property.getValue() != null)
+				if (property.getValue() != null){
 					str.append(property.getValue().toString() + " <br />");
-				else
+				}else{
 					str.append(" <br />");
+				}
 			}
 		}
 		return str.toString();
@@ -840,15 +865,16 @@ public class WorksheetToFeatureCollection {
 			File dir = new File(sourceDirectory);
 
 			// check to see if this directory exists
-			if (!dir.isDirectory())
+			if (!dir.isDirectory()){
 				System.out.println(sourceDirectory + " is not a directory");
-			else {
+			}else {
 				File[] files = dir.listFiles();
 
 				for (int i = 0; i < files.length; i++) {
 					System.out.println("Adding " + files[i].getName());
-					if (files[i].getName().contains(".zip"))
+					if (files[i].getName().contains(".zip")){
 						continue;
+					}
 					// create object of FileInputStream for source file
 					FileInputStream fin = new FileInputStream(files[i]);
 
@@ -897,8 +923,9 @@ public class WorksheetToFeatureCollection {
 
 	public boolean hasNoGeospatialData() {
 		if (pointFeatureList.size() == 0 && lineFeatureList.size() == 0
-				&& polygonFeatureList.size() == 0)
+				&& polygonFeatureList.size() == 0){
 			return true;
+		}
 		return false;
 	}
 

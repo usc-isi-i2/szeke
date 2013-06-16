@@ -125,10 +125,11 @@ public class CSVFileImport {
 			
 		for (int i = 0; i < rowValues.length; i++) {
 			HNode hNode = null;
-			if (headerRowIndex == 0)
+			if (headerRowIndex == 0){
 				hNode = headers.addHNode("Column_" + (i + 1), worksheet, fac);
-			else
+			}else{
 				hNode = headers.addHNode(rowValues[i], worksheet, fac);
+			}
 			headersList.add(hNode.getId());
 		}
 		reader.close();
@@ -148,9 +149,9 @@ public class CSVFileImport {
 			
 		Row row = dataTable.addRow(fac);
 		for (int i = 0; i < rowValues.length; i++) {
-			if (i < hNodeIdList.size())
+			if (i < hNodeIdList.size()){
 				row.setValue(hNodeIdList.get(i), rowValues[i], fac);
-			else {
+			}else {
 				// TODO Our model does not allow a value to be added to a row
 				// without its associated HNode. In CSVs, there could be case
 				// where values in rows are greater than number of column names.
@@ -190,8 +191,9 @@ public class CSVFileImport {
 				break;
 			}
 			rowCount++;
-			if(scanner.hasNext())
+			if(scanner.hasNext()){
 				scanner.nextLine();
+			}
 		}
 		return headersList;
 	}

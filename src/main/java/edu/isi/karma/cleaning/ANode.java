@@ -47,13 +47,15 @@ public class ANode {
 	// all constant node and same content
 	public boolean isvalid()
 	{
-		if(orgPos.size()<= 1)
+		if(orgPos.size()<= 1){
 			return true;
+		}
 		for(int i=1; i<orgPos.size(); i++)
 		{
 			int value = orgPos.get(i)*orgPos.get(i-1);
-			if(value < 0)
+			if(value < 0){
 				return false;
+			}
 			if(orgPos.get(i) <0)
 			{
 				String sub = this.exps.get(i)[1].substring(tarPos.get(i), tarPos.get(i)+length.get(i));

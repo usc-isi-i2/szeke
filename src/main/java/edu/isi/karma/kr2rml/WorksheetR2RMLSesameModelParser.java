@@ -292,8 +292,9 @@ public class WorksheetR2RMLSesameModelParser {
 				Statement typeStmt = rdfTypes.next();
 				if (typeStmt.getObject() instanceof Resource) {
 					// Skip the steiner tree root type
-					if(typeStmt.getObject().stringValue().equals(Uris.KM_STEINER_TREE_ROOT_NODE))
+					if(typeStmt.getObject().stringValue().equals(Uris.KM_STEINER_TREE_ROOT_NODE)){
 						continue;
+					}
 					
 					StringTemplateTerm uriTerm = new StringTemplateTerm(
 							typeStmt.getObject().stringValue(), true);

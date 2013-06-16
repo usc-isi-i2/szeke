@@ -184,8 +184,12 @@ public class DomainModelParser extends Parser {
             	    section1=section();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_section.add(section1.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_section.add(section1.getTree());
+					}
 
             	    }
             	    break;
@@ -323,8 +327,12 @@ public class DomainModelParser extends Parser {
                     schema2=schema();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, schema2.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, schema2.getTree());
+					}
 
                     }
                     break;
@@ -337,8 +345,12 @@ public class DomainModelParser extends Parser {
                     functions3=functions();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, functions3.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, functions3.getTree());
+					}
 
                     }
                     break;
@@ -351,8 +363,12 @@ public class DomainModelParser extends Parser {
                     rules4=rules();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, rules4.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, rules4.getTree());
+					}
 
                     }
                     break;
@@ -365,8 +381,12 @@ public class DomainModelParser extends Parser {
                     namespaces5=namespaces();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, namespaces5.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, namespaces5.getTree());
+					}
 
                     }
                     break;
@@ -420,8 +440,12 @@ public class DomainModelParser extends Parser {
             schema_name6=schema_name();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_schema_name.add(schema_name6.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_schema_name.add(schema_name6.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:87:16: ( schema_exp )*
             loop3:
             do {
@@ -441,8 +465,12 @@ public class DomainModelParser extends Parser {
             	    schema_exp7=schema_exp();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_schema_exp.add(schema_exp7.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_schema_exp.add(schema_exp7.getTree());
+					}
 
             	    }
             	    break;
@@ -551,8 +579,12 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:90:4: 'SOURCE_SCHEMA:'
                     {
-                    string_literal8=(Token)match(input,31,FOLLOW_31_in_schema_name222); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_31.add(string_literal8);
+                    string_literal8=(Token)match(input,31,FOLLOW_31_in_schema_name222); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_31.add(string_literal8);
+					}
 
 
 
@@ -586,8 +618,12 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:91:4: 'DOMAIN_SCHEMA:'
                     {
-                    string_literal9=(Token)match(input,32,FOLLOW_32_in_schema_name233); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_32.add(string_literal9);
+                    string_literal9=(Token)match(input,32,FOLLOW_32_in_schema_name233); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_32.add(string_literal9);
+					}
 
 
 
@@ -664,8 +700,12 @@ public class DomainModelParser extends Parser {
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:94:2: ( 'FUNCTIONS:' ( function_name )* -> ^( FUNCTIONS ( function_name )* ) )
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:94:4: 'FUNCTIONS:' ( function_name )*
             {
-            string_literal10=(Token)match(input,33,FOLLOW_33_in_functions249); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_33.add(string_literal10);
+            string_literal10=(Token)match(input,33,FOLLOW_33_in_functions249); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_33.add(string_literal10);
+			}
 
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:94:17: ( function_name )*
             loop5:
@@ -686,8 +726,12 @@ public class DomainModelParser extends Parser {
             	    function_name11=function_name();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_function_name.add(function_name11.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_function_name.add(function_name11.getTree());
+					}
 
             	    }
             	    break;
@@ -777,8 +821,12 @@ public class DomainModelParser extends Parser {
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:97:2: ( 'NAMESPACES:' ( namespace )* -> ^( NAMESPACES ( namespace )* ) )
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:97:4: 'NAMESPACES:' ( namespace )*
             {
-            string_literal12=(Token)match(input,34,FOLLOW_34_in_namespaces273); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_34.add(string_literal12);
+            string_literal12=(Token)match(input,34,FOLLOW_34_in_namespaces273); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_34.add(string_literal12);
+			}
 
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:97:18: ( namespace )*
             loop6:
@@ -799,8 +847,12 @@ public class DomainModelParser extends Parser {
             	    namespace13=namespace();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_namespace.add(namespace13.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_namespace.add(namespace13.getTree());
+					}
 
             	    }
             	    break;
@@ -897,17 +949,29 @@ public class DomainModelParser extends Parser {
             namespace_prefix14=namespace_prefix();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_namespace_prefix.add(namespace_prefix14.getTree());
-            char_literal15=(Token)match(input,35,FOLLOW_35_in_namespace299); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_35.add(char_literal15);
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_namespace_prefix.add(namespace_prefix14.getTree());
+			}
+            char_literal15=(Token)match(input,35,FOLLOW_35_in_namespace299); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_35.add(char_literal15);
+			}
 
             pushFollow(FOLLOW_namespace_uri_in_namespace301);
             namespace_uri16=namespace_uri();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_namespace_uri.add(namespace_uri16.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_namespace_uri.add(namespace_uri16.getTree());
+			}
 
 
             // AST REWRITE
@@ -998,17 +1062,29 @@ public class DomainModelParser extends Parser {
             table_name17=table_name();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_table_name.add(table_name17.getTree());
-            char_literal18=(Token)match(input,36,FOLLOW_36_in_schema_exp320); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_36.add(char_literal18);
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_table_name.add(table_name17.getTree());
+			}
+            char_literal18=(Token)match(input,36,FOLLOW_36_in_schema_exp320); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_36.add(char_literal18);
+			}
 
             pushFollow(FOLLOW_column_identifier_in_schema_exp322);
             column_identifier19=column_identifier();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_column_identifier.add(column_identifier19.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_column_identifier.add(column_identifier19.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:103:37: ( ',' column_identifier )*
             loop7:
             do {
@@ -1024,15 +1100,23 @@ public class DomainModelParser extends Parser {
             	case 1 :
             	    // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:103:38: ',' column_identifier
             	    {
-            	    char_literal20=(Token)match(input,37,FOLLOW_37_in_schema_exp325); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_37.add(char_literal20);
+            	    char_literal20=(Token)match(input,37,FOLLOW_37_in_schema_exp325); if (state.failed){
+						return retval;
+					} 
+            	    if ( state.backtracking==0 ){
+						stream_37.add(char_literal20);
+					}
 
             	    pushFollow(FOLLOW_column_identifier_in_schema_exp327);
             	    column_identifier21=column_identifier();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_column_identifier.add(column_identifier21.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_column_identifier.add(column_identifier21.getTree());
+					}
 
             	    }
             	    break;
@@ -1042,8 +1126,12 @@ public class DomainModelParser extends Parser {
                 }
             } while (true);
 
-            char_literal22=(Token)match(input,38,FOLLOW_38_in_schema_exp331); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_38.add(char_literal22);
+            char_literal22=(Token)match(input,38,FOLLOW_38_in_schema_exp331); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_38.add(char_literal22);
+			}
 
 
 
@@ -1139,17 +1227,29 @@ public class DomainModelParser extends Parser {
             column_name23=column_name();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_column_name.add(column_name23.getTree());
-            char_literal24=(Token)match(input,35,FOLLOW_35_in_column_identifier352); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_35.add(char_literal24);
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_column_name.add(column_name23.getTree());
+			}
+            char_literal24=(Token)match(input,35,FOLLOW_35_in_column_identifier352); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_35.add(char_literal24);
+			}
 
             pushFollow(FOLLOW_column_type_in_column_identifier354);
             column_type25=column_type();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_column_type.add(column_type25.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_column_type.add(column_type25.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:106:33: ( ':' column_binding )?
             int alt8=2;
             int LA8_0 = input.LA(1);
@@ -1161,15 +1261,23 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:106:34: ':' column_binding
                     {
-                    char_literal26=(Token)match(input,35,FOLLOW_35_in_column_identifier357); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_35.add(char_literal26);
+                    char_literal26=(Token)match(input,35,FOLLOW_35_in_column_identifier357); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_35.add(char_literal26);
+					}
 
                     pushFollow(FOLLOW_column_binding_in_column_identifier359);
                     column_binding27=column_binding();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_column_binding.add(column_binding27.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_column_binding.add(column_binding27.getTree());
+					}
 
                     }
                     break;
@@ -1302,8 +1410,12 @@ public class DomainModelParser extends Parser {
                     rule_name28=rule_name();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_rule_name.add(rule_name28.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_rule_name.add(rule_name28.getTree());
+					}
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:109:14: ( rule )*
                     loop9:
                     do {
@@ -1323,8 +1435,12 @@ public class DomainModelParser extends Parser {
                     	    rule29=rule();
 
                     	    state._fsp--;
-                    	    if (state.failed) return retval;
-                    	    if ( state.backtracking==0 ) stream_rule.add(rule29.getTree());
+                    	    if (state.failed){
+								return retval;
+							}
+                    	    if ( state.backtracking==0 ){
+								stream_rule.add(rule29.getTree());
+							}
 
                     	    }
                     	    break;
@@ -1375,8 +1491,12 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:110:4: 'LAV_RULES:' ( lav_rule )*
                     {
-                    string_literal30=(Token)match(input,39,FOLLOW_39_in_rules403); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_39.add(string_literal30);
+                    string_literal30=(Token)match(input,39,FOLLOW_39_in_rules403); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_39.add(string_literal30);
+					}
 
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:110:17: ( lav_rule )*
                     loop10:
@@ -1397,8 +1517,12 @@ public class DomainModelParser extends Parser {
                     	    lav_rule31=lav_rule();
 
                     	    state._fsp--;
-                    	    if (state.failed) return retval;
-                    	    if ( state.backtracking==0 ) stream_lav_rule.add(lav_rule31.getTree());
+                    	    if (state.failed){
+								return retval;
+							}
+                    	    if ( state.backtracking==0 ){
+								stream_lav_rule.add(lav_rule31.getTree());
+							}
 
                     	    }
                     	    break;
@@ -1449,8 +1573,12 @@ public class DomainModelParser extends Parser {
                 case 3 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:111:4: 'GLAV_RULES:' ( glav_rule )*
                     {
-                    string_literal32=(Token)match(input,40,FOLLOW_40_in_rules422); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_40.add(string_literal32);
+                    string_literal32=(Token)match(input,40,FOLLOW_40_in_rules422); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_40.add(string_literal32);
+					}
 
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:111:18: ( glav_rule )*
                     loop11:
@@ -1471,8 +1599,12 @@ public class DomainModelParser extends Parser {
                     	    glav_rule33=glav_rule();
 
                     	    state._fsp--;
-                    	    if (state.failed) return retval;
-                    	    if ( state.backtracking==0 ) stream_glav_rule.add(glav_rule33.getTree());
+                    	    if (state.failed){
+								return retval;
+							}
+                    	    if ( state.backtracking==0 ){
+								stream_glav_rule.add(glav_rule33.getTree());
+							}
 
                     	    }
                     	    break;
@@ -1597,8 +1729,12 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:114:4: 'GAV_RULES:'
                     {
-                    string_literal34=(Token)match(input,41,FOLLOW_41_in_rule_name446); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_41.add(string_literal34);
+                    string_literal34=(Token)match(input,41,FOLLOW_41_in_rule_name446); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_41.add(string_literal34);
+					}
 
 
 
@@ -1632,8 +1768,12 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:115:4: 'UAC_RULES:'
                     {
-                    string_literal35=(Token)match(input,42,FOLLOW_42_in_rule_name457); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_42.add(string_literal35);
+                    string_literal35=(Token)match(input,42,FOLLOW_42_in_rule_name457); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_42.add(string_literal35);
+					}
 
 
 
@@ -1667,8 +1807,12 @@ public class DomainModelParser extends Parser {
                 case 3 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:116:4: 'QUERIES:'
                     {
-                    string_literal36=(Token)match(input,43,FOLLOW_43_in_rule_name468); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_43.add(string_literal36);
+                    string_literal36=(Token)match(input,43,FOLLOW_43_in_rule_name468); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_43.add(string_literal36);
+					}
 
 
 
@@ -1789,8 +1933,12 @@ public class DomainModelParser extends Parser {
                     relation_predicate37=relation_predicate();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_relation_predicate.add(relation_predicate37.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_relation_predicate.add(relation_predicate37.getTree());
+					}
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:119:23: ( '<-' | '::' )
                     int alt14=2;
                     int LA14_0 = input.LA(1);
@@ -1812,8 +1960,12 @@ public class DomainModelParser extends Parser {
                         case 1 :
                             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:119:24: '<-'
                             {
-                            string_literal38=(Token)match(input,44,FOLLOW_44_in_rule486); if (state.failed) return retval; 
-                            if ( state.backtracking==0 ) stream_44.add(string_literal38);
+                            string_literal38=(Token)match(input,44,FOLLOW_44_in_rule486); if (state.failed){
+								return retval;
+							} 
+                            if ( state.backtracking==0 ){
+								stream_44.add(string_literal38);
+							}
 
 
                             }
@@ -1821,8 +1973,12 @@ public class DomainModelParser extends Parser {
                         case 2 :
                             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:119:31: '::'
                             {
-                            string_literal39=(Token)match(input,45,FOLLOW_45_in_rule490); if (state.failed) return retval; 
-                            if ( state.backtracking==0 ) stream_45.add(string_literal39);
+                            string_literal39=(Token)match(input,45,FOLLOW_45_in_rule490); if (state.failed){
+								return retval;
+							} 
+                            if ( state.backtracking==0 ){
+								stream_45.add(string_literal39);
+							}
 
 
                             }
@@ -1834,8 +1990,12 @@ public class DomainModelParser extends Parser {
                     rule_body40=rule_body();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_rule_body.add(rule_body40.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_rule_body.add(rule_body40.getTree());
+					}
 
 
                     // AST REWRITE
@@ -1891,10 +2051,18 @@ public class DomainModelParser extends Parser {
                     relation_predicate41=relation_predicate();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_relation_predicate.add(relation_predicate41.getTree());
-                    string_literal42=(Token)match(input,46,FOLLOW_46_in_rule518); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_46.add(string_literal42);
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_relation_predicate.add(relation_predicate41.getTree());
+					}
+                    string_literal42=(Token)match(input,46,FOLLOW_46_in_rule518); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_46.add(string_literal42);
+					}
 
 
 
@@ -1988,13 +2156,21 @@ public class DomainModelParser extends Parser {
             relation_predicate43=relation_predicate();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_relation_predicate.add(relation_predicate43.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_relation_predicate.add(relation_predicate43.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:123:23: ( '->' )
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:123:24: '->'
             {
-            string_literal44=(Token)match(input,47,FOLLOW_47_in_lav_rule543); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_47.add(string_literal44);
+            string_literal44=(Token)match(input,47,FOLLOW_47_in_lav_rule543); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_47.add(string_literal44);
+			}
 
 
             }
@@ -2003,8 +2179,12 @@ public class DomainModelParser extends Parser {
             rule_body45=rule_body();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_rule_body.add(rule_body45.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_rule_body.add(rule_body45.getTree());
+			}
 
 
             // AST REWRITE
@@ -2103,13 +2283,21 @@ public class DomainModelParser extends Parser {
             v1=rule_body();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_rule_body.add(v1.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_rule_body.add(v1.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:126:17: ( '->' )
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:126:18: '->'
             {
-            string_literal46=(Token)match(input,47,FOLLOW_47_in_glav_rule579); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_47.add(string_literal46);
+            string_literal46=(Token)match(input,47,FOLLOW_47_in_glav_rule579); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_47.add(string_literal46);
+			}
 
 
             }
@@ -2118,8 +2306,12 @@ public class DomainModelParser extends Parser {
             v2=rule_body();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_rule_body.add(v2.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_rule_body.add(v2.getTree());
+			}
 
 
             // AST REWRITE
@@ -2220,8 +2412,12 @@ public class DomainModelParser extends Parser {
             predicate47=predicate();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_predicate.add(predicate47.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_predicate.add(predicate47.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:129:14: ( '^' predicate )*
             loop16:
             do {
@@ -2237,15 +2433,23 @@ public class DomainModelParser extends Parser {
             	case 1 :
             	    // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:129:15: '^' predicate
             	    {
-            	    char_literal48=(Token)match(input,48,FOLLOW_48_in_rule_body616); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_48.add(char_literal48);
+            	    char_literal48=(Token)match(input,48,FOLLOW_48_in_rule_body616); if (state.failed){
+						return retval;
+					} 
+            	    if ( state.backtracking==0 ){
+						stream_48.add(char_literal48);
+					}
 
             	    pushFollow(FOLLOW_predicate_in_rule_body618);
             	    predicate49=predicate();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_predicate.add(predicate49.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_predicate.add(predicate49.getTree());
+					}
 
             	    }
             	    break;
@@ -2358,8 +2562,12 @@ public class DomainModelParser extends Parser {
                     relation_predicate50=relation_predicate();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, relation_predicate50.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, relation_predicate50.getTree());
+					}
 
                     }
                     break;
@@ -2372,8 +2580,12 @@ public class DomainModelParser extends Parser {
                     builtin_predicate51=builtin_predicate();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, builtin_predicate51.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, builtin_predicate51.getTree());
+					}
 
                     }
                     break;
@@ -2438,17 +2650,29 @@ public class DomainModelParser extends Parser {
             table_name52=table_name();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_table_name.add(table_name52.getTree());
-            char_literal53=(Token)match(input,36,FOLLOW_36_in_relation_predicate652); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_36.add(char_literal53);
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_table_name.add(table_name52.getTree());
+			}
+            char_literal53=(Token)match(input,36,FOLLOW_36_in_relation_predicate652); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_36.add(char_literal53);
+			}
 
             pushFollow(FOLLOW_column_value_in_relation_predicate654);
             column_value54=column_value();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_column_value.add(column_value54.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_column_value.add(column_value54.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:135:32: ( ',' column_value )*
             loop18:
             do {
@@ -2464,15 +2688,23 @@ public class DomainModelParser extends Parser {
             	case 1 :
             	    // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:135:33: ',' column_value
             	    {
-            	    char_literal55=(Token)match(input,37,FOLLOW_37_in_relation_predicate657); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_37.add(char_literal55);
+            	    char_literal55=(Token)match(input,37,FOLLOW_37_in_relation_predicate657); if (state.failed){
+						return retval;
+					} 
+            	    if ( state.backtracking==0 ){
+						stream_37.add(char_literal55);
+					}
 
             	    pushFollow(FOLLOW_column_value_in_relation_predicate659);
             	    column_value56=column_value();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_column_value.add(column_value56.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_column_value.add(column_value56.getTree());
+					}
 
             	    }
             	    break;
@@ -2482,8 +2714,12 @@ public class DomainModelParser extends Parser {
                 }
             } while (true);
 
-            char_literal57=(Token)match(input,38,FOLLOW_38_in_relation_predicate663); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_38.add(char_literal57);
+            char_literal57=(Token)match(input,38,FOLLOW_38_in_relation_predicate663); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_38.add(char_literal57);
+			}
 
 
 
@@ -2629,17 +2865,29 @@ public class DomainModelParser extends Parser {
                     function_name58=function_name();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_function_name.add(function_name58.getTree());
-                    char_literal59=(Token)match(input,36,FOLLOW_36_in_function_predicate685); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_36.add(char_literal59);
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_function_name.add(function_name58.getTree());
+					}
+                    char_literal59=(Token)match(input,36,FOLLOW_36_in_function_predicate685); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_36.add(char_literal59);
+					}
 
                     pushFollow(FOLLOW_column_value_in_function_predicate687);
                     column_value60=column_value();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_column_value.add(column_value60.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_column_value.add(column_value60.getTree());
+					}
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:138:35: ( ',' column_value )*
                     loop19:
                     do {
@@ -2655,15 +2903,23 @@ public class DomainModelParser extends Parser {
                     	case 1 :
                     	    // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:138:36: ',' column_value
                     	    {
-                    	    char_literal61=(Token)match(input,37,FOLLOW_37_in_function_predicate690); if (state.failed) return retval; 
-                    	    if ( state.backtracking==0 ) stream_37.add(char_literal61);
+                    	    char_literal61=(Token)match(input,37,FOLLOW_37_in_function_predicate690); if (state.failed){
+								return retval;
+							} 
+                    	    if ( state.backtracking==0 ){
+								stream_37.add(char_literal61);
+							}
 
                     	    pushFollow(FOLLOW_column_value_in_function_predicate692);
                     	    column_value62=column_value();
 
                     	    state._fsp--;
-                    	    if (state.failed) return retval;
-                    	    if ( state.backtracking==0 ) stream_column_value.add(column_value62.getTree());
+                    	    if (state.failed){
+								return retval;
+							}
+                    	    if ( state.backtracking==0 ){
+								stream_column_value.add(column_value62.getTree());
+							}
 
                     	    }
                     	    break;
@@ -2673,8 +2929,12 @@ public class DomainModelParser extends Parser {
                         }
                     } while (true);
 
-                    char_literal63=(Token)match(input,38,FOLLOW_38_in_function_predicate696); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_38.add(char_literal63);
+                    char_literal63=(Token)match(input,38,FOLLOW_38_in_function_predicate696); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_38.add(char_literal63);
+					}
 
 
 
@@ -2722,13 +2982,25 @@ public class DomainModelParser extends Parser {
                     function_name64=function_name();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_function_name.add(function_name64.getTree());
-                    char_literal65=(Token)match(input,36,FOLLOW_36_in_function_predicate714); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_36.add(char_literal65);
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_function_name.add(function_name64.getTree());
+					}
+                    char_literal65=(Token)match(input,36,FOLLOW_36_in_function_predicate714); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_36.add(char_literal65);
+					}
 
-                    char_literal66=(Token)match(input,38,FOLLOW_38_in_function_predicate715); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_38.add(char_literal66);
+                    char_literal66=(Token)match(input,38,FOLLOW_38_in_function_predicate715); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_38.add(char_literal66);
+					}
 
 
 
@@ -2854,21 +3126,33 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:142:4: '(' v1= column_value comparison (v2= column_value )? ')'
                     {
-                    char_literal67=(Token)match(input,36,FOLLOW_36_in_builtin_predicate732); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_36.add(char_literal67);
+                    char_literal67=(Token)match(input,36,FOLLOW_36_in_builtin_predicate732); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_36.add(char_literal67);
+					}
 
                     pushFollow(FOLLOW_column_value_in_builtin_predicate736);
                     v1=column_value();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_column_value.add(v1.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_column_value.add(v1.getTree());
+					}
                     pushFollow(FOLLOW_comparison_in_builtin_predicate738);
                     comparison68=comparison();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_comparison.add(comparison68.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_comparison.add(comparison68.getTree());
+					}
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:142:37: (v2= column_value )?
                     int alt21=2;
                     int LA21_0 = input.LA(1);
@@ -2884,16 +3168,24 @@ public class DomainModelParser extends Parser {
                             v2=column_value();
 
                             state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_column_value.add(v2.getTree());
+                            if (state.failed){
+								return retval;
+							}
+                            if ( state.backtracking==0 ){
+								stream_column_value.add(v2.getTree());
+							}
 
                             }
                             break;
 
                     }
 
-                    char_literal69=(Token)match(input,38,FOLLOW_38_in_builtin_predicate745); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_38.add(char_literal69);
+                    char_literal69=(Token)match(input,38,FOLLOW_38_in_builtin_predicate745); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_38.add(char_literal69);
+					}
 
 
 
@@ -2938,29 +3230,49 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:143:4: '(' v1= column_value in_comparison v3= value_list ')'
                     {
-                    char_literal70=(Token)match(input,36,FOLLOW_36_in_builtin_predicate765); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_36.add(char_literal70);
+                    char_literal70=(Token)match(input,36,FOLLOW_36_in_builtin_predicate765); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_36.add(char_literal70);
+					}
 
                     pushFollow(FOLLOW_column_value_in_builtin_predicate769);
                     v1=column_value();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_column_value.add(v1.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_column_value.add(v1.getTree());
+					}
                     pushFollow(FOLLOW_in_comparison_in_builtin_predicate771);
                     in_comparison71=in_comparison();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_in_comparison.add(in_comparison71.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_in_comparison.add(in_comparison71.getTree());
+					}
                     pushFollow(FOLLOW_value_list_in_builtin_predicate775);
                     v3=value_list();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_value_list.add(v3.getTree());
-                    char_literal72=(Token)match(input,38,FOLLOW_38_in_builtin_predicate777); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_38.add(char_literal72);
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						stream_value_list.add(v3.getTree());
+					}
+                    char_literal72=(Token)match(input,38,FOLLOW_38_in_builtin_predicate777); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_38.add(char_literal72);
+					}
 
 
 
@@ -3082,8 +3394,12 @@ public class DomainModelParser extends Parser {
                     column_name73=column_name();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, column_name73.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, column_name73.getTree());
+					}
 
                     }
                     break;
@@ -3096,8 +3412,12 @@ public class DomainModelParser extends Parser {
                     constant74=constant();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, constant74.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, constant74.getTree());
+					}
 
                     }
                     break;
@@ -3110,8 +3430,12 @@ public class DomainModelParser extends Parser {
                     function_predicate75=function_predicate();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, function_predicate75.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, function_predicate75.getTree());
+					}
 
                     }
                     break;
@@ -3163,7 +3487,9 @@ public class DomainModelParser extends Parser {
             set76=(Token)input.LT(1);
             if ( (input.LA(1)>=STRING && input.LA(1)<=FLOAT)||input.LA(1)==49 ) {
                 input.consume();
-                if ( state.backtracking==0 ) adaptor.addChild(root_0, (CommonTree)adaptor.create(set76));
+                if ( state.backtracking==0 ){
+					adaptor.addChild(root_0, (CommonTree)adaptor.create(set76));
+				}
                 state.errorRecovery=false;state.failed=false;
             }
             else {
@@ -3227,15 +3553,23 @@ public class DomainModelParser extends Parser {
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:152:2: ( '[' constant ( ',' constant )* ']' -> ( constant )+ )
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:152:4: '[' constant ( ',' constant )* ']'
             {
-            char_literal77=(Token)match(input,50,FOLLOW_50_in_value_list841); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_50.add(char_literal77);
+            char_literal77=(Token)match(input,50,FOLLOW_50_in_value_list841); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_50.add(char_literal77);
+			}
 
             pushFollow(FOLLOW_constant_in_value_list843);
             constant78=constant();
 
             state._fsp--;
-            if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_constant.add(constant78.getTree());
+            if (state.failed){
+				return retval;
+			}
+            if ( state.backtracking==0 ){
+				stream_constant.add(constant78.getTree());
+			}
             // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:152:17: ( ',' constant )*
             loop24:
             do {
@@ -3251,15 +3585,23 @@ public class DomainModelParser extends Parser {
             	case 1 :
             	    // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:152:18: ',' constant
             	    {
-            	    char_literal79=(Token)match(input,37,FOLLOW_37_in_value_list846); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_37.add(char_literal79);
+            	    char_literal79=(Token)match(input,37,FOLLOW_37_in_value_list846); if (state.failed){
+						return retval;
+					} 
+            	    if ( state.backtracking==0 ){
+						stream_37.add(char_literal79);
+					}
 
             	    pushFollow(FOLLOW_constant_in_value_list848);
             	    constant80=constant();
 
             	    state._fsp--;
-            	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_constant.add(constant80.getTree());
+            	    if (state.failed){
+						return retval;
+					}
+            	    if ( state.backtracking==0 ){
+						stream_constant.add(constant80.getTree());
+					}
 
             	    }
             	    break;
@@ -3269,8 +3611,12 @@ public class DomainModelParser extends Parser {
                 }
             } while (true);
 
-            char_literal81=(Token)match(input,51,FOLLOW_51_in_value_list852); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_51.add(char_literal81);
+            char_literal81=(Token)match(input,51,FOLLOW_51_in_value_list852); if (state.failed){
+				return retval;
+			} 
+            if ( state.backtracking==0 ){
+				stream_51.add(char_literal81);
+			}
 
 
 
@@ -3418,7 +3764,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    char_literal82=(Token)match(input,52,FOLLOW_52_in_comparison867); if (state.failed) return retval;
+                    char_literal82=(Token)match(input,52,FOLLOW_52_in_comparison867); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     char_literal82_tree = (CommonTree)adaptor.create(char_literal82);
                     adaptor.addChild(root_0, char_literal82_tree);
@@ -3431,7 +3779,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal83=(Token)match(input,53,FOLLOW_53_in_comparison871); if (state.failed) return retval;
+                    string_literal83=(Token)match(input,53,FOLLOW_53_in_comparison871); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     string_literal83_tree = (CommonTree)adaptor.create(string_literal83);
                     adaptor.addChild(root_0, string_literal83_tree);
@@ -3444,7 +3794,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    char_literal84=(Token)match(input,54,FOLLOW_54_in_comparison875); if (state.failed) return retval;
+                    char_literal84=(Token)match(input,54,FOLLOW_54_in_comparison875); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     char_literal84_tree = (CommonTree)adaptor.create(char_literal84);
                     adaptor.addChild(root_0, char_literal84_tree);
@@ -3457,7 +3809,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    char_literal85=(Token)match(input,55,FOLLOW_55_in_comparison879); if (state.failed) return retval;
+                    char_literal85=(Token)match(input,55,FOLLOW_55_in_comparison879); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     char_literal85_tree = (CommonTree)adaptor.create(char_literal85);
                     adaptor.addChild(root_0, char_literal85_tree);
@@ -3470,7 +3824,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal86=(Token)match(input,56,FOLLOW_56_in_comparison883); if (state.failed) return retval;
+                    string_literal86=(Token)match(input,56,FOLLOW_56_in_comparison883); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     string_literal86_tree = (CommonTree)adaptor.create(string_literal86);
                     adaptor.addChild(root_0, string_literal86_tree);
@@ -3483,7 +3839,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal87=(Token)match(input,57,FOLLOW_57_in_comparison887); if (state.failed) return retval;
+                    string_literal87=(Token)match(input,57,FOLLOW_57_in_comparison887); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     string_literal87_tree = (CommonTree)adaptor.create(string_literal87);
                     adaptor.addChild(root_0, string_literal87_tree);
@@ -3496,7 +3854,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal88=(Token)match(input,58,FOLLOW_58_in_comparison891); if (state.failed) return retval;
+                    string_literal88=(Token)match(input,58,FOLLOW_58_in_comparison891); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     string_literal88_tree = (CommonTree)adaptor.create(string_literal88);
                     adaptor.addChild(root_0, string_literal88_tree);
@@ -3509,7 +3869,9 @@ public class DomainModelParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal89=(Token)match(input,59,FOLLOW_59_in_comparison895); if (state.failed) return retval;
+                    string_literal89=(Token)match(input,59,FOLLOW_59_in_comparison895); if (state.failed){
+						return retval;
+					}
                     if ( state.backtracking==0 ) {
                     string_literal89_tree = (CommonTree)adaptor.create(string_literal89);
                     adaptor.addChild(root_0, string_literal89_tree);
@@ -3526,8 +3888,12 @@ public class DomainModelParser extends Parser {
                     null_comparison90=null_comparison();
 
                     state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, null_comparison90.getTree());
+                    if (state.failed){
+						return retval;
+					}
+                    if ( state.backtracking==0 ){
+						adaptor.addChild(root_0, null_comparison90.getTree());
+					}
 
                     }
                     break;
@@ -3614,11 +3980,19 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:158:4: 'IS' 'NULL'
                     {
-                    string_literal91=(Token)match(input,60,FOLLOW_60_in_null_comparison909); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_60.add(string_literal91);
+                    string_literal91=(Token)match(input,60,FOLLOW_60_in_null_comparison909); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_60.add(string_literal91);
+					}
 
-                    string_literal92=(Token)match(input,49,FOLLOW_49_in_null_comparison911); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_49.add(string_literal92);
+                    string_literal92=(Token)match(input,49,FOLLOW_49_in_null_comparison911); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_49.add(string_literal92);
+					}
 
 
 
@@ -3652,14 +4026,26 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:159:5: 'IS' 'NOT' 'NULL'
                     {
-                    string_literal93=(Token)match(input,60,FOLLOW_60_in_null_comparison924); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_60.add(string_literal93);
+                    string_literal93=(Token)match(input,60,FOLLOW_60_in_null_comparison924); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_60.add(string_literal93);
+					}
 
-                    string_literal94=(Token)match(input,61,FOLLOW_61_in_null_comparison926); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_61.add(string_literal94);
+                    string_literal94=(Token)match(input,61,FOLLOW_61_in_null_comparison926); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_61.add(string_literal94);
+					}
 
-                    string_literal95=(Token)match(input,49,FOLLOW_49_in_null_comparison928); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_49.add(string_literal95);
+                    string_literal95=(Token)match(input,49,FOLLOW_49_in_null_comparison928); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_49.add(string_literal95);
+					}
 
 
 
@@ -3757,8 +4143,12 @@ public class DomainModelParser extends Parser {
                 case 1 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:162:4: 'IN'
                     {
-                    string_literal96=(Token)match(input,62,FOLLOW_62_in_in_comparison944); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_62.add(string_literal96);
+                    string_literal96=(Token)match(input,62,FOLLOW_62_in_in_comparison944); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_62.add(string_literal96);
+					}
 
 
 
@@ -3792,11 +4182,19 @@ public class DomainModelParser extends Parser {
                 case 2 :
                     // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:163:5: 'NOT' 'IN'
                     {
-                    string_literal97=(Token)match(input,61,FOLLOW_61_in_in_comparison957); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_61.add(string_literal97);
+                    string_literal97=(Token)match(input,61,FOLLOW_61_in_in_comparison957); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_61.add(string_literal97);
+					}
 
-                    string_literal98=(Token)match(input,62,FOLLOW_62_in_in_comparison959); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_62.add(string_literal98);
+                    string_literal98=(Token)match(input,62,FOLLOW_62_in_in_comparison959); if (state.failed){
+						return retval;
+					} 
+                    if ( state.backtracking==0 ){
+						stream_62.add(string_literal98);
+					}
 
 
 
@@ -3872,7 +4270,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID99=(Token)match(input,ID,FOLLOW_ID_in_column_type975); if (state.failed) return retval;
+            ID99=(Token)match(input,ID,FOLLOW_ID_in_column_type975); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID99_tree = (CommonTree)adaptor.create(ID99);
             adaptor.addChild(root_0, ID99_tree);
@@ -3923,7 +4323,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID100=(Token)match(input,ID,FOLLOW_ID_in_column_binding987); if (state.failed) return retval;
+            ID100=(Token)match(input,ID,FOLLOW_ID_in_column_binding987); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID100_tree = (CommonTree)adaptor.create(ID100);
             adaptor.addChild(root_0, ID100_tree);
@@ -3974,7 +4376,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID101=(Token)match(input,ID,FOLLOW_ID_in_table_name999); if (state.failed) return retval;
+            ID101=(Token)match(input,ID,FOLLOW_ID_in_table_name999); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID101_tree = (CommonTree)adaptor.create(ID101);
             adaptor.addChild(root_0, ID101_tree);
@@ -4025,7 +4429,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID102=(Token)match(input,ID,FOLLOW_ID_in_column_name1009); if (state.failed) return retval;
+            ID102=(Token)match(input,ID,FOLLOW_ID_in_column_name1009); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID102_tree = (CommonTree)adaptor.create(ID102);
             adaptor.addChild(root_0, ID102_tree);
@@ -4076,7 +4482,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID103=(Token)match(input,ID,FOLLOW_ID_in_function_name1019); if (state.failed) return retval;
+            ID103=(Token)match(input,ID,FOLLOW_ID_in_function_name1019); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID103_tree = (CommonTree)adaptor.create(ID103);
             adaptor.addChild(root_0, ID103_tree);
@@ -4127,7 +4535,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            ID104=(Token)match(input,ID,FOLLOW_ID_in_namespace_prefix1028); if (state.failed) return retval;
+            ID104=(Token)match(input,ID,FOLLOW_ID_in_namespace_prefix1028); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             ID104_tree = (CommonTree)adaptor.create(ID104);
             adaptor.addChild(root_0, ID104_tree);
@@ -4178,7 +4588,9 @@ public class DomainModelParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            STRING105=(Token)match(input,STRING,FOLLOW_STRING_in_namespace_uri1037); if (state.failed) return retval;
+            STRING105=(Token)match(input,STRING,FOLLOW_STRING_in_namespace_uri1037); if (state.failed){
+				return retval;
+			}
             if ( state.backtracking==0 ) {
             STRING105_tree = (CommonTree)adaptor.create(STRING105);
             adaptor.addChild(root_0, STRING105_tree);
@@ -4215,7 +4627,9 @@ public class DomainModelParser extends Parser {
         relation_predicate();
 
         state._fsp--;
-        if (state.failed) return ;
+        if (state.failed){
+			return ;
+		}
         if ( (input.LA(1)>=44 && input.LA(1)<=45) ) {
             input.consume();
             state.errorRecovery=false;state.failed=false;
@@ -4230,7 +4644,9 @@ public class DomainModelParser extends Parser {
         rule_body();
 
         state._fsp--;
-        if (state.failed) return ;
+        if (state.failed){
+			return ;
+		}
 
         }
     }
@@ -4246,17 +4662,23 @@ public class DomainModelParser extends Parser {
         // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:142:4: ( '(' v1= column_value comparison (v2= column_value )? ')' )
         // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:142:4: '(' v1= column_value comparison (v2= column_value )? ')'
         {
-        match(input,36,FOLLOW_36_in_synpred26_DomainModel732); if (state.failed) return ;
+        match(input,36,FOLLOW_36_in_synpred26_DomainModel732); if (state.failed){
+			return ;
+		}
         pushFollow(FOLLOW_column_value_in_synpred26_DomainModel736);
         v1=column_value();
 
         state._fsp--;
-        if (state.failed) return ;
+        if (state.failed){
+			return ;
+		}
         pushFollow(FOLLOW_comparison_in_synpred26_DomainModel738);
         comparison();
 
         state._fsp--;
-        if (state.failed) return ;
+        if (state.failed){
+			return ;
+		}
         // C:\\Documents and Settings\\mariam\\My Documents\\mediator-new\\workspace\\domainparser\\DomainModel.g:142:37: (v2= column_value )?
         int alt31=2;
         int LA31_0 = input.LA(1);
@@ -4272,14 +4694,18 @@ public class DomainModelParser extends Parser {
                 v2=column_value();
 
                 state._fsp--;
-                if (state.failed) return ;
+                if (state.failed){
+					return ;
+				}
 
                 }
                 break;
 
         }
 
-        match(input,38,FOLLOW_38_in_synpred26_DomainModel745); if (state.failed) return ;
+        match(input,38,FOLLOW_38_in_synpred26_DomainModel745); if (state.failed){
+			return ;
+		}
 
         }
     }

@@ -29,8 +29,9 @@ public class Loop implements GrammarTreeNode {
 		if(this.looptype == a.looptype)
 		{
 			Segment segment = this.loopbody.mergewith(a.loopbody);
-			if(segment == null)
+			if(segment == null){
 				return null;
+			}
 			Loop l = new Loop(segment, looptype);
 			return l;
 		}
@@ -42,8 +43,9 @@ public class Loop implements GrammarTreeNode {
 	public Loop mergewith(Segment a)
 	{
 		Segment segment = this.loopbody.mergewith(a);
-		if(segment == null)
+		if(segment == null){
 			return null;
+		}
 		Loop l = new Loop(segment, looptype);
 		return l;
 	}
@@ -74,9 +76,9 @@ public class Loop implements GrammarTreeNode {
 		else if(a.getNodeType().compareTo("Segment")==0)
 		{
 			return this.mergewith((Segment)a);
-		}
-		else
+		}else{
 			return null;
+		}
 	}
 	public String getNodeType()
 	{

@@ -29,8 +29,9 @@ public class TestJAVA {
 	void generate_combos(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
-	    for (int i = 0; i < k; i++) 
-	    		com[i] = 0;
+	    for (int i = 0; i < k; i++){
+			com[i] = 0;
+		}
 	    while (com[k - 1] < indexs.get(k-1)) {
 	    		Vector<Integer> res = new Vector<Integer>();
 	        for (int i = 0; i < k; i++)
@@ -41,15 +42,17 @@ public class TestJAVA {
 	        //System.out.println("");
 	        configs.add(res);
 	        int t = k - 1;
-	        while (t != 0 && com[t] == indexs.get(t)-1) 
-	        		t--;
+	        while (t != 0 && com[t] == indexs.get(t)-1){
+				t--;
+			}
 	        com[t]++;
 	        if(t==0 && com[t] >= indexs.get(0))
 	        {
 	        		break;
 	        }
-	        for (int i = t + 1; i < k; i++) 
-	        		com[i] = 0;
+	        for (int i = t + 1; i < k; i++){
+				com[i] = 0;
+			}
 	    }
 	}
 	public static void main(String[] args)

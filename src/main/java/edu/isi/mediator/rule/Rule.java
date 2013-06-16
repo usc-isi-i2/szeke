@@ -113,7 +113,9 @@ abstract public class Rule{
 	public String antecedentToString(){
 		String s = "";
 		for(int i=0; i<antecedent.size(); i++){
-			if(i>0) s += " ^ \t";
+			if(i>0){
+				s += " ^ \t";
+			}
 			s += antecedent.get(i).toString();
 		}
 		return s;
@@ -125,12 +127,16 @@ abstract public class Rule{
 	public String toString(){
 		String s = "";
 		for(int i=0; i<antecedent.size(); i++){
-			if(i>0) s += " ^ \n\t";
+			if(i>0){
+				s += " ^ \n\t";
+			}
 			s += antecedent.get(i).toString();
 		}
 		s+= "->";
 		for(int i=0; i<consequent.size(); i++){
-			if(i>0) s += " ^ \n\t";
+			if(i>0){
+				s += " ^ \n\t";
+			}
 			s += consequent.get(i).toString();
 		}
 		return s;

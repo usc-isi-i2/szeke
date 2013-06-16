@@ -52,8 +52,9 @@ public class SpatialReferenceSystemTransformationUtil {
 		Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
 				Boolean.TRUE);
 
-		if(sourceCRS.equals(targetCRS))
+		if(sourceCRS.equals(targetCRS)){
 			return inGeom;
+		}
 		
 		MathTransform transform = null;
 		
@@ -85,8 +86,9 @@ public class SpatialReferenceSystemTransformationUtil {
 		Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
 				Boolean.TRUE);
 		
-		if(fromSRID.equals(toSRID))
+		if(fromSRID.equals(toSRID)){
 			return inGeomWKT;
+		}
 		
 		WKTReader reader = new WKTReader();
 		Geometry JTSGeometry;
@@ -97,10 +99,12 @@ public class SpatialReferenceSystemTransformationUtil {
 			return inGeomWKT;
 		}
 
-		if (!fromSRID.contains(":"))
+		if (!fromSRID.contains(":")){
 			fromSRID = "EPSG:" + fromSRID;
-		if (!toSRID.contains(":"))
+		}
+		if (!toSRID.contains(":")){
 			toSRID = "EPSG:" + toSRID;
+		}
 
 		CoordinateReferenceSystem sourceCRS = null;
 		CoordinateReferenceSystem targetCRS = null;

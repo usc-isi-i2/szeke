@@ -43,8 +43,9 @@ public class GraphVizUtil {
 
 		org.kohsuke.graphviz.Graph gViz = new org.kohsuke.graphviz.Graph();
 
-		if (path == null)
+		if (path == null){
 			return gViz;
+		}
 			
 		org.kohsuke.graphviz.Style internalNodeStyle = new org.kohsuke.graphviz.Style();
 //		internalNodeStyle.attr("shape", "circle");
@@ -100,12 +101,13 @@ public class GraphVizUtil {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (source instanceof ColumnNode)  // attribute
+				if (source instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (source instanceof LiteralNode)  // literal
+				}else if (source instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -122,12 +124,13 @@ public class GraphVizUtil {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (target instanceof ColumnNode)  // attribute
+				if (target instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (target instanceof LiteralNode)  // literal
+				}else if (target instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -174,8 +177,9 @@ public class GraphVizUtil {
 
 		org.kohsuke.graphviz.Graph gViz = new org.kohsuke.graphviz.Graph();
 
-		if (model == null)
+		if (model == null){
 			return gViz;
+		}
 
 		org.kohsuke.graphviz.Style internalNodeStyle = new org.kohsuke.graphviz.Style();
 //		internalNodeStyle.attr("shape", "circle");
@@ -228,12 +232,13 @@ public class GraphVizUtil {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (source instanceof ColumnNode)  // attribute
+				if (source instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (source instanceof LiteralNode)  // literal
+				}else if (source instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -250,12 +255,13 @@ public class GraphVizUtil {
 //					gViz.nodeWith(inputNodeStyle);
 //				else if (id.indexOf("att") != -1 && id.indexOf("o") != -1)  // output
 //					gViz.nodeWith(outputNodeStyle);
-				if (target instanceof ColumnNode)  // attribute
+				if (target instanceof ColumnNode){
 					gViz.nodeWith(parameterNodeStyle);
-				else if (target instanceof LiteralNode)  // literal
+				}else if (target instanceof LiteralNode){
 					gViz.nodeWith(literalNodeStyle);
-				else  // internal node
+				}else{
 					gViz.nodeWith(internalNodeStyle);
+				}
 					
 				gViz.node(n);
 			}
@@ -267,10 +273,12 @@ public class GraphVizUtil {
 			String label = (uri == null?id:uri);
 			label += "-(" + roundTwoDecimals(e.getWeight()) + ")-";
 			label += "-[";
-			for (String pId : e.getPatternIds())
+			for (String pId : e.getPatternIds()){
 				label += pId + ",";
-			if (label.endsWith(","))
+			}
+			if (label.endsWith(",")){
 				label = label.substring(0, label.length() - 1);
+			}
 			label += "]";
 
 			edge.attr("label", label);

@@ -56,8 +56,9 @@ public class Label implements Serializable {
 	}
 	
 	public Label(Label uri) {
-		if (uri == null) this.init();
-		else {
+		if (uri == null){
+			this.init();
+		}else {
 			this.uri = uri.getUri();
 			this.ns = uri.getNs();
 			this.prefix = uri.getPrefix();
@@ -94,35 +95,40 @@ public class Label implements Serializable {
 	}
 
 	public String getNs() {
-		if (ns == null || ns.trim().length() == 0)
-			return null;		
+		if (ns == null || ns.trim().length() == 0){
+			return null;
+		}		
 		
 		return ns;
 	}
 
 	public String getPrefix() {
-		if (prefix == null || prefix.trim().length() == 0)
+		if (prefix == null || prefix.trim().length() == 0){
 			return null;
+		}
 		
 		return prefix;
 	}
 	
 	public String getLocalName() {
-		if (uri == null)
+		if (uri == null){
 			return null;
+		}
 		
 		String localName = uri;
 		String ns = getNs();
-		if (ns != null && !ns.equalsIgnoreCase(localName))
+		if (ns != null && !ns.equalsIgnoreCase(localName)){
 			localName = localName.replaceFirst(ns, "");
+		}
 		
 		return localName;
 	}
 
 	public String getDisplayName() {
 
-		if (getPrefix() == null)
+		if (getPrefix() == null){
 			return getLocalName();
+		}
 		
 		return prefix + ":" + getLocalName();
 	}

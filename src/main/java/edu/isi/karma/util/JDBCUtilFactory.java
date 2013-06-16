@@ -22,15 +22,17 @@ package edu.isi.karma.util;
 
 public class JDBCUtilFactory {
 	public static AbstractJDBCUtil getInstance(AbstractJDBCUtil.DBType dbType) {
-		if(dbType == AbstractJDBCUtil.DBType.MySQL)
+		if(dbType == AbstractJDBCUtil.DBType.MySQL){
 			return new MySQLUtil();
-		else if(dbType == AbstractJDBCUtil.DBType.Oracle)
+		}else if(dbType == AbstractJDBCUtil.DBType.Oracle){
 			return new OracleUtil();
-		else if(dbType == AbstractJDBCUtil.DBType.SQLServer)
+		}else if(dbType == AbstractJDBCUtil.DBType.SQLServer){
 			return new SQLServerUtil();
-		else if(dbType == AbstractJDBCUtil.DBType.PostGIS)
+		}else if(dbType == AbstractJDBCUtil.DBType.PostGIS){
 			return new PostGISUtil();
-		else return null;
+		}else{
+			return null;
+		}
 	}
 
 }

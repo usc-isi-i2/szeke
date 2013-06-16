@@ -62,8 +62,9 @@ public class MDBFileExport {
 			modeledColumnTable.put(type.getHNodeId(),"");
 		}
 		int numRows = worksheet.getDataTable().getNumRows();
-		if(numRows==0) 
+		if(numRows==0){
 			return "";
+		}
 		
 		Database db;
 		try {
@@ -77,8 +78,9 @@ public class MDBFileExport {
 			for (HNode hNode : sortedLeafHNodes) {
 				if (modeledColumnTable.containsKey(hNode.getId())) {
 					String columnName = hNode.getColumnName();
-					if (columnName.equals(""))
+					if (columnName.equals("")){
 						columnName = "NA";
+					}
 					tb.addColumn(new ColumnBuilder(columnName).setType(
 							DataType.MEMO).toColumn());
 					hNodeIdList.add(hNode.getId());

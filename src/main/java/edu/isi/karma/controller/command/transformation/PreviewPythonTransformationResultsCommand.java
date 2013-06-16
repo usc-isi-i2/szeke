@@ -117,8 +117,9 @@ public class PreviewPythonTransformationResultsCommand extends Command {
 				int counter = 0;
 				for (String hNodeId:hNodeIds) {
 					String nodeVal = row.getNode(hNodeId).getValue().asString();
-					if (counter++ != 0)
+					if (counter++ != 0){
 						objectCreationStmt.append(",");
+					}
 					if (nodeVal == null || nodeVal.equals("")) {
 						objectCreationStmt.append("\"\"");
 					} else {

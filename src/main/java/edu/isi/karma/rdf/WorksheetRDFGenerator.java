@@ -127,10 +127,11 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		for(Row r:rows){
 			//construct the values map
 			Map<String,String> values;
-			if(useInternalColumnNames)
+			if(useInternalColumnNames){
 				values = getValueMap(r);
-			else
+			}else{
 				values = getValueMapColumnName(r);
+			}
 			logger.debug("Values=" + values);
 			generateTriples(values);
 		}
@@ -162,16 +163,18 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		for(Row r:rows){
 			//construct the values map
 			Map<String,String> values;
-			if(useInternalColumnNames)
+			if(useInternalColumnNames){
 				values = getValueMap(r);
-			else
+			}else{
 				values = getValueMapColumnName(r);
+			}
 			logger.debug("Values=" + values);
 			generateTriples(values);
 		}
 		//all triples written, so close the writer
-		if(!appendToWriter)
+		if(!appendToWriter){
 			closeWriter();
+		}
 	}
 	
 	//used for testing
@@ -224,8 +227,9 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 	public void generateTriplesCell(Worksheet w, boolean useInternalColumnNames, boolean appendToWriter) throws MediatorException, IOException, KarmaException{
 		generateTriplesCell(w.getDataTable(), useInternalColumnNames);
 		//all triples written, so close the writer
-		if(!appendToWriter)
-			closeWriter();		
+		if(!appendToWriter){
+			closeWriter();
+		}		
 	}
 	//used for testing; generate only for first 3 rows
 	public void generateTriplesCellLimit(Worksheet w) throws MediatorException, IOException, KarmaException{
@@ -325,11 +329,14 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 		String val = n.getValue().asString();
 		//get the column name of this node
 		String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNamePath();
-		if(!useInternalColumnNames)
+		if(!useInternalColumnNames){
 			columnName = factory.getHNode(n.getHNodeId()).getColumnName();
+		}
 		//logger.info("Generate triples for node:"+columnName +" with value=" + val);
 		//transform the null to "", so that I can handle it as ""; basically it will not be added as a triple to RDF
-		if(val==null) val="";
+		if(val==null){
+			val="";
+		}
 		values.put(columnName, val);
 		
 		//get other columns used in the RDF rule associated with columnName
@@ -412,8 +419,9 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 			//get HNodePtah for this node
 			//logger.info("hnodepath="+factory.getHNode(n.getHNodeId()).getHNodePath(factory));
 			String columnName = factory.getHNode(n.getHNodeId()).getHNodePath(factory).toColumnNamePath();
-			if(!useInternalColumnNames)
+			if(!useInternalColumnNames){
 				columnName = factory.getHNode(n.getHNodeId()).getColumnName();
+			}
 			//logger.info("Path="+nodePath + "col name:" + columnName);
 			//logger.info("Row for this node="+n.getBelongsToRow().hashCode());			
 			if(columnName.equals(nodePath)){
@@ -454,7 +462,9 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 			String columnName = factory.getHNode(node.getKey()).getHNodePath(factory).toColumnNamePath();
 			//System.out.println("val for " + columnName + "=" + val + " is it null?" + (val==null));
 			//transform the null to "", so that I can handle it as ""; basically it will not be added as a triple to RDF
-			if(val==null) val="";
+			if(val==null){
+				val="";
+			}
 			values.put(columnName,val);
 		}
 		return values;
@@ -480,7 +490,9 @@ public class WorksheetRDFGenerator extends TableRDFGenerator{
 			String columnName = factory.getHNode(node.getKey()).getColumnName();
 			//System.out.println("val for " + columnName + "=" + val);
 			//transform the null to "", so that I can handle it as ""; basically it will not be added as a triple to RDF
-			if(val==null) val="";
+			if(val==null){
+				val="";
+			}
 			values.put(columnName,val);
 		}
 		return values;

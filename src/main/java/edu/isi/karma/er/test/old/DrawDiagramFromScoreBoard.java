@@ -30,8 +30,9 @@ public class DrawDiagramFromScoreBoard {
 				if (s.getKarmaUri().equals(s.getDbpediaUri())) {
 					found ++;
 				}
-				if (lastResult - s.getFound() > 1e-8)
+				if (lastResult - s.getFound() > 1e-8){
 					System.out.println(s.getFound() + "\t" + df.format(found / count)  + "\t" + df.format(found / total) + "\t" + df.format(2*found/(count + total)));
+				}
 				lastResult = s.getFound();
 			}
 		}

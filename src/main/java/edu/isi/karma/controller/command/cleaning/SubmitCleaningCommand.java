@@ -183,8 +183,9 @@ public class SubmitCleaningCommand extends Command {
 			for (Node node : nodes) {
 				String id = node.getBelongsToRow().getId();
 				String originalVal = node.getValue().asString();
-				if(!rows.containsKey(id))
+				if(!rows.containsKey(id)){
 					rows.put(id, originalVal);
+				}
 			}
 			RamblerValueCollection vc = new RamblerValueCollection(rows);
 			RamblerTransformationInputs inputs = new RamblerTransformationInputs(examples, vc);

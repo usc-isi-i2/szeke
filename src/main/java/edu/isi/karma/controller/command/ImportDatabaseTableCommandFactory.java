@@ -38,8 +38,9 @@ public class ImportDatabaseTableCommandFactory extends CommandFactory{
 
 		ImportDatabaseTableCommand comm = new ImportDatabaseTableCommand(getNewId(vWorkspace), vWorkspace);
 		
-		if(interactionType.equals(ImportDatabaseTableCommand.InteractionType.getPreferencesValues.name()))
+		if(interactionType.equals(ImportDatabaseTableCommand.InteractionType.getPreferencesValues.name())){
 			comm.setRequestedInteractionType(ImportDatabaseTableCommand.InteractionType.getPreferencesValues);
+		}
 		return comm;
 	}
 }

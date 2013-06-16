@@ -50,8 +50,9 @@ public class KMLFileTransferHandler extends HttpServlet {
 		// Move the file to the webapp directory so that it is public
 		File dir = new File(ServletContextParameterMap.getParameterValue(ContextParameter.USER_DIRECTORY_PATH) + 
 				"KML/"+file.getName());
-		if(dir.exists())
+		if(dir.exists()){
 			dir.delete();
+		}
 		file.renameTo(dir);
 		try {
 			Writer writer = response.getWriter();

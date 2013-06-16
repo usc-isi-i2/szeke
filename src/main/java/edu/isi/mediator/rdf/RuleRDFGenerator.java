@@ -302,9 +302,9 @@ public class RuleRDFGenerator {
 					//abort the process; max number of triples was reached
 					return false;
 				}
-			}
-			else
-				continue;			
+			}else{
+				continue;
+			}			
 		}
 		return true;
 	}
@@ -336,9 +336,9 @@ public class RuleRDFGenerator {
 					//abort the process; max number of triples was reached
 					return false;
 				}
-			}
-			else
+			}else{
 				continue;
+			}
 		}
 		return true;
 	}
@@ -362,13 +362,15 @@ public class RuleRDFGenerator {
 	protected boolean addClassStatement(Predicate p, Map<String,String> values) throws MediatorException, UnsupportedEncodingException{
 		String className = p.getName();
 		//remove backtick
-		if(className.startsWith("`"))
+		if(className.startsWith("`")){
 			className = className.substring(1,className.length()-1);
+		}
 		
 		//the class name is the VALUE of the column name (p=`expand@column_name(uri(`id`))) ; 
 		//look for the value of column_name in values to find the actual class name 
-		if(className.startsWith("expand@"))
+		if(className.startsWith("expand@")){
 			className = getExpandedName(className, values);
+		}
 		
 		if(className==null){
 			//the value is empty or null; don't include this triple
@@ -389,8 +391,9 @@ public class RuleRDFGenerator {
 		ArrayList<Term> terms = p.getTerms();
 		Term t = terms.get(0);
 		//should be a uri FunctionTerm uri(VAR_NAME)
-		if(!(t instanceof FunctionTerm))
+		if(!(t instanceof FunctionTerm)){
 			throw new MediatorException("A subject should have only one uri FunctionTerm: " + p);
+		}
 		
 		FunctionPredicate uri = ((FunctionTerm) t).getFunction();
 		
@@ -416,9 +419,9 @@ public class RuleRDFGenerator {
 		if(!tripleAdded){
 			//abort the process; max number of triples was reached
 			return false;
-		}
-		else
+		}else{
 			return true;
+		}
 	}
 	
 	/**
@@ -442,8 +445,9 @@ public class RuleRDFGenerator {
 		//remove back-tick
 		String predicateName = p.getName();
 		//System.out.println("Predicate Name=" + predicateName);
-		if(predicateName.startsWith("`"))
+		if(predicateName.startsWith("`")){
 			predicateName = predicateName.substring(1,predicateName.length()-1);
+		}
 		
 		// Remove the RDF literal type
 		String rdfLiteralType = "";
@@ -454,8 +458,9 @@ public class RuleRDFGenerator {
 
 		//the predicate name is the VALUE of the column name (p=`expand@predicate_name(uri(`id`))) ; 
 		//look for the value of column_name in values to find the actual class name 
-		if(predicateName.startsWith("expand@"))
+		if(predicateName.startsWith("expand@")){
 			predicateName = getExpandedName(predicateName, values);
+		}
 
 		if(predicateName==null){
 			//the value is empty or null; don't include this triple
@@ -486,14 +491,16 @@ public class RuleRDFGenerator {
 		ArrayList<Term> terms = p.getTerms();
 		//should have exactly 2 terms
 		//first is the subject, second is the value
-		if(terms.size()!=2)
+		if(terms.size()!=2){
 			throw new MediatorException("A predicate should have 2 terms: " + p);
+		}
 		
 		Term t1 = terms.get(0);
 		Term t2 = terms.get(1);
 		//t1 should be a uri FunctionTerm uri(VAR_NAME); related to the subject
-		if(!(t1 instanceof FunctionTerm))
+		if(!(t1 instanceof FunctionTerm)){
 			throw new MediatorException("First term in predicate should be uri FunctionTerm: " + p);
+		}
 		
 		FunctionPredicate uri1 = ((FunctionTerm) t1).getFunction();
 		
@@ -530,8 +537,9 @@ public class RuleRDFGenerator {
 			//it's a VarTerm
 			String varName = t2.getVar();
 			String varValue = values.get(MediatorUtil.removeBacktick(varName));
-			if(varValue==null)
+			if(varValue==null){
 				throw new MediatorException("The values map does not contain variable: " + varName + " Map is:" + values);
+			}
 			statement += prepareValue(varValue, rdfLiteralType);
 			
 			//I have a key that has no value OR has NULL value=>don't add this triple
@@ -550,9 +558,9 @@ public class RuleRDFGenerator {
 			if(!tripleAdded){
 				//abort the process; max number of triples was reached
 				return false;
-			}
-			else
+			}else{
 				return true;
+			}
 		}
 		return true;
 	}
@@ -570,9 +578,9 @@ public class RuleRDFGenerator {
 		String columnName = name.substring(7);
 
 		String varValue = values.get(columnName);
-		if(varValue==null)
+		if(varValue==null){
 			throw new MediatorException("The values map does not contain variable: " + columnName + " Map is:" + values);
-		else if(varValue.equals("") || varValue.equals("NULL")){
+		}else if(varValue.equals("") || varValue.equals("NULL")){
 			return null;
 		}
 		else if(varValue.startsWith("http://")){
@@ -597,15 +605,17 @@ public class RuleRDFGenerator {
 		
 		// If newline present in the value, quote them around with triple quotes
 		if (value.contains("\n") || value.contains("\r")) {
-			if (rdfLiteralType != null && !rdfLiteralType.equals(""))
+			if (rdfLiteralType != null && !rdfLiteralType.equals("")){
 				return "\"\"\"" + value + "\"\"\"" + "^^" + rdfLiteralType;
-			else
+			}else{
 				return "\"\"\"" + value + "\"\"\"";
+			}
 		} else {
-			if (rdfLiteralType != null && !rdfLiteralType.equals(""))
+			if (rdfLiteralType != null && !rdfLiteralType.equals("")){
 				return "\"" + value + "\""+ "^^" + rdfLiteralType;
-			else
+			}else{
 				return "\"" + value + "\"";
+			}
 		}
 	}
 	
@@ -667,8 +677,9 @@ public class RuleRDFGenerator {
 				varName = term.getVar();
 				//get its value
 				String val = values.get(MediatorUtil.removeBacktick(varName));
-				if(val==null)
+				if(val==null){
 					throw new MediatorException("The values map does not contain variable: " + varName + " Map is:" + values);
+				}
 				if(i>0 && !varValue.trim().isEmpty()) { varValue += "_"; allVarNames += "_";}
 				//System.out.println("VAL="+val);
 				if(val.equals("NULL")){
@@ -678,10 +689,11 @@ public class RuleRDFGenerator {
 					//12/7/2012 MariaM: per Karma-57
 					//if key is null set val to empty; if key is not part of a compound key return null
 					//and don't include this tuple
-					if(generateGensymForEmptyKey)
+					if(generateGensymForEmptyKey){
 						val = RDFUtil.gensym(uniqueId, rowId,"NULL_c" + i);
-					else
+					}else{
 						val="";
+					}
 				}
 				else if(val.trim().isEmpty()){
 					//for empty strings that are keys / I have to generate a URI I generate a gensym
@@ -691,10 +703,11 @@ public class RuleRDFGenerator {
 					//12/7/2012 MariaM: per Karma-57
 					//if key is null set val to empty; if key is not part of a compound key return null
 					//and don't include this tuple
-					if(generateGensymForEmptyKey)
+					if(generateGensymForEmptyKey){
 						val = RDFUtil.gensym(uniqueId, rowId,"EmptyStr_c" + i);
-					else
+					}else{
 						val="";
+					}
 
 				}
 				varValue += val;
@@ -732,10 +745,11 @@ public class RuleRDFGenerator {
 		
 		// TEMPORARY FIX TO RESOLVE PROBLEM WITH BAD URIS WHILE USING SUBCLASS LINKS
 		if (className.startsWith("http:") || className.startsWith("<http:")) {
-			if (className.contains("#"))
+			if (className.contains("#")){
 				className = className.substring(className.indexOf("#")+1).replaceAll(">", "");
-			else
+			}else{
 				className = className.substring(className.lastIndexOf("/")).replaceAll(">", "");
+			}
 		}
 		
 		//set terms for this function
@@ -773,10 +787,11 @@ public class RuleRDFGenerator {
 		}
 		else{
 			NUMBER_OF_TRIPLES++;
-			if(NUMBER_OF_TRIPLES<=MAX_NUMBER_OF_TRIPLES)
+			if(NUMBER_OF_TRIPLES<=MAX_NUMBER_OF_TRIPLES){
 				return true;
-			else
+			}else{
 				return false;
+			}
 		}
 	}
 	

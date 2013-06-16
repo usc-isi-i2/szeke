@@ -73,9 +73,11 @@ public abstract class Predicate{
 	 */
 	public void addTerm(String var){
 		Term t;
-		if(!MediatorUtil.isVar(var))
+		if(!MediatorUtil.isVar(var)){
 			t=new ConstTerm(var);
-		else t = new VarTerm(var);
+		}else{
+			t = new VarTerm(var);
+		}
 		terms.add(t);
 	}
 	
@@ -87,11 +89,14 @@ public abstract class Predicate{
 	 */
 	public void addTermIfUnique(String var){
 		Term t;
-		if(!MediatorUtil.isVar(var))
+		if(!MediatorUtil.isVar(var)){
 			t=new ConstTerm(var);
-		else t = new VarTerm(var);
-		if(!containsTerm(t))
+		}else{
+			t = new VarTerm(var);
+		}
+		if(!containsTerm(t)){
 			terms.add(t);
+		}
 	}
 
 	/**
@@ -120,8 +125,9 @@ public abstract class Predicate{
 		//System.out.println("Find term " + t + " in " + terms + " starting at " + index);
 		for(int i=index; i<terms.size(); i++){
 			Term t1 = terms.get(i);
-			if(t1.equals(t))
+			if(t1.equals(t)){
 				return i;
+			}
 		}
 		return -1;
 	}
@@ -136,8 +142,9 @@ public abstract class Predicate{
 	public boolean containsTerm(Term t1){
 		for(int i=0; i<terms.size(); i++){
 			Term t2 = terms.get(i);
-			if(t1.equals(t2))
+			if(t1.equals(t2)){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -182,8 +189,9 @@ public abstract class Predicate{
 		for(int i=0; i<terms.size(); i++){
 			Term t = terms.get(i);
 			String var = t.getFreeVar();
-			if(var!=null)
+			if(var!=null){
 				vars.add(var);
+			}
 		}
 		return vars;
 	}
@@ -215,8 +223,9 @@ public abstract class Predicate{
 		for(int i=0; i<terms.size(); i++){
 			Term t = terms.get(i);
 			String var = t.getTermValue();
-			if(var!=null)
+			if(var!=null){
 				vars.add(var);
+			}
 		}
 		return vars;
 	}
@@ -262,18 +271,21 @@ public abstract class Predicate{
 	 */
 	public boolean equals(Predicate p){
 		//System.out.println("Compare " + this + " and " + p);		
-		if(!p.getName().equals(name))
+		if(!p.getName().equals(name)){
 			return false;
+		}
 		//if different number of terms, can't be a UNION
-		if(terms.size()!=p.terms.size())
+		if(terms.size()!=p.terms.size()){
 			return false;
+		}
 		//compare the terms
 		for(int i=0; i<terms.size(); i++){
 			Term t1 = terms.get(i);
 			Term t2 = p.getTerms().get(i);
 			//System.out.println("Compare " + t1 + " and " + t2);
-			if(!t1.equals(t2))
+			if(!t1.equals(t2)){
 				return false;
+			}
 		}
 		return true;
 	}

@@ -21,8 +21,9 @@ public class StringQGramComparatorImpl implements StringComparator {
 		str2 = trim(str2);
 
 		int s1 = str1.length(), s2 = str2.length();
-		if (s1 < 2 || s2 < 2) 
+		if (s1 < 2 || s2 < 2){
 			return 0;
+		}
 
 		char[][] a = new char[s1 - q + 1][q];
 		char[][] b = new char[s2 - q + 1][q];
@@ -40,17 +41,19 @@ public class StringQGramComparatorImpl implements StringComparator {
 		}
 
 		int k, count = 0;
-		for (int i = 0; i < s1 - q + 1; i++) 
+		for (int i = 0; i < s1 - q + 1; i++){
 			for (int j = 0; j < s2 -q + 1; j++) {
 				for (k = 0; k < q; k++) {
-					if (a[i][k] != b[j][k])
+					if (a[i][k] != b[j][k]){
 						break;
+					}
 				}
 				if (k >= q) {
 					count ++;
 					break;
 				}
 			}
+		}
 		degree = count * 2f / (s1 + s2 -2*q + 2);
 
 		degree = degree + (1 - degree) * calcWeight(str1, str2);
@@ -64,8 +67,12 @@ public class StringQGramComparatorImpl implements StringComparator {
 		char[] strch = new char[str.length()];
 		for (int i = 0; i < strch.length; i++) {
 			char ch = str.charAt(i);
-			if (ch == '(') break;
-			if (ch == ',' || ch == '.') ch = ' ';
+			if (ch == '('){
+				break;
+			}
+			if (ch == ',' || ch == '.'){
+				ch = ' ';
+			}
 			if (ch == ' ' && last == ' ') {
 				
 			} else {
@@ -125,21 +132,29 @@ public class StringQGramComparatorImpl implements StringComparator {
 						break;
 					}
 				}
-				while (ch2[j++] != ' ' && j < len2) ;
+				while (ch2[j++] != ' ' && j < len2){
+					;
+				}
 
 				
 			}
-			while (ch1[i++] != ' ' && i < len1); 
+			while (ch1[i++] != ' ' && i < len1){
+				;
+			} 
 
 		}
 		
 		count = 0;
-		for (i = 0; i < len1; i++)
-			if (ch1[i] == ' ')
+		for (i = 0; i < len1; i++){
+			if (ch1[i] == ' '){
 				count ++;
-		for (j = 0; j < len2; j++) 
-			if (ch2[j] == ' ')
+			}
+		}
+		for (j = 0; j < len2; j++){
+			if (ch2[j] == ' '){
 				count ++;
+			}
+		}
 		return weight * 0.5f / (count + 2);
 	}
 

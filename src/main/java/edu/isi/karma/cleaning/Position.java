@@ -27,8 +27,9 @@ public class Position implements GrammarTreeNode {
 		this.absPosition = absPos;
 		this.orgStrings.addAll(orgStrings);
 		this.tarStrings.addAll(tarStrings);
-		if (itInterpretor == null)
+		if (itInterpretor == null){
 			itInterpretor = new Interpretor();
+		}
 		// occurance of a reg pattern
 		this.counters.add(-1);
 		this.counters.add(1);
@@ -56,7 +57,9 @@ public class Position implements GrammarTreeNode {
 			if (!smap.keySet().contains(path)) {
 				String res = UtilTools.escape(path);
 				if (!smap.containsKey(res) && res.length() != 0)
+				 {
 					smap.put(res, value); // store the string of all sizes
+				}
 			}
 		}
 		if (x == null || x.size() == 0) {
@@ -67,16 +70,18 @@ public class Position implements GrammarTreeNode {
 				if (!smap.keySet().contains(path)) {
 					String res = UtilTools.escape(path);
 					if (!smap.containsKey(res) && res.length() != 0)
+					 {
 						smap.put(res, value); // store the string of all sizes
+					}
 				}
 			}
 			return;
 		}
 		TNode t = x.get(cur);
 		if (t.text.compareTo("ANYTOK") != 0 && t.text.length() > 0) {
-			if (!isleft)
+			if (!isleft){
 				getString(x, cur + 1, path + t.text, value + 2, smap, false);
-			else {
+			}else {
 				getString(x, cur - 1, t.text + path, value + 2, smap, true);
 			}
 		}
@@ -102,9 +107,9 @@ public class Position implements GrammarTreeNode {
 		} else {
 			s += "" + t.getType();
 		}
-		if (!isleft)
+		if (!isleft){
 			getString(x, cur + 1, path + s, value + 1, smap, false);
-		else {
+		}else {
 			getString(x, cur - 1, s + path, value + 1, smap, true);
 		}
 	}
@@ -113,9 +118,9 @@ public class Position implements GrammarTreeNode {
 	public Vector<TNode> mergeCNXT(Vector<TNode> a, Vector<TNode> b,
 			String option) {
 		Vector<TNode> xNodes = new Vector<TNode>();
-		if (a == null || b == null)
+		if (a == null || b == null){
 			return null;
-		else {
+		}else {
 			int leng = Math.min(a.size(), b.size());
 			if (option.compareTo(Segment.LEFTPOS) == 0) {
 				for (int i = 1; i <= leng; i++) {
@@ -161,14 +166,16 @@ public class Position implements GrammarTreeNode {
 				}
 			}
 		}
-		if (xNodes.size() == 0)
+		if (xNodes.size() == 0){
 			return null;
+		}
 		return xNodes;
 	}
 
 	public Position mergewith(Position b) {
-		if (this == null || b == null)
+		if (this == null || b == null){
 			return null;
+		}
 		Vector<Integer> tmpIntegers = new Vector<Integer>();
 		tmpIntegers.addAll(this.absPosition);
 		tmpIntegers.retainAll(b.absPosition);
@@ -184,8 +191,9 @@ public class Position implements GrammarTreeNode {
 		// this.leftContextNodes = g_lcxtNodes;
 		// this.rightContextNodes = g_rcxtNodes;
 		if (tmpIntegers.size() == 0 && g_lcxtNodes == null
-				&& g_rcxtNodes == null)
+				&& g_rcxtNodes == null){
 			return null;
+		}
 		boolean loop = this.isinloop || b.isinloop;
 
 		Vector<String> aStrings = new Vector<String>();
@@ -251,9 +259,9 @@ public class Position implements GrammarTreeNode {
 		if (this.rightContextNodes != null) {
 			rsize = rightContextNodes.size();
 		}
-		if (lsize == 0 && rsize == 0)
+		if (lsize == 0 && rsize == 0){
 			return 1;
-		else {
+		}else {
 			for (int i = 0; i < lsize; i++) {
 				if (leftContextNodes.get(i).text.compareTo("ANYTOK") != 0
 						&& leftContextNodes.get(i).type != TNode.ANYTYP) {
@@ -277,21 +285,25 @@ public class Position implements GrammarTreeNode {
 	public Vector<String> rules = new Vector<String>();
 
 	public String toProgram() {
-		if (curState >= rules.size())
+		if (curState >= rules.size()){
 			return "null";
+		}
 		String rule = rules.get(curState);
-		if (!isinloop)
+		if (!isinloop){
 			rule = rule.replace("counter", counters.get(1) + "");
+		}
 		curState++;
 		return rule;
 	}
 
 	public String getRule(int index) {
-		if (index >= rules.size())
+		if (index >= rules.size()){
 			return "null";
+		}
 		String rule = rules.get(index);
-		if (!isinloop)
+		if (!isinloop){
 			rule = rule.replace("counter", counters.get(1) + "");
+		}
 		return rule;
 	}
 
@@ -322,23 +334,27 @@ public class Position implements GrammarTreeNode {
 						ProgramRule programRule = new ProgramRule(tmpRule);
 						String val = programRule.transform(this.orgStrings
 								.get(j));
-						if(val.indexOf("None")!= -1)
+						if(val.indexOf("None")!= -1){
 							break;
+						}
 						r += val+",";
 						cnt ++;
 					}
-					if(r.length()<=1)
+					if(r.length()<=1){
 						return "null";
+					}
 					if (this.tarStrings.get(j).compareTo(r.substring(0,r.length()-1)) != 0) {
 						isvalid = false;
 						break;
 					}
 				}
 				if (isvalid) {
-					if(itercnt == 0)
+					if(itercnt == 0){
 						return rule;
-					else
+					}
+					else {
 						itercnt--; // valid number - 1
+					}
 				}
 
 			} else {
@@ -353,10 +369,11 @@ public class Position implements GrammarTreeNode {
 					}
 				}
 				if (isValid) {
-					if(itercnt == 0)
+					if(itercnt == 0){
 						return rule;
-					else
+					}else{
 						itercnt--;
+					}
 				}
 			}
 		}
@@ -384,8 +401,9 @@ public class Position implements GrammarTreeNode {
 		String negString = "";
 		for (String a : lMap.keySet()) {
 			for (String b : rMap.keySet()) {
-				if (a.compareTo(b) == 0 && a.compareTo("ANY") == 0)
+				if (a.compareTo(b) == 0 && a.compareTo("ANY") == 0){
 					continue;
+				}
 				Double key = lMap.get(a) + rMap.get(b);
 				reString = String.format(
 						"indexOf(value,\'%s\',\'%s\',counter)", a, b);

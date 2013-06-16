@@ -78,13 +78,18 @@ public class Algorithm {
 		
 		HashMap<String, Node> attMap1 = new HashMap<String, Node>();
 		HashMap<String, Node> attMap2 = new HashMap<String, Node>();
-		for (Node n : attributes1) attMap1.put(n.getId(), n);
-		for (Node n : attributes2) attMap2.put(n.getId(), n);
+		for (Node n : attributes1){
+			attMap1.put(n.getId(), n);
+		}
+		for (Node n : attributes2){
+			attMap2.put(n.getId(), n);
+		}
 		
 		int attCount = attributes1.size(); // = attributes2.size();
 		Set<String> keys = attMap1.keySet();
-		if (attMap2.keySet().size() < attMap1.keySet().size())
+		if (attMap2.keySet().size() < attMap1.keySet().size()){
 			keys = attMap2.keySet();
+		}
 
 		
 		Set<Set<String>> powerSet = powerSet(keys);
@@ -93,13 +98,16 @@ public class Algorithm {
 			
 			// if numberOfattributes specified by the user is null or greater than total number of attributes,
 			// we compute all the possible subgraphs
-			if (numberOfAttributes != null && numberOfAttributes.intValue() < attCount)
-				if (k != numberOfAttributes)
+			if (numberOfAttributes != null && numberOfAttributes.intValue() < attCount){
+				if (k != numberOfAttributes){
 					continue;
+				}
+			}
 			
 			for (Set<String> set : powerSet) {
-				if (set.size() != k)
+				if (set.size() != k){
 					continue;
+				}
 				
 				List<Node> steinerNodes1 = new ArrayList<Node>();
 				List<Node> steinerNodes2 = new ArrayList<Node>();

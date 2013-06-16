@@ -86,8 +86,12 @@ public class Model {
 
 	public String getUri() {
 		String uri = "";
-		if (getBaseUri() != null) uri += getBaseUri();
-		if (getId() != null) uri += getId();
+		if (getBaseUri() != null){
+			uri += getBaseUri();
+		}
+		if (getId() != null){
+			uri += getId();
+		}
 		return uri;
 	}
 
@@ -103,8 +107,9 @@ public class Model {
 		
 		com.hp.hpl.jena.rdf.model.Model model = ModelFactory.createDefaultModel();
 		
-		if (this.baseUri != null)
+		if (this.baseUri != null){
 			model.setNsPrefix("", this.baseUri);
+		}
 		
 		model.setNsPrefix(Prefixes.KARMA, Namespaces.KARMA);
 		model.setNsPrefix(Prefixes.RDF, Namespaces.RDF);
@@ -138,8 +143,9 @@ public class Model {
 				r = model.createResource();
 				r.addProperty(rdf_type, class_atom_resource);
 				
-				if (classAtom.getClassPredicate().getPrefix() != null && classAtom.getClassPredicate().getNs() != null)
+				if (classAtom.getClassPredicate().getPrefix() != null && classAtom.getClassPredicate().getNs() != null){
 					model.setNsPrefix(classAtom.getClassPredicate().getPrefix(), classAtom.getClassPredicate().getNs());
+				}
 				Resource className = model.createResource(classAtom.getClassPredicate().getUri());
 				r.addProperty(class_predicate, className);
 				
@@ -154,8 +160,9 @@ public class Model {
 				r = model.createResource();
 				r.addProperty(rdf_type, individual_property_atom_resource);
 				
-				if (propertyAtom.getPropertyPredicate().getPrefix() != null && propertyAtom.getPropertyPredicate().getNs() != null)
+				if (propertyAtom.getPropertyPredicate().getPrefix() != null && propertyAtom.getPropertyPredicate().getNs() != null){
 					model.setNsPrefix(propertyAtom.getPropertyPredicate().getPrefix(), propertyAtom.getPropertyPredicate().getNs());
+				}
 				Resource propertyName = model.createResource(propertyAtom.getPropertyPredicate().getUri());
 				r.addProperty(property_predicate, propertyName);
 				
@@ -199,12 +206,13 @@ public class Model {
 		
 		List<String> argList = new ArrayList<String>();
 		String queryString = "";
-		if (ioType.equalsIgnoreCase(IOType.INPUT)) 
+		if (ioType.equalsIgnoreCase(IOType.INPUT)){
 			queryString = this.getSparqlToMatchServiceInputs(argList);
-		else if (ioType.equalsIgnoreCase(IOType.OUTPUT)) 
+		}else if (ioType.equalsIgnoreCase(IOType.OUTPUT)){
 			queryString = this.getSparqlToMatchServiceOutputs(argList);
-		else 
+		}else{
 			queryString = this.getSparql(argList);
+		}
 
 		if (limit != null) {
 			queryString += "LIMIT " + String.valueOf(limit.intValue() + "\n");
@@ -332,8 +340,9 @@ public class Model {
 		
 		for (String ns : nsToPrefixMapping.keySet()) {
 			String prefix = nsToPrefixMapping.get(ns);
-			if (prefix != null)
+			if (prefix != null){
 				prefixHeader += "PREFIX " + prefix + ": <" + ns + "> \n";
+			}
 		}
 
 		return prefixHeader;
@@ -357,8 +366,9 @@ public class Model {
 		String argument1Var = "";
 		String argument2Var = "";
 
-		if (argList == null) 
+		if (argList == null){
 			argList = new ArrayList<String>();
+		}
 		
 		for (int i = 0; i < this.getAtoms().size(); i++) {
 			Atom atom = this.getAtoms().get(i);
@@ -453,8 +463,9 @@ public class Model {
 		String argument1Var = "";
 		String argument2Var = "";
 
-		if (argList == null) 
+		if (argList == null){
 			argList = new ArrayList<String>();
+		}
 		
 		for (int i = 0; i < this.getAtoms().size(); i++) {
 			Atom atom = this.getAtoms().get(i);
@@ -476,8 +487,9 @@ public class Model {
 					argument1 = classAtom.getArgument1().getId();
 					argument1Var = "?" + argument1;
 					
-					if (argList.indexOf(argument1) == -1) 
+					if (argList.indexOf(argument1) == -1){
 						argList.add(argument1);
+					}
 
 					construct_header += 
 						"      " + argument1Var + " rdf:type " + predicateUri + " . \n";
@@ -504,10 +516,12 @@ public class Model {
 					argument1Var = "?" + argument1;
 					argument2Var = "?" + argument2;
 					
-					if (argList.indexOf(argument1) == -1) 
+					if (argList.indexOf(argument1) == -1){
 						argList.add(argument1);
-					if (argList.indexOf(argument2) == -1) 
+					}
+					if (argList.indexOf(argument2) == -1){
 						argList.add(argument2);
+					}
 					
 					construct_header += 
 						"      " + argument1Var + " " + predicateUri + " " + argument2Var + " . \n";
@@ -553,10 +567,11 @@ public class Model {
 		nsToPrefixMapping.put(Namespaces.HRESTS, Prefixes.HRESTS);
 		
 		String io_class = "";
-		if (ioType.equalsIgnoreCase(IOType.OUTPUT))
+		if (ioType.equalsIgnoreCase(IOType.OUTPUT)){
 			io_class = "Output";
-		else if (ioType.equalsIgnoreCase(IOType.INPUT))
+		}else if (ioType.equalsIgnoreCase(IOType.INPUT)){
 			io_class =  "Input";
+		}
 
 		String select_header = "SELECT ?model ";
 		String select_where =
@@ -577,8 +592,9 @@ public class Model {
 		String argument1Var = "";
 		String argument2Var = "";
 
-		if (argList == null) 
+		if (argList == null){
 			argList = new ArrayList<String>();
+		}
 
 		for (int i = 0; i < m.getAtoms().size(); i++) {
 			Atom atom = m.getAtoms().get(i);
@@ -666,8 +682,9 @@ public class Model {
 			}
 		}		
 		int index = logicalForm.lastIndexOf(separator);
-		if (index != -1)
+		if (index != -1){
 			logicalForm = logicalForm.substring(0, index);
+		}
 		
 		return logicalForm;
 	}

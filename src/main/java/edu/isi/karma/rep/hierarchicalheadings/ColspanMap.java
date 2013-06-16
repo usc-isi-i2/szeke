@@ -20,8 +20,9 @@ public class ColspanMap {
 		spanMap.put(node, span);
 
 		if (!node.isLeaf()) {
-			for (HHTNode child : node.getChildren())
+			for (HHTNode child : node.getChildren()){
 				populateColSpan(child);
+			}
 		}
 	}
 	

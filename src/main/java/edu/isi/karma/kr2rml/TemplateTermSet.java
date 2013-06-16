@@ -67,10 +67,11 @@ public class TemplateTermSet {
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		for (TemplateTerm term:termSet) {
-			if (term instanceof StringTemplateTerm)
+			if (term instanceof StringTemplateTerm){
 				str.append("<" + term.getTemplateTermValue() + ">");
-			else if (term instanceof ColumnTemplateTerm)
+			}else if (term instanceof ColumnTemplateTerm){
 				str.append("<ColumnHNodeId:" + term.getTemplateTermValue() + ">");
+			}
 		}
 		return str.toString();
 	}
@@ -150,15 +151,17 @@ public class TemplateTermSet {
 	}
 
 	public boolean isSingleUriString() {
-		if (termSet.size() == 1 && termSet.get(0) instanceof StringTemplateTerm)
+		if (termSet.size() == 1 && termSet.get(0) instanceof StringTemplateTerm){
 			return ((StringTemplateTerm)termSet.get(0)).hasFullUri();
+		}
 		
 		return false;
 	}
 
 	public boolean isSingleColumnTerm() {
-		if (termSet.size() == 1 && termSet.get(0) instanceof ColumnTemplateTerm)
+		if (termSet.size() == 1 && termSet.get(0) instanceof ColumnTemplateTerm){
 			return true;
+		}
 		return false;
 	}
 }

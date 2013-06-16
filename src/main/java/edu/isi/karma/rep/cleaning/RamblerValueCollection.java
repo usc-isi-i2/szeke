@@ -68,9 +68,9 @@ public class RamblerValueCollection implements ValueCollection {
 		if(data.containsKey(id))
 		{
 			return data.get(id);
-		}
-		else
+		}else{
 			return "";
+		}
 	}
 
 	public Collection<String> getValues() {

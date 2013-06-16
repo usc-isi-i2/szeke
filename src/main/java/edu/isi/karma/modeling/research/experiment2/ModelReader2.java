@@ -142,60 +142,65 @@ public class ModelReader2 {
 		
 		int count = 1;
 		
-		if (modelExamples != null)
-		for (File f : modelExamples) {
+		if (modelExamples != null){
+			for (File f : modelExamples) {
 
-			matcher = fileNamePattern.matcher(f.getName());
-			if (!matcher.find()) {
-				continue;
-			}
-
-			ServiceModel2 serviceModel = new ServiceModel2("s" + String.valueOf(count));
-			
-			LineNumberReader lr = new LineNumberReader(new FileReader(f));
-			String curLine = "";
-			while ((curLine = lr.readLine()) != null) {
-				
-				matcher = serviceNamePattern.matcher(curLine);
-				if (matcher.find()) {
-					serviceModel.setServiceDescription(curLine.trim());
-					serviceModel.setServiceNameWithPrefix(f.getName().replaceAll(".txt", ""));
-					serviceName = matcher.group(2).trim();
-					serviceModel.setServiceName(serviceName);
-//					System.out.println(serviceName);
-				}
-				
-				if (!curLine.trim().startsWith("<N3>"))
+				matcher = fileNamePattern.matcher(f.getName());
+				if (!matcher.find()) {
 					continue;
+				}
+
+				ServiceModel2 serviceModel = new ServiceModel2("s" + String.valueOf(count));
 				
-				List<Statement> statements = new ArrayList<Statement>();
+				LineNumberReader lr = new LineNumberReader(new FileReader(f));
+				String curLine = "";
 				while ((curLine = lr.readLine()) != null) {
-					if (curLine.trim().startsWith("</N3>"))
-						break;
-//					System.out.println(curLine);
 					
-					String[] parts = curLine.trim().split("\\s+");
-					if (parts == null || parts.length < 3) {
-						System.out.println("Cannot extract statement from \"" + curLine + " \"");
+					matcher = serviceNamePattern.matcher(curLine);
+					if (matcher.find()) {
+						serviceModel.setServiceDescription(curLine.trim());
+						serviceModel.setServiceNameWithPrefix(f.getName().replaceAll(".txt", ""));
+						serviceName = matcher.group(2).trim();
+						serviceModel.setServiceName(serviceName);
+//					System.out.println(serviceName);
+					}
+					
+					if (!curLine.trim().startsWith("<N3>")){
 						continue;
 					}
 					
-					subject = parts[0].trim();
-					predicate = parts[1].trim();
-					object = parts[2].trim();
-					Statement st = new Statement(subject, predicate, object);
-					statements.add(st);
+					List<Statement> statements = new ArrayList<Statement>();
+					while ((curLine = lr.readLine()) != null) {
+						if (curLine.trim().startsWith("</N3>"))
+						 {
+							break;
+//					System.out.println(curLine);
+						}
+						
+						String[] parts = curLine.trim().split("\\s+");
+						if (parts == null || parts.length < 3) {
+							System.out.println("Cannot extract statement from \"" + curLine + " \"");
+							continue;
+						}
+						
+						subject = parts[0].trim();
+						predicate = parts[1].trim();
+						object = parts[2].trim();
+						Statement st = new Statement(subject, predicate, object);
+						statements.add(st);
+					}
+					
+					DirectedWeightedMultigraph<Node, Link> graph = buildGraphsFromStatements2(serviceModel.getId(), statements);
+					if (graph != null){
+						serviceModel.addModel(graph);
+					}
+				
 				}
 				
-				DirectedWeightedMultigraph<Node, Link> graph = buildGraphsFromStatements2(serviceModel.getId(), statements);
-				if (graph != null)
-					serviceModel.addModel(graph);
-			
+				lr.close();
+				serviceModels.add(serviceModel);
+				count++;
 			}
-			
-			lr.close();
-			serviceModels.add(serviceModel);
-			count++;
 		}
 		
 		return serviceModels;
@@ -256,8 +261,9 @@ public class ModelReader2 {
 		DirectedWeightedMultigraph<Node, Link> graph = 
 				new DirectedWeightedMultigraph<Node, Link>(Link.class);
 		
-		if (statements == null || statements.size() == 0)
+		if (statements == null || statements.size() == 0){
 			return null;
+		}
 		
 		// Assumption: there is only one rdf:type for each URI
 		HashMap<String, Node> uri2Classes = new HashMap<String, Node>();
@@ -292,8 +298,9 @@ public class ModelReader2 {
 			predicateStr = getUri(predicateStr);
 			objStr = getUri(objStr);
 
-			if (predicateStr.equalsIgnoreCase(typePredicate)) 
+			if (predicateStr.equalsIgnoreCase(typePredicate)){
 				continue;
+			}
 			
 			Node subj = uri2Classes.get(subjStr);
 			if (subj == null) {
@@ -303,23 +310,25 @@ public class ModelReader2 {
 
 			Node obj = uri2Classes.get(objStr);
 			if (obj == null) {
-				if (objStr.startsWith(attPrefix))
+				if (objStr.startsWith(attPrefix)){
 					obj = new ColumnNode(objStr, null, null, "");
-				else if (objStr.indexOf(":") == -1 && objStr.indexOf("\"") != -1) {
+				}else if (objStr.indexOf(":") == -1 && objStr.indexOf("\"") != -1) {
 //					String literalId = "lit:" + serviceId + "_l" + String.valueOf(countOfLiterals); 
 					obj = new LiteralNode(objStr, objStr, null);
 //					countOfLiterals ++;
-				} else
+				}else{
 					obj = new InternalNode(objStr, new Label(objStr));
+				}
 				
 				graph.addVertex(obj);
 			}
 			
 			Link e;
-			if (obj instanceof InternalNode)
+			if (obj instanceof InternalNode){
 				e = new ObjectPropertyLink(predicateStr, new Label(predicateStr));
-			else
+			}else{
 				e = new DataPropertyLink(predicateStr, new Label(predicateStr));
+			}
 			graph.addEdge(subj, obj, e);
 			
 		}

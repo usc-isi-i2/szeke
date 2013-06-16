@@ -111,8 +111,9 @@ public class HTable extends RepEntity {
 			return getNewColumnName(prefix.replaceAll(m.group(1), "")); 
 		}
 		for (int i=1; i<1000; i++) {
-			if (isValidNewColumnName(prefix + "_" + i))
+			if (isValidNewColumnName(prefix + "_" + i)){
 				return prefix + "_" + i;
+			}
 		}
 		// Last resort
 		return "New Column";
@@ -120,8 +121,9 @@ public class HTable extends RepEntity {
 	
 	private boolean isValidNewColumnName (String columnName) {
 		for (HNode node:nodes.values()) {
-			if (node.getColumnName().equalsIgnoreCase(columnName))
+			if (node.getColumnName().equalsIgnoreCase(columnName)){
 				return false;
+			}
 		}
 		return true;
 	}
@@ -149,8 +151,9 @@ public class HTable extends RepEntity {
 	 */
 	public boolean hasNestedTables() {
 		for (HNode n : getHNodes()) {
-			if (n.hasNestedTable())
+			if (n.hasNestedTable()){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -208,10 +211,11 @@ public class HTable extends RepEntity {
 			nodes.put(newNode.getId(), newNode);
 			int index = orderedNodeIds.indexOf(hNodeId);
 
-			if (index == orderedNodeIds.size() - 1)
+			if (index == orderedNodeIds.size() - 1){
 				orderedNodeIds.add(newNode.getId());
-			else
+			}else{
 				orderedNodeIds.add(index + 1, newNode.getId());
+			}
 			worksheet.addNodeToDataTable(newNode, factory);
 		}
 	}
@@ -235,11 +239,12 @@ public class HTable extends RepEntity {
 				//node not found; 
 				throw new KarmaException("Node " + hNodeId + " not found in table " + tableName);
 			}
-			else if (index == orderedNodeIds.size() - 1)
+			else if (index == orderedNodeIds.size() - 1){
 				//last node
 				orderedNodeIds.add(hn.getId());
-			else
+			}else{
 				orderedNodeIds.add(index + 1, hn.getId());
+			}
 		}
 		
 		worksheet.addNodeToDataTable(hn, factory);

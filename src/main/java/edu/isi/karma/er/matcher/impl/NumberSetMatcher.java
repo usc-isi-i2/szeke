@@ -134,10 +134,11 @@ public class NumberSetMatcher implements Matcher {
 			}
 		}
 
-		if (i >= ch.length)
+		if (i >= ch.length){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	}
 
 	public double getMin() {

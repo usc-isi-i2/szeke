@@ -81,11 +81,13 @@ public class GetExampleJSON extends HttpServlet {
 					"CRF_Models/"+workspace.getId()+"_CRFModel.txt");
 		}
 		/* Read and populate CRF Model from a file */
-		if(!crfModelFile.exists())
+		if(!crfModelFile.exists()){
 			crfModelFile.createNewFile();
+		}
 		boolean result = workspace.getCrfModelHandler().readModelFromFile(crfModelFile.getAbsolutePath());
-		if (!result)
+		if (!result){
 			logger.error("Error occured while reading CRF Model!");
+		}
 		
 		WorkspaceRegistry.getInstance().register(new ExecutionController(vwsp));
 		

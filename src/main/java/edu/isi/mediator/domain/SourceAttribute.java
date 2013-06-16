@@ -30,10 +30,11 @@ public class SourceAttribute extends DomainAttribute{
 	public SourceAttribute(String name, String type, String bound){
 		super(name, type);
 
-		if(bound.equals("B"))
+		if(bound.equals("B")){
 			this.needsBinding=true;
-		else
+		}else{
 			this.needsBinding=false;
+		}
 	}
 
 	public boolean needsBinding(){
@@ -43,9 +44,11 @@ public class SourceAttribute extends DomainAttribute{
 	public String toString(){
 		String s = "";
 		s += name + ":" + type + ":";
-		if(needsBinding)
+		if(needsBinding){
 			s += MediatorConstants.BOUND;
-		else s +=MediatorConstants.FREE;
+		}else{
+			s +=MediatorConstants.FREE;
+		}
 		return s;
 	}
 

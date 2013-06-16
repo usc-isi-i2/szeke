@@ -55,17 +55,19 @@ public class OfflineCSVGenerator {
      */
     public static void main(String[] args) throws ClassNotFoundException,
 	    IOException, MediatorException, KarmaException {
-	if (args.length < 3)
-	    throw new IllegalArgumentException(
+	if (args.length < 3){
+		throw new IllegalArgumentException(
 		    "Arguments are: <model file> <data file> <output file> <csv delimiter>");
+	}
 
 	String modelFilePath = args[0];
 	String dataFilePath = args[1];
 	String outputFilePath = args[2];
 	char csvDelimiter = '\t';
 	
-	if(args.length==4)
+	if(args.length==4){
 		csvDelimiter = args[3].charAt(0);
+	}
 
 	//System.out.println("CSV Delimiter:" + csvDelimiter);
 	
@@ -96,9 +98,10 @@ public class OfflineCSVGenerator {
 
 	// Load the model into Jena
 	File file = new File(modelFilePath);
-	if (!file.exists())
-	    throw new FileNotFoundException("Model file not found: "
+	if (!file.exists()){
+		throw new FileNotFoundException("Model file not found: "
 		    + file.getAbsolutePath());
+	}
 	Model model = ModelFactory.createDefaultModel();
 	InputStream s = new FileInputStream(file);
 	model.read(s, null, "N3");
@@ -109,8 +112,9 @@ public class OfflineCSVGenerator {
 		"hasSourceDescription");
 	ResIterator itr = model.listResourcesWithProperty(hasSourceDesc);
 	List<Resource> sourceList = itr.toList();
-	if (sourceList.size() == 0)
-	    throw new KarmaException("No source found in the model file.");
+	if (sourceList.size() == 0){
+		throw new KarmaException("No source found in the model file.");
+	}
 	Resource resource = sourceList.get(0);
 	Statement stmt = model.getProperty(resource, hasSourceDesc);
 	String domainStr = stmt.getObject().toString();

@@ -41,8 +41,9 @@ public abstract class SourceLoader {
 	
 	public Model getSourceJenaModel(String uri) {
 		Model m = Repository.Instance().getNamedModel(uri);
-		if (m == null)
+		if (m == null){
 			return null;
+		}
 
 		return m;
 	}

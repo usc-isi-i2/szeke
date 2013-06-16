@@ -156,8 +156,9 @@ public class ExampleSelection {
 		HashMap<String, Integer> d = new HashMap<String, Integer>();
 		int score = 0;
 		for (int i = 0; i < vec.size(); i++) {
-			if (d.containsKey(vec.get(i).text))
+			if (d.containsKey(vec.get(i).text)){
 				continue;
+			}
 			for (int j = 0; j < vec.size(); j++) {
 				if (vec.get(j).text.compareTo(vec.get(i).text) == 0 && i != j
 						&& vec.get(j).text.compareTo(" ") != 0) {

@@ -206,8 +206,9 @@ public class PublishKMLLayerCommand extends Command {
 					logger.info("Transfer complete.");
 					inStream.close();
 					return true;
-				} else
+				}else{
 					return false;
+				}
 			}
 			inStream.close();
 			return false;

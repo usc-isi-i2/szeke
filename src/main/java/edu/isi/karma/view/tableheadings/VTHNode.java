@@ -85,7 +85,8 @@ public class VTHNode implements TNode {
 	}
 
 	void addChild(VTHNode childNode) {
-		if(!children.contains(childNode))
+		if(!children.contains(childNode)){
 			children.add(childNode);
+		}
 	}
 }

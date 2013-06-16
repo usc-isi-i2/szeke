@@ -44,8 +44,9 @@ public class FileSystemOps {
 		ArrayList<String> fileList = new ArrayList<String>() ;
 		File[] files = new File(folder).listFiles() ;
 		for(File f : files) {
-			if(f.getName().endsWith(qualStr))
+			if(f.getName().endsWith(qualStr)){
 				fileList.add(f.getAbsolutePath()) ;
+			}
 		}
 		return fileList ;
 	}

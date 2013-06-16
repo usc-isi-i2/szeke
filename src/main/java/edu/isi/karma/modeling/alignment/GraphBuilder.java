@@ -135,8 +135,9 @@ public class GraphBuilder {
 		
 		for (Node node : this.graph.vertexSet()) {
 			
-			if (node instanceof InternalNode)
+			if (node instanceof InternalNode){
 				nodeIdFactory.getNodeId(node.getLabel().getUri());
+			}
 
 			this.idToNodeMap.put(node.getId(), node);
 			
@@ -261,8 +262,9 @@ public class GraphBuilder {
 	public void resetOntologyMaps() {
 		String[] currentUris = this.uriClosure.keySet().toArray(new String[0]);
 		this.uriClosure.clear();
-		for (String uri : currentUris)
+		for (String uri : currentUris){
 			computeUriClosure(uri);
+		}
 	}
 	
 	public void addNodeList(List<Node> nodes) {
@@ -274,11 +276,13 @@ public class GraphBuilder {
 
 		for (Node node : nodes) {
 			
-			if (!addSingleNode(node))
+			if (!addSingleNode(node)){
 				continue;
+			}
 				
-			if (node instanceof InternalNode) 
+			if (node instanceof InternalNode){
 				addNodeClosure(node, new ArrayList<Node>());
+			}
 		}
 
 		long addNodesClosure = System.currentTimeMillis();
@@ -301,8 +305,9 @@ public class GraphBuilder {
 		
 		logger.debug("<enter");
 
-		if (!addSingleNode(node))
+		if (!addSingleNode(node)){
 			return false;
+		}
 			
 		if (node instanceof InternalNode) {
 
@@ -350,8 +355,9 @@ public class GraphBuilder {
 		
 		logger.debug("<enter");
 
-		if (!addSingleNode(node))
+		if (!addSingleNode(node)){
 			return false;
+		}
 
 		logger.debug("exit>");		
 		return true;
@@ -386,20 +392,21 @@ public class GraphBuilder {
 		this.sourceToTargetConnectivity.add(target.getId() + source.getId());
 		
 		double w = 0.0;
-		if (link.getPriorityType() == LinkPriorityType.DirectDataProperty)
+		if (link.getPriorityType() == LinkPriorityType.DirectDataProperty){
 			w = ModelingParams.PROPERTY_DIRECT_WEIGHT;
-		else if (link.getPriorityType() == LinkPriorityType.IndirectObjectProperty)
+		}else if (link.getPriorityType() == LinkPriorityType.IndirectObjectProperty){
 			w = ModelingParams.PROPERTY_INDIRECT_WEIGHT;
-		else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithOnlyDomain)
+		}else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithOnlyDomain){
 			w = ModelingParams.PROPERTY_WITH_ONLY_DOMAIN_WEIGHT;
-		else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithOnlyRange)
+		}else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithOnlyRange){
 			w = ModelingParams.PROPERTY_WITH_ONLY_RANGE_WEIGHT;
-		else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithoutDomainAndRange)
+		}else if (link.getPriorityType() == LinkPriorityType.ObjectPropertyWithoutDomainAndRange){
 			w = ModelingParams.PROPERTY_WITHOUT_DOMAIN_RANGE_WEIGHT;
-		else if (link.getPriorityType() == LinkPriorityType.SubClassOf)
+		}else if (link.getPriorityType() == LinkPriorityType.SubClassOf){
 			w = ModelingParams.SUBCLASS_WEIGHT;
-		else
+		}else{
 			w = ModelingParams.PROPERTY_DIRECT_WEIGHT;
+		}
 		
 		this.graph.setEdgeWeight(link, w);
 		
@@ -431,12 +438,18 @@ public class GraphBuilder {
 		if (source instanceof InternalNode && target instanceof ColumnNode) {
 			List<Node> closure = this.getNodeClosure(source);
 			List<Node> closureIncludingSelf = new ArrayList<Node>();
-			if (closure != null) closureIncludingSelf.addAll(closure);
-			if (!closureIncludingSelf.contains(source)) closureIncludingSelf.add(source);
+			if (closure != null){
+				closureIncludingSelf.addAll(closure);
+			}
+			if (!closureIncludingSelf.contains(source)){
+				closureIncludingSelf.add(source);
+			}
 			
 			for (Node n : closureIncludingSelf) {
 				Integer refCount = this.nodeReferences.get(n);
-				if (refCount != null) this.nodeReferences.put(source, ++refCount);
+				if (refCount != null){
+					this.nodeReferences.put(source, ++refCount);
+				}
 			}
 		}
 			
@@ -456,7 +469,9 @@ public class GraphBuilder {
 		link.setStatus(newStatus);
 		
 		List<Link> linksWithOldStatus = this.statusToLinksMap.get(oldStatus);
-		if (linksWithOldStatus != null) linksWithOldStatus.remove(link);
+		if (linksWithOldStatus != null){
+			linksWithOldStatus.remove(link);
+		}
 
 		List<Link> linksWithNewStatus = this.statusToLinksMap.get(newStatus);
 		if (linksWithNewStatus == null) {
@@ -488,17 +503,24 @@ public class GraphBuilder {
 		if (source instanceof InternalNode && target instanceof ColumnNode) {
 			List<Node> closure = this.getNodeClosure(source);
 			List<Node> closureIncludingSelf = new ArrayList<Node>();
-			if (closure != null) closureIncludingSelf.addAll(closure);
-			if (!closureIncludingSelf.contains(source)) closureIncludingSelf.add(source);
+			if (closure != null){
+				closureIncludingSelf.addAll(closure);
+			}
+			if (!closureIncludingSelf.contains(source)){
+				closureIncludingSelf.add(source);
+			}
 			
 			for (Node n : closureIncludingSelf) {
 				Integer refCount = this.nodeReferences.get(n);
-				if (refCount != null) this.nodeReferences.put(source, --refCount);
+				if (refCount != null){
+					this.nodeReferences.put(source, --refCount);
+				}
 			}
 		}
 		
-		if (!removeSingleLink(link))
+		if (!removeSingleLink(link)){
 			return false;
+		}
 		
 		return true;
 	}
@@ -517,16 +539,21 @@ public class GraphBuilder {
 		
 		List<Node> closure = this.getNodeClosure(node);
 		List<Node> closureIncludingSelf = new ArrayList<Node>();
-		if (closure != null) closureIncludingSelf.addAll(closure);
-		if (!closureIncludingSelf.contains(node)) closureIncludingSelf.add(node);
+		if (closure != null){
+			closureIncludingSelf.addAll(closure);
+		}
+		if (!closureIncludingSelf.contains(node)){
+			closureIncludingSelf.add(node);
+		}
 
 		for (Node n : closureIncludingSelf) {
 			Integer refCount = this.nodeReferences.get(n);
 			if (refCount != null) {
-				if (refCount.intValue() == 0) 
+				if (refCount.intValue() == 0){
 					removeSingleNode(n);
-			else
-				this.nodeReferences.put(n, --refCount);
+				}else{
+					this.nodeReferences.put(n, --refCount);
+				}
 			}
 		}
 
@@ -546,8 +573,9 @@ public class GraphBuilder {
 		List<Node> internalNodes = this.typeToNodesMap.get(NodeType.InternalNode);
 		if (internalNodes != null) {
 			Node[] nodes = internalNodes.toArray(new Node[0]);
-			for (Node node : nodes) 
+			for (Node node : nodes){
 				addNodeClosure(node, new ArrayList<Node>());
+			}
 		}
 
 		long addNodesClosure = System.currentTimeMillis();
@@ -645,20 +673,23 @@ public class GraphBuilder {
 			}
 		}
 		
-		if (!this.graph.removeVertex(node))
+		if (!this.graph.removeVertex(node)){
 			return false;
+		}
 		
 		// updating hashmaps
 		
 		this.idToNodeMap.remove(node.getId());
 		
 		List<Node> nodesWithSameUri = uriToNodesMap.get(node.getLabel().getUri());
-		if (nodesWithSameUri != null) 
+		if (nodesWithSameUri != null){
 			nodesWithSameUri.remove(node);
+		}
 		
 		List<Node> nodesWithSameType = typeToNodesMap.get(node.getType());
-		if (nodesWithSameType != null) 
+		if (nodesWithSameType != null){
 			nodesWithSameType.remove(node);
+		}
 		
 		this.nodeReferences.remove(node);
 				
@@ -668,24 +699,28 @@ public class GraphBuilder {
 	
 	private boolean removeSingleLink(Link link) {
 		
-		if (!this.graph.removeEdge(link))
+		if (!this.graph.removeEdge(link)){
 			return false;
+		}
 
 		// update hashmaps
 
 		this.idToLinkMap.remove(link.getId());
 
 		List<Link> linksWithSameUri = uriToLinksMap.get(link.getLabel().getUri());
-		if (linksWithSameUri != null) 
+		if (linksWithSameUri != null){
 			linksWithSameUri.remove(link);
+		}
 		
 		List<Link> linksWithSameType = typeToLinksMap.get(link.getType());
-		if (linksWithSameType != null) 
+		if (linksWithSameType != null){
 			linksWithSameType.remove(link);
+		}
 		
 		List<Link> linksWithSameStatus = statusToLinksMap.get(link.getStatus());
-		if (linksWithSameStatus != null) 
+		if (linksWithSameStatus != null){
 			linksWithSameStatus.remove(link);
+		}
 		
 		this.sourceToTargetLinkUris.remove(link.getSource().getId() + 
 				link.getTarget().getId() + 
@@ -708,10 +743,12 @@ public class GraphBuilder {
 		opDomainClasses = ontologyManager.getDomainsGivenRange(uri, true);
 		superClasses = ontologyManager.getSuperClasses(uri, false);
 
-		if (opDomainClasses != null)
+		if (opDomainClasses != null){
 			uriDirectConnections.addAll(opDomainClasses);
-		if (superClasses != null)
+		}
+		if (superClasses != null){
 			uriDirectConnections.addAll(superClasses.keySet());
+		}
 
 		return uriDirectConnections;
 	}
@@ -719,15 +756,17 @@ public class GraphBuilder {
 	private List<String> computeUriClosure(String uri) {
 		
 		List<String> closure = this.uriClosure.get(uri);
-		if (closure != null) 
+		if (closure != null){
 			return closure;
+		}
 	
 		closure = new ArrayList<String>();
 		List<String> closedList = new ArrayList<String>();
 		HashMap<String, List<String>> dependentUrisMap = new HashMap<String, List<String>>();
 		computeUriClosureRecursive(uri, closure, closedList, dependentUrisMap);
-		if (closedList.contains(uri) && !closure.contains(uri))
+		if (closedList.contains(uri) && !closure.contains(uri)){
 			closure.add(uri);
+		}
 		
 		int count = 1;
 		while (count != 0) {
@@ -773,15 +812,24 @@ public class GraphBuilder {
 						dependentUris = new ArrayList<String>();
 						dependentUrisMap.put(uri, dependentUris);
 					}
-					if (!dependentUris.contains(c)) dependentUris.add(c);
+					if (!dependentUris.contains(c)){
+						dependentUris.add(c);
+					}
 					continue;
 				}
-				if (!closure.contains(c)) closure.add(c);
-				if (!closedList.contains(c)) closedList.add(c);
+				if (!closure.contains(c)){
+					closure.add(c);
+				}
+				if (!closedList.contains(c)){
+					closedList.add(c);
+				}
 				List<String> localClosure = new ArrayList<String>();
 				computeUriClosureRecursive(c, localClosure, closedList, dependentUrisMap);
-				for (String s : localClosure)
-					if (!closure.contains(s)) closure.add(s);
+				for (String s : localClosure){
+					if (!closure.contains(s)){
+						closure.add(s);
+					}
+				}
 			}
 			this.uriClosure.put(uri, closure);
 		}
@@ -792,7 +840,9 @@ public class GraphBuilder {
 	private List<Node> getNodeClosure(Node node) {
 		
 		List<Node> nodeClosure = new ArrayList<Node>();
-		if (node instanceof ColumnNode) return nodeClosure;
+		if (node instanceof ColumnNode){
+			return nodeClosure;
+		}
 		
 		String uri = node.getLabel().getUri();
 		List<String> closure = this.uriClosure.get(uri); 
@@ -801,7 +851,9 @@ public class GraphBuilder {
 		} 
 		for (String s : closure) {
 			List<Node> nodes = uriToNodesMap.get(s);
-			if (nodes != null) nodeClosure.addAll(nodes);
+			if (nodes != null){
+				nodeClosure.addAll(nodes);
+			}
 		}
 		return nodeClosure;
 	}
@@ -817,7 +869,9 @@ public class GraphBuilder {
 
 		logger.debug("<enter");
 		
-		if (newAddedNodes == null) newAddedNodes = new ArrayList<Node>();
+		if (newAddedNodes == null){
+			newAddedNodes = new ArrayList<Node>();
+		}
 		
 		String uri = node.getLabel().getUri();
 
@@ -828,7 +882,9 @@ public class GraphBuilder {
 			if (nodesOfSameUri == null || nodesOfSameUri.size() == 0) { // the internal node is not added to the graph before
 				Node nn = new InternalNode(nodeIdFactory.getNodeId(c), 
 						ontologyManager.getUriLabel(c));
-				if (addSingleNode(nn)) newAddedNodes.add(nn);
+				if (addSingleNode(nn)){
+					newAddedNodes.add(nn);
+				}
 			} 
 		}
 
@@ -868,11 +924,13 @@ public class GraphBuilder {
 //				System.out.println(count);
 //				count++;
 				
-				if (n1.equals(n2))
+				if (n1.equals(n2)){
 					continue;
+				}
 				
-				if (this.visitedSourceTargetPairs.contains(n1.getId() + n2.getId()))
+				if (this.visitedSourceTargetPairs.contains(n1.getId() + n2.getId())){
 					continue;
+				}
 				
 				this.visitedSourceTargetPairs.add(n1.getId() + n2.getId());
 
@@ -886,70 +944,82 @@ public class GraphBuilder {
 				
 				// create a link from the domain to the range
 				objectPropertiesDirect = ontologyManager.getObjectPropertiesDirect(sourceUri, targetUri);
-				if (objectPropertiesDirect != null)
-				for (String uri : objectPropertiesDirect) {
+				if (objectPropertiesDirect != null){
+					for (String uri : objectPropertiesDirect) {
 
-					key = source.getId() + target.getId() + uri;
-					// check to see if the link is duplicate or not
-					if (sourceToTargetLinkUris.contains(key)) continue;
+						key = source.getId() + target.getId() + uri;
+						// check to see if the link is duplicate or not
+						if (sourceToTargetLinkUris.contains(key)){
+							continue;
+						}
 
-					id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
-					label = ontologyManager.getUriLabel(uri);
-					Link link = new ObjectPropertyLink(id, label);
-					link.setPriorityType(LinkPriorityType.DirectObjectProperty);
-					addLink(source, target, link);
+						id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
+						label = ontologyManager.getUriLabel(uri);
+						Link link = new ObjectPropertyLink(id, label);
+						link.setPriorityType(LinkPriorityType.DirectObjectProperty);
+						addLink(source, target, link);
+					}
 				}
 				
 				// create a link from the domain and all its subclasses of ObjectProperties to range and all its subclasses
 				objectPropertiesIndirect = ontologyManager.getObjectPropertiesIndirect(sourceUri, targetUri);
-				if (objectPropertiesIndirect != null)
-				for (String uri : objectPropertiesIndirect) {
+				if (objectPropertiesIndirect != null){
+					for (String uri : objectPropertiesIndirect) {
 
-					key = source.getId() + target.getId() + uri;
-					// check to see if the link is duplicate or not
-					if (sourceToTargetLinkUris.contains(key)) continue;
+						key = source.getId() + target.getId() + uri;
+						// check to see if the link is duplicate or not
+						if (sourceToTargetLinkUris.contains(key)){
+							continue;
+						}
 
-					id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
-					label = ontologyManager.getUriLabel(uri);
-					Link link = new ObjectPropertyLink(id, label);
-					// prefer the links that are actually defined between source and target in the ontology 
-					// over inherited ones.
-					link.setPriorityType(LinkPriorityType.IndirectObjectProperty);
-					addLink(source, target, link);
+						id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
+						label = ontologyManager.getUriLabel(uri);
+						Link link = new ObjectPropertyLink(id, label);
+						// prefer the links that are actually defined between source and target in the ontology 
+						// over inherited ones.
+						link.setPriorityType(LinkPriorityType.IndirectObjectProperty);
+						addLink(source, target, link);
+					}
 				}
 
 				objectPropertiesWithOnlyDomain = ontologyManager.getObjectPropertiesWithOnlyDomain(sourceUri, targetUri);
-				if (objectPropertiesWithOnlyDomain != null)
-				for (String uri : objectPropertiesWithOnlyDomain) {
+				if (objectPropertiesWithOnlyDomain != null){
+					for (String uri : objectPropertiesWithOnlyDomain) {
 
-					key = source.getId() + target.getId() + uri;
-					// check to see if the link is duplicate or not
-					if (sourceToTargetLinkUris.contains(key)) continue;
+						key = source.getId() + target.getId() + uri;
+						// check to see if the link is duplicate or not
+						if (sourceToTargetLinkUris.contains(key)){
+							continue;
+						}
 
-					id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
-					label = ontologyManager.getUriLabel(uri);
-					Link link = new ObjectPropertyLink(id, label);
-					// prefer the links that are actually defined between source and target in the ontology 
-					// over inherited ones.
-					link.setPriorityType(LinkPriorityType.ObjectPropertyWithOnlyDomain);
-					addLink(source, target, link);
+						id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
+						label = ontologyManager.getUriLabel(uri);
+						Link link = new ObjectPropertyLink(id, label);
+						// prefer the links that are actually defined between source and target in the ontology 
+						// over inherited ones.
+						link.setPriorityType(LinkPriorityType.ObjectPropertyWithOnlyDomain);
+						addLink(source, target, link);
+					}
 				}
 				
 				objectPropertiesWithOnlyRange = ontologyManager.getObjectPropertiesWithOnlyRange(sourceUri, targetUri);
-				if (objectPropertiesWithOnlyRange != null)
-				for (String uri : objectPropertiesWithOnlyRange) {
+				if (objectPropertiesWithOnlyRange != null){
+					for (String uri : objectPropertiesWithOnlyRange) {
 
-					key = source.getId() + target.getId() + uri;
-					// check to see if the link is duplicate or not
-					if (sourceToTargetLinkUris.contains(key)) continue;
+						key = source.getId() + target.getId() + uri;
+						// check to see if the link is duplicate or not
+						if (sourceToTargetLinkUris.contains(key)){
+							continue;
+						}
 
-					id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
-					label = ontologyManager.getUriLabel(uri);
-					Link link = new ObjectPropertyLink(id, label);
-					// prefer the links that are actually defined between source and target in the ontology 
-					// over inherited ones.
-					link.setPriorityType(LinkPriorityType.ObjectPropertyWithOnlyRange);
-					addLink(source, target, link);
+						id = LinkIdFactory.getLinkId(uri, source.getId(), target.getId());
+						label = ontologyManager.getUriLabel(uri);
+						Link link = new ObjectPropertyLink(id, label);
+						// prefer the links that are actually defined between source and target in the ontology 
+						// over inherited ones.
+						link.setPriorityType(LinkPriorityType.ObjectPropertyWithOnlyRange);
+						addLink(source, target, link);
+					}
 				}
 				
 				// Add subclass links between internal nodes
@@ -957,7 +1027,9 @@ public class GraphBuilder {
 					// target is subclass of source
 					key = source.getId() + target.getId() + SubClassLink.getFixedLabel().getUri();
 					// check to see if the link is duplicate or not
-					if (sourceToTargetLinkUris.contains(key)) continue;
+					if (sourceToTargetLinkUris.contains(key)){
+						continue;
+					}
 					id = LinkIdFactory.getLinkId(SubClassLink.getFixedLabel().getUri(), source.getId(), target.getId());
 					SubClassLink subClassOfLink = new SubClassLink(id);
 					addLink(source, target, subClassOfLink);
@@ -994,13 +1066,16 @@ public class GraphBuilder {
 //				System.out.println(count);
 //				count++;
 
-				if (n1.equals(n2))
+				if (n1.equals(n2)){
 					continue;
+				}
 
-				if (this.visitedSourceTargetPairs.contains(n1.getId() + n2.getId()))
+				if (this.visitedSourceTargetPairs.contains(n1.getId() + n2.getId())){
 					continue;
-				if (this.visitedSourceTargetPairs.contains(n2.getId() + n1.getId()))
+				}
+				if (this.visitedSourceTargetPairs.contains(n2.getId() + n1.getId())){
 					continue;
+				}
 				
 				this.visitedSourceTargetPairs.add(n1.getId() + n2.getId());
 
@@ -1081,34 +1156,40 @@ public class GraphBuilder {
 
 		objectPropertiesDirect = ontologyManager.getObjectPropertiesDirect(sourceUri, targetUri);
 		if (objectPropertiesDirect != null) {
-			for (String s : objectPropertiesDirect)
-			linkUris.put(s, LinkPriorityType.DirectObjectProperty);
+			for (String s : objectPropertiesDirect){
+				linkUris.put(s, LinkPriorityType.DirectObjectProperty);
+			}
 		}
 
 		objectPropertiesIndirect = ontologyManager.getObjectPropertiesIndirect(sourceUri, targetUri);
 		if (objectPropertiesIndirect != null) {
-			for (String s : objectPropertiesIndirect)
-			linkUris.put(s, LinkPriorityType.IndirectObjectProperty);
+			for (String s : objectPropertiesIndirect){
+				linkUris.put(s, LinkPriorityType.IndirectObjectProperty);
+			}
 		}		
 
 		objectPropertiesWithOnlyDomain = ontologyManager.getObjectPropertiesWithOnlyDomain(sourceUri, targetUri);
 		if (objectPropertiesWithOnlyDomain != null) {
-			for (String s : objectPropertiesWithOnlyDomain)
-			linkUris.put(s, LinkPriorityType.ObjectPropertyWithOnlyDomain);
+			for (String s : objectPropertiesWithOnlyDomain){
+				linkUris.put(s, LinkPriorityType.ObjectPropertyWithOnlyDomain);
+			}
 		}	
 	
 		objectPropertiesWithOnlyRange = ontologyManager.getObjectPropertiesWithOnlyRange(sourceUri, targetUri);
 		if (objectPropertiesWithOnlyRange != null) {
-			for (String s : objectPropertiesWithOnlyRange)
-			linkUris.put(s, LinkPriorityType.ObjectPropertyWithOnlyRange);
+			for (String s : objectPropertiesWithOnlyRange){
+				linkUris.put(s, LinkPriorityType.ObjectPropertyWithOnlyRange);
+			}
 		}	
 
-		if (ontologyManager.isSubClass(sourceUri, targetUri, true)) 
+		if (ontologyManager.isSubClass(sourceUri, targetUri, true)){
 			linkUris.put(Uris.RDFS_SUBCLASS_URI, LinkPriorityType.SubClassOf);
+		}
 		
 		if (objectPropertiesWithoutDomainAndRange != null) {
-			for (String s : objectPropertiesWithoutDomainAndRange.keySet())
-			linkUris.put(s, LinkPriorityType.ObjectPropertyWithoutDomainAndRange);
+			for (String s : objectPropertiesWithoutDomainAndRange.keySet()){
+				linkUris.put(s, LinkPriorityType.ObjectPropertyWithoutDomainAndRange);
+			}
 		}
 
 		return linkUris;
@@ -1149,10 +1230,11 @@ public class GraphBuilder {
 			label = new Label(ontologyManager.getUriLabel(uri));
 			
 			Link newLink;
-			if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI))
+			if (uri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI)){
 				newLink = new SubClassLink(id);
-			else
+			}else{
 				newLink = new ObjectPropertyLink(id, label);
+			}
 			
 			newLink.setPriorityType(entry.getValue());
 			sortedLinks.add(newLink);

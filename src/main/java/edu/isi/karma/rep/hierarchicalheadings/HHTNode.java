@@ -48,10 +48,11 @@ public class HHTNode {
 	}
 
 	public boolean isLeaf() {
-		if(children == null || children.size() == 0)
+		if(children == null || children.size() == 0){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	}
 
 	public int getStartCol() {
@@ -162,7 +163,8 @@ public class HHTNode {
 			for(HHTNode node: children) {
 				node.prettyprint(prefix +"    ");
 			}
-		} else
+		}else{
 			System.out.println();
+		}
 	}
 }

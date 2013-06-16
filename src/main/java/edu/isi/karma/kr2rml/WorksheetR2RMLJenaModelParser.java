@@ -124,8 +124,9 @@ public class WorksheetR2RMLJenaModelParser {
 			throw new KarmaException("More than one resource exists with source name: " + sourceName);
 		} else if (resList.size() == 1) {
 			return resList.get(0);
-		} else 
+		}else{
 			return null;
+		}
 		
 	}
 	
@@ -342,8 +343,9 @@ public class WorksheetR2RMLJenaModelParser {
 				RDFNode typeNode = rdfTypesItr.next();
 				if (typeNode instanceof Resource) {
 					// Skip the steiner tree root type
-					if(((Resource) typeNode).getURI().equals(Uris.KM_STEINER_TREE_ROOT_NODE))
+					if(((Resource) typeNode).getURI().equals(Uris.KM_STEINER_TREE_ROOT_NODE)){
 						continue;
+					}
 					
 					StringTemplateTerm uriTerm = new StringTemplateTerm(
 							((Resource) typeNode).getURI(), true);

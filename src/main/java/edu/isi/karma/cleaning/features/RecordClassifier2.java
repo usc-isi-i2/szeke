@@ -156,9 +156,9 @@ public class RecordClassifier2 implements PartitionClassifierType {
 	public String getLabel(String value) {
 		try {
 			String label = this.Classify(value);
-			if (label.length() > 0)
+			if (label.length() > 0){
 				return label;
-			else {
+			}else {
 				return "null_in_classification";
 			}
 		} catch (Exception e) {

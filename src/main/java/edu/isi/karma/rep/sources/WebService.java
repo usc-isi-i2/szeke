@@ -128,8 +128,9 @@ public class WebService extends Source {
 	}
 
 	public String getOperationName() {
-		if (operationName == null)
+		if (operationName == null){
 			this.operationName = URLManager.getOperationName(this.urlExample);
+		}
 		
 		return operationName;
 	}
@@ -159,8 +160,9 @@ public class WebService extends Source {
 		String address = this.getAddress();
 		String populatedAddress = address;
 		
-		if (missingAttributes == null)
+		if (missingAttributes == null){
 			missingAttributes = new ArrayList<Attribute>();
+		}
 		
 		for (Attribute att : this.inputAttributes) {
 			
@@ -212,12 +214,16 @@ public class WebService extends Source {
 	}
 
 	public void setInputAttributes(List<Attribute> inputAttributes) {
-		if (inputAttributes != null)
-			for (Attribute att : inputAttributes)
+		if (inputAttributes != null){
+			for (Attribute att : inputAttributes){
 				att.setBaseUri(this.getUri());
-		if (inputAttributes != null)
-			for (Attribute att : inputAttributes)
+			}
+		}
+		if (inputAttributes != null){
+			for (Attribute att : inputAttributes){
 				attIdToAttMap.put(att.getId(), att);
+			}
+		}
 		this.inputAttributes = inputAttributes;
 	}
 
@@ -226,12 +232,16 @@ public class WebService extends Source {
 	}
 
 	public void setOutputAttributes(List<Attribute> outputAttributes) {
-		if (outputAttributes != null)
-			for (Attribute att : outputAttributes)
+		if (outputAttributes != null){
+			for (Attribute att : outputAttributes){
 				att.setBaseUri(this.getUri());
-		if (outputAttributes != null)
-			for (Attribute att : outputAttributes)
+			}
+		}
+		if (outputAttributes != null){
+			for (Attribute att : outputAttributes){
 				attIdToAttMap.put(att.getId(), att);
+			}
+		}
 		this.outputAttributes = outputAttributes;
 	}
 
@@ -240,8 +250,9 @@ public class WebService extends Source {
 	}
 
 	public void setInputModel(Model inputModel) {
-		if (inputModel != null)
+		if (inputModel != null){
 			inputModel.setBaseUri(this.getUri());
+		}
 		this.inputModel = inputModel;
 	}
 	
@@ -250,8 +261,9 @@ public class WebService extends Source {
 	}
 
 	public void setOutputModel(Model outputModel) {
-		if (inputModel != null)
+		if (inputModel != null){
 			outputModel.setBaseUri(this.getUri());
+		}
 		this.outputModel = outputModel;
 	}
 	
@@ -264,8 +276,9 @@ public class WebService extends Source {
 	}
 
 	public String getAddress() {
-		if (address == null)
+		if (address == null){
 			doGrounding();
+		}
 		
 		return address;
 	}
@@ -279,23 +292,29 @@ public class WebService extends Source {
 	}
 
 	public Attribute getInputAttributeByName(String name) {
-		if (this.inputAttributes == null)
+		if (this.inputAttributes == null){
 			return null;
+		}
 		
-		for (Attribute att : this.inputAttributes)
-			if (att.getName().equalsIgnoreCase(name))
+		for (Attribute att : this.inputAttributes){
+			if (att.getName().equalsIgnoreCase(name)){
 				return att;
+			}
+		}
 		
 		return null;
 	}
 	
 	public Attribute getOutputAttributeByName(String name) {
-		if (this.outputAttributes == null)
+		if (this.outputAttributes == null){
 			return null;
+		}
 		
-		for (Attribute att : this.outputAttributes)
-			if (att.getName().equalsIgnoreCase(name))
+		for (Attribute att : this.outputAttributes){
+			if (att.getName().equalsIgnoreCase(name)){
 				return att;
+			}
+		}
 		
 		return null;
 	}
@@ -327,7 +346,9 @@ public class WebService extends Source {
 		
 		String params = "";
 		String[] addressParts = str.split("\\?");
-		if (addressParts.length == 2) params = addressParts[1];
+		if (addressParts.length == 2){
+			params = addressParts[1];
+		}
 		
 		// This only works for Web APIs and not RESTful APIs
 		for (int i = 0; i < this.inputAttributes.size(); i++) {
@@ -335,26 +356,30 @@ public class WebService extends Source {
 			String groundVar = "p" + String.valueOf(i+1);
 			int index = params.indexOf(name);
 			String temp = params.substring(index);
-			if (temp.indexOf("&") != -1)
+			if (temp.indexOf("&") != -1){
 				temp = temp.substring(0, temp.indexOf("&"));
-			if (temp.indexOf("=") != -1)
+			}
+			if (temp.indexOf("=") != -1){
 				temp = temp.substring(temp.indexOf("=") + 1);
+			}
 
 			params = params.replaceFirst(Pattern.quote(temp.trim()), "{" + groundVar + "}");
 			this.inputAttributes.get(i).setGroundedIn(groundVar);
 		}
 		
-		if (params.length() > 0)
+		if (params.length() > 0){
 			this.address = addressParts[0] + "?" + params;
-		else
+		}else{
 			this.address = str;
+		}
 
 	}
 	
 	public void updateModel(DirectedWeightedMultigraph<Node, Link> treeModel) {
 		
-		if (treeModel == null)
+		if (treeModel == null){
 			return;
+		}
 		
 		List<Node> inputAttributesNodes = new ArrayList<Node>();
 		List<Node> outputAttributesNodes = new ArrayList<Node>();
@@ -416,8 +441,9 @@ public class WebService extends Source {
 			List<Node> inputNodes, List<String> inputModelVertexes, List<String> inputModelEdges,
 			HashMap<String, Argument> vertexIdToArgument) {
 
-		if (treeModel == null)
+		if (treeModel == null){
 			return null;
+		}
 				
 		logger.debug("compute the steiner tree from the alignment tree with input nodes as steiner nodes ...");
 		UndirectedGraph<Node, Link> undirectedGraph = 
@@ -431,11 +457,13 @@ public class WebService extends Source {
 			
 			inputModelVertexes.add(n.getId());
 			
-			if (n instanceof ColumnNode || n instanceof LiteralNode)
+			if (n instanceof ColumnNode || n instanceof LiteralNode){
 				continue;
+			}
 			
-			if (vertexIdToArgument.get(n.getId()) == null)
+			if (vertexIdToArgument.get(n.getId()) == null){
 				continue;
+			}
 			
 			Label classPredicate = new Label(n.getLabel().getUri(), n.getLabel().getNs(), n.getLabel().getPrefix());
 
@@ -448,8 +476,9 @@ public class WebService extends Source {
 			inputModelEdges.add(e.getId());
 			
 			if (vertexIdToArgument.get(e.getSource().getId()) == null || 
-					vertexIdToArgument.get(e.getTarget().getId()) == null)
+					vertexIdToArgument.get(e.getTarget().getId()) == null){
 				continue;
+			}
 			
 			Label propertyPredicate = new Label(e.getLabel().getUri(), e.getLabel().getNs(), e.getLabel().getPrefix());
 			IndividualPropertyAtom propertyAtom = null;
@@ -475,21 +504,25 @@ public class WebService extends Source {
 			List<String> inputModelVertexes, List<String> inputModelEdges,
 			HashMap<String, Argument> vertexIdToArgument) {
 
-		if (treeModel == null)
+		if (treeModel == null){
 			return null;
+		}
 
 		Model m = new Model("outputModel");
 		
 		for (Node n : treeModel.vertexSet()) {
 			
-			if (inputModelVertexes.indexOf(n.getId()) != -1)
+			if (inputModelVertexes.indexOf(n.getId()) != -1){
 				continue;
+			}
 			
-			if (n instanceof ColumnNode || n instanceof LiteralNode)
+			if (n instanceof ColumnNode || n instanceof LiteralNode){
 				continue;
+			}
 			
-			if (vertexIdToArgument.get(n.getId()) == null)
+			if (vertexIdToArgument.get(n.getId()) == null){
 				continue;
+			}
 			
 			
 			Label classPredicate = new Label(n.getLabel().getUri(), n.getLabel().getNs(), n.getLabel().getPrefix());
@@ -500,12 +533,14 @@ public class WebService extends Source {
 		
 		for (Link e : treeModel.edgeSet()) {
 			
-			if (inputModelEdges.indexOf(e.getId()) != -1)
+			if (inputModelEdges.indexOf(e.getId()) != -1){
 				continue;
+			}
 			
 			if (vertexIdToArgument.get(e.getSource().getId()) == null || 
-					vertexIdToArgument.get(e.getTarget().getId()) == null)
+					vertexIdToArgument.get(e.getTarget().getId()) == null){
 				continue;
+			}
 			
 			Label propertyPredicate = new Label(e.getLabel().getUri(), e.getLabel().getNs(), e.getLabel().getPrefix());
 			IndividualPropertyAtom propertyAtom = null;
@@ -529,12 +564,16 @@ public class WebService extends Source {
 	}
 
 	public void buildHNodeId2AttributeMapping() {
-		for (Attribute att : getInputAttributes()) 
-			if (att.gethNodeId() != null)
+		for (Attribute att : getInputAttributes()){
+			if (att.gethNodeId() != null){
 				this.hNodeIdToAttribute.put(att.gethNodeId(), att);
-		for (Attribute att : getOutputAttributes()) 
-			if (att.gethNodeId() != null)
+			}
+		}
+		for (Attribute att : getOutputAttributes()){
+			if (att.gethNodeId() != null){
 				this.hNodeIdToAttribute.put(att.gethNodeId(), att);
+			}
+		}
 	}
 	
 	public String getInfo() {
@@ -556,15 +595,18 @@ public class WebService extends Source {
 		System.out.println("********************************************");
 		System.out.println("Variables: ");
 		if (this.variables != null) {
-			for (String v : this.variables)
+			for (String v : this.variables){
 				System.out.print(v + ", ");
+			}
 			System.out.println();
 		}
 		System.out.println("********************************************");
 		System.out.println("Input Attributes: ");
-		if (this.inputAttributes != null)
-			for (Attribute p : this.inputAttributes)
+		if (this.inputAttributes != null){
+			for (Attribute p : this.inputAttributes){
 				p.print();
+			}
+		}
 		System.out.println("********************************************");
 		System.out.println("Input Model: ");
 		if (this.inputModel != null) {
@@ -573,9 +615,11 @@ public class WebService extends Source {
 		}
 		System.out.println("********************************************");
 		System.out.println("Output Attributes: ");
-		if (this.outputAttributes != null)
-			for (Attribute p : getOutputAttributes())
+		if (this.outputAttributes != null){
+			for (Attribute p : getOutputAttributes()){
 				p.print();
+			}
+		}
 		System.out.println("********************************************");
 		System.out.println("Output Model: ");
 		if (this.outputModel != null) {

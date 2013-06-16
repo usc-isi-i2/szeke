@@ -67,8 +67,9 @@ public class OfflineDbRdfGenerator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(args.length != 3)
+		if(args.length != 3){
 			throw new IllegalArgumentException("Illegal arguments! Please specify the model file path, the output file path and the database password as arguments.");
+		}
 		
 		OfflineDbRdfGenerator rdfGen = new OfflineDbRdfGenerator(args[0], args[1], args[2]);
 		
@@ -112,8 +113,9 @@ public class OfflineDbRdfGenerator {
 
 	private void loadModelFile() throws IOException {
 		File file = new File(modelFilePath);
-		if(!file.exists())
+		if(!file.exists()){
 			throw new FileNotFoundException("Model file not found. Constructed path: " + file.getAbsolutePath());
+		}
 		
 		jenaModel = ModelFactory.createDefaultModel();
 		InputStream s = new FileInputStream(file);
@@ -129,8 +131,9 @@ public class OfflineDbRdfGenerator {
 		ResIterator itr = jenaModel.listResourcesWithProperty(hasSourceDesc);
 		List<Resource> sourceList = itr.toList();
 		
-		if(sourceList.size() == 0)
+		if(sourceList.size() == 0){
 			throw new KarmaException("No source found in the model file.");
+		}
 		Resource source = sourceList.get(0);
 		
 		/** Loop through the database properties to get the required information **/
@@ -138,8 +141,9 @@ public class OfflineDbRdfGenerator {
 		for (InfoAttribute attr : dbAttributeList) {
 			Property prop = jenaModel.createProperty(Namespaces.KARMA, "hasSourceInfo_" + attr.name());
 			Statement stmt = jenaModel.getProperty(source, prop);
-			if (stmt == null)
+			if (stmt == null){
 				throw new KarmaException("RDF statement for the " + prop.getURI() + " property of source not found!");
+			}
 			
 			if(attr == InfoAttribute.dbType) {
 				dbType = DBType.valueOf(stmt.getString());

@@ -149,8 +149,9 @@ public class PublishDatabaseCommand extends Command {
 			//see if table exists
 			if (dbUtil.tableExists(tableName, conn)) {
 				if(!overwrite && !insert){
-					if(conn!=null)
+					if(conn!=null){
 						conn.close();
+					}
 					return new UpdateContainer(new ErrorUpdate(
 					"Table exists! Please check one of \"Overwrite Table\" or \"Insert in Table\"."));					
 				}
@@ -174,8 +175,9 @@ public class PublishDatabaseCommand extends Command {
 				numRowsNotInserted=insertInTable(worksheet, tableName, colNamesMap,conn);
 			}
 
-			if(conn!=null)
+			if(conn!=null){
 				conn.close();
+			}
 			
 			return new UpdateContainer(new AbstractUpdate() {
 				@Override
@@ -197,8 +199,9 @@ public class PublishDatabaseCommand extends Command {
 			});
 		} catch (Exception e) {
 			try{
-			if(conn!=null)
+			if(conn!=null){
 				conn.close();
+			}
 			}catch(SQLException ex){}
 			e.printStackTrace();
 			return new UpdateContainer(new ErrorUpdate(e.getMessage()));
@@ -222,8 +225,9 @@ public class PublishDatabaseCommand extends Command {
 		for(String semType: colNames){
 			//for now always VARCHAR
 			String dbType = getDbType(semType);
-			if (i++ > 0)
+			if (i++ > 0){
 				createQ += ",";
+			}
 			createQ += dbUtil.prepareName(semType) + " " + dbType;
 		}
 		createQ += ")";
@@ -251,8 +255,9 @@ public class PublishDatabaseCommand extends Command {
 			for(String semType: colNames){
 				//for now always VARCHAR
 				String dbType = getDbType(semType);
-				if (i++ > 0)
+				if (i++ > 0){
 					createQ += ",";
+				}
 				createQ += dbUtil.prepareName(semType) + " " + dbType;
 			}
 			createQ += ")";
@@ -315,9 +320,11 @@ public class PublishDatabaseCommand extends Command {
 			String insertRow = insertInTableRow(r, tableName, addTheseColumns, addTheseTypes);
 			//returns null if that particular row could not be inserted
 			//because there is a number column for which the values are not numbers
-			if(insertRow!=null)
+			if(insertRow!=null){
 				dbUtil.executeUpdate(conn, insertRow);
-			else numOfRowsNotInserted++;
+			}else{
+				numOfRowsNotInserted++;
+			}
 		}
 		return numOfRowsNotInserted;
 	}
@@ -354,17 +361,18 @@ public class PublishDatabaseCommand extends Command {
 				}
 				colNames += dbUtil.prepareName(colName);
 				//handle null vaules in worksheets
-				if(val==null)
+				if(val==null){
 					val="";
+				}
 				//escape string
 				val = val.replaceAll("'", "''");
 				if (isDbTypeString(colTypesMap.get(hNodeId))) {
 					val = "'" + val + "'";
 				} else {
 					// it's a number
-					if (val.trim().equals(""))
+					if (val.trim().equals("")){
 						val = null;
-					else{
+					}else{
 						//check that it is really a number
 						try{
 							Double.valueOf(val);
@@ -402,8 +410,9 @@ public class PublishDatabaseCommand extends Command {
 	 * @return
 	 */
 	private boolean isDbTypeString(String type){
-		if(type.toLowerCase().contains("varchar") || type.toLowerCase().contains("bit"))
+		if(type.toLowerCase().contains("varchar") || type.toLowerCase().contains("bit")){
 			return true;
+		}
 		return false;
 	}
 	

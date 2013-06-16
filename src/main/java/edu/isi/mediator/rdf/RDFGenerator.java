@@ -211,11 +211,11 @@ public class RDFGenerator {
 	 */
 	public void generateTriples(String input, String sourceType) throws MediatorException, IOException, SQLException, ClassNotFoundException{
 		
-		if(sourceType == RDFGeneratorMain.CSV)
+		if(sourceType == RDFGeneratorMain.CSV){
 			generateTriplesCSV(input);
-		else if(sourceType == RDFGeneratorMain.ACCESS)
+		}else if(sourceType == RDFGeneratorMain.ACCESS){
 			generateTriplesACCESS(input);
-		else{
+		}else{
 			//sourceType is the DBDriver
 			generateTriplesDB(input,sourceType);
 		}

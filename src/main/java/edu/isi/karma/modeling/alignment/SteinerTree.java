@@ -79,11 +79,13 @@ public class SteinerTree {
 			
 			for (Node n2 : this.steinerNodes) {
 				
-				if (n1.equals(n2))
+				if (n1.equals(n2)){
 					continue;
+				}
 				
-				if (g.containsEdge(n1, n2))
+				if (g.containsEdge(n1, n2)){
 					continue;
+				}
 				
 				Link e = new SimpleLink(null, null);
 				g.addEdge(n1, n2, e);
@@ -120,8 +122,9 @@ public class SteinerTree {
 		
 		List<Link> edgesSortedById = new ArrayList<Link>();
 		
-		for (Link e : edges) 
+		for (Link e : edges){
 			edgesSortedById.add(e);
+		}
 		
 		Collections.sort(edgesSortedById);
 		
@@ -161,22 +164,26 @@ public class SteinerTree {
 			path = new DijkstraShortestPath<Node, Link>(this.graph, source, target);
 			List<Link> pathEdges = path.getPathEdgeList();
 			
-			if (pathEdges == null)
+			if (pathEdges == null){
 				continue;
+			}
 			
 			for (int i = 0; i < pathEdges.size(); i++) {
 				
-				if (g3.edgeSet().contains(pathEdges.get(i)))
+				if (g3.edgeSet().contains(pathEdges.get(i))){
 					continue;
+				}
 				
 				source = pathEdges.get(i).getSource();
 				target = pathEdges.get(i).getTarget();
 				
-				if (!g3.vertexSet().contains(source) )
+				if (!g3.vertexSet().contains(source) ){
 					g3.addVertex(source);
+				}
 
-				if (!g3.vertexSet().contains(target) )
+				if (!g3.vertexSet().contains(target) ){
 					g3.addVertex(target);
+				}
 
 				g3.addEdge(source, target, pathEdges.get(i));
 			}
@@ -208,8 +215,9 @@ public class SteinerTree {
 		
 		List<Link> edgesSortedById = new ArrayList<Link>();
 		
-		for (Link e : edges) 
+		for (Link e : edges){
 			edgesSortedById.add(e);
+		}
 		
 		Collections.sort(edgesSortedById);
 		
@@ -253,8 +261,9 @@ public class SteinerTree {
 				target = this.graph.getEdgeTarget(e);
 				
 				// this should not happen, but just in case of ...
-				if (target.equals(source)) 
+				if (target.equals(source)){
 					target = e.getSource();
+				}
 				
 				g5.removeVertex(source);
 				source = target;
@@ -278,7 +287,9 @@ public class SteinerTree {
 		
 		if (g1.vertexSet().size() < 2) {
 			this.tree = new WeightedMultigraph<Node, Link>(Link.class);
-			for (Node n : g1.vertexSet()) this.tree.addVertex(n);
+			for (Node n : g1.vertexSet()){
+				this.tree.addVertex(n);
+			}
 			return;
 		}
 		

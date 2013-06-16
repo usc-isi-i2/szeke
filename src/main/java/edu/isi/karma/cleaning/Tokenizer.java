@@ -135,7 +135,9 @@ public class Tokenizer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt1 >= 1 ) break loop1;
+            	    if ( cnt1 >= 1 ){
+						break loop1;
+					}
                         EarlyExitException eee =
                             new EarlyExitException(1, input);
                         throw eee;
@@ -193,7 +195,9 @@ public class Tokenizer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt2 >= 1 ) break loop2;
+            	    if ( cnt2 >= 1 ){
+						break loop2;
+					}
                         EarlyExitException eee =
                             new EarlyExitException(2, input);
                         throw eee;

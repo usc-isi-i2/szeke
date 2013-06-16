@@ -115,8 +115,9 @@ public class KR2RMLWorksheetRDFGenerator {
 				Map<String, ReportMessage> predicatesFailed = new HashMap<String,ReportMessage>();
 				generateTriplesForRow(row, rowTriplesSet, rowPredicatesCovered, predicatesFailed);
 				outWriter.println();
-				if (i++%2000 == 0)
+				if (i++%2000 == 0){
 					logger.info("Done processing " + i + " rows");
+				}
 				for (ReportMessage errMsg:predicatesFailed.values()){
 					this.errorReport.addReportMessage(errMsg);
 				}
@@ -157,8 +158,9 @@ public class KR2RMLWorksheetRDFGenerator {
 			Map<String, ReportMessage> predicatesFailed) {
 		Map<String, String> columnValues = node.getColumnValues();
 		List<PredicateObjectMap> pomList = this.auxInfo.getHNodeIdToPredObjLinks().get(hNodeId);
-		if (pomList == null || pomList.isEmpty())
+		if (pomList == null || pomList.isEmpty()){
 			return;
+		}
 		
 		List<TriplesMap> toBeProcessedTriplesMap = new LinkedList<TriplesMap>();
 		for (PredicateObjectMap pom:pomList) {
@@ -187,8 +189,9 @@ public class KR2RMLWorksheetRDFGenerator {
 					.getAllNeighboringTriplesMap(trMap.getId());
 			
 			for (TriplesMapLink trMapLink:neighboringLinks) {
-				if (predicatesCovered.contains(trMapLink.getPredicateObjectMapLink().getPredicate().getId()))
+				if (predicatesCovered.contains(trMapLink.getPredicateObjectMapLink().getPredicate().getId())){
 					continue;
+				}
 				
 				// Add the other triplesMap in queue to be processed later
 				if (!alreadyProcessedTriplesMapIds.contains(trMapLink.getSourceMap().getId())
@@ -277,8 +280,9 @@ public class KR2RMLWorksheetRDFGenerator {
 			String value = "";
 			try {
 				value = getTemplateTermSetPopulatedWithValues(columnValues, pom.getObject().getTemplate());
-				if (value == null || value.trim().equals(""))
+				if (value == null || value.trim().equals("")){
 					return;
+				}
 			} catch (ValueNotFoundKarmaException ve) {
 				ReportMessage msg = createReportMessage("Could not retrieve value for the <i>predicate:" + 
 						pom.getPredicate().getTemplate().toString().replaceAll("<", "{").replaceAll(">", "}") +
@@ -296,8 +300,9 @@ public class KR2RMLWorksheetRDFGenerator {
 			}
 		}
 		predicatesCovered.add(pom.getPredicate().getId());
-		if (predicatesFailed.containsKey(pom.getPredicate().getId()))
+		if (predicatesFailed.containsKey(pom.getPredicate().getId())){
 			predicatesFailed.remove(pom.getPredicate().getId());
+		}
 	}
 
 	private ReportMessage createReportMessage(String title, ValueNotFoundKarmaException ve, 
@@ -314,9 +319,10 @@ public class KR2RMLWorksheetRDFGenerator {
 		if (subjMap.isBlankNode()) {
 			uri = getBlankNodeUri(subjMap.getId(), columnValues).replaceAll(" ", "")
 					.replaceAll("[,`']", "_");
-		} else 
+		}else{
 			uri = getTemplateTermSetPopulatedWithValues(columnValues, subjMap.getTemplate())
 				.replaceAll(" ", "").replaceAll("[,`']", "_");
+		}
 		
 		// Generate triples for specifying the types
 		for (TemplateTermSet typeTerm:subjMap.getRdfsType()) {
@@ -331,11 +337,13 @@ public class KR2RMLWorksheetRDFGenerator {
 	}
 	
 	private String constructTripleWithURIObject(String subjUri, String predicateUri, String objectUri) {
-		if (!subjUri.startsWith(BLANK_NODE_PREFIX))
+		if (!subjUri.startsWith(BLANK_NODE_PREFIX)){
 			subjUri = "<" + subjUri + ">";
+		}
 		
-		if (!objectUri.startsWith(BLANK_NODE_PREFIX))
+		if (!objectUri.startsWith(BLANK_NODE_PREFIX)){
 			objectUri = "<" + objectUri + ">";
+		}
 		
 		return subjUri + " " 
 				+ getNormalizedPredicateUri(predicateUri) + " " 
@@ -344,8 +352,9 @@ public class KR2RMLWorksheetRDFGenerator {
 	
 	private String constructTripleWithLiteralObject(String subjUri, String predicateUri, String value, 
 			String literalType) {
-		if (!subjUri.startsWith(BLANK_NODE_PREFIX))
+		if (!subjUri.startsWith(BLANK_NODE_PREFIX)){
 			subjUri = "<" + subjUri + ">";
+		}
 		
 		// Escaping the quotes
 		value = value.replaceAll("\\\\", "\\\\\\\\");

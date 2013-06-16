@@ -52,8 +52,9 @@ public class VTHeaderForest implements TForest {
 				rootNode = new VTHNode(rootId, root.getColumnName());
 				nodeMap.put(rootId, rootNode);
 			}
-			if (!roots.contains(rootNode))
+			if (!roots.contains(rootNode)){
 				roots.add(rootNode);
+			}
 
 			// Add the children
 			HNodePath rest = path.getRest();

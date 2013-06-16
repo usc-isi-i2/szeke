@@ -203,15 +203,15 @@ public class JsonImport {
 			Row row = dataTable.addRow(factory);
 			// TODO, conserve the types of the primitive types.
 			String value = "";
-			if (listValue instanceof String || listValue instanceof Boolean)
+			if (listValue instanceof String || listValue instanceof Boolean){
 				value = (String) listValue;
-			else if (listValue instanceof Double)
+			}else if (listValue instanceof Double){
 				value = Double.toString((Double) listValue);
-			else if (listValue instanceof Integer)
+			}else if (listValue instanceof Integer){
 				value = Integer.toString((Integer) listValue);
-			else if (listValue instanceof Long)
+			}else if (listValue instanceof Long){
 				value = Long.toString((Long) listValue);
-			else {
+			}else {
 				// Pedro 2012/09/14
 				logger.error("Unexpected value in JSON array:"
 						+ listValue.toString());

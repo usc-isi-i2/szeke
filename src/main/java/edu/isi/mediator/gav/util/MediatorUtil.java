@@ -47,8 +47,9 @@ public class MediatorUtil {
 	 * 			false otherwise
 	 */
 	static public boolean isVar(String var){
-		if(var.toUpperCase().equals(MediatorConstants.NULL_VALUE))
+		if(var.toUpperCase().equals(MediatorConstants.NULL_VALUE)){
 			return false;
+		}
 		if(!var.startsWith("\"") && !var.startsWith("'")){
 			//if it's not between quotes AND is not a number
 			try{
@@ -58,8 +59,9 @@ public class MediatorUtil {
 			catch(Exception e){
 				return true;
 			}
+		}else{
+			return false;
 		}
-		else return false;
 	}
 
 	static public String removeBacktick(String s){
@@ -74,8 +76,9 @@ public class MediatorUtil {
 //		s = s.trim();
 		if(s.startsWith("`")){
 			return s;
+		}else{
+			return "`"+s+"`";
 		}
-		else return "`"+s+"`";
 	}
 
 	/**

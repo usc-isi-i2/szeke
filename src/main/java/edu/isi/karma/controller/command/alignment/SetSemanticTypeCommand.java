@@ -145,8 +145,9 @@ public class SetSemanticTypeCommand extends Command {
 					domainValueExists = true;
 					// Check if the new domain is an existing instance
 					newDomainNode = alignment.getNodeById(domainValue);
-					if (newDomainNode != null)
+					if (newDomainNode != null){
 						domainNodeAlreadyExistsInGraph = true;
+					}
 				}
 					
 				if (type.getBoolean(ClientJsonKeys.isPrimary.name())) {
@@ -159,8 +160,9 @@ public class SetSemanticTypeCommand extends Command {
 						columnNodeAlreadyExisted = true;
 						oldIncomingLinkToColumnNode = alignment.getCurrentLinksToNode(existingColumnNode.getId()).iterator().next();
 						oldDomainNode = oldIncomingLinkToColumnNode.getSource();
-						if (!rdfLiteralType.equals(existingColumnNode.getRdfLiteralType()))
+						if (!rdfLiteralType.equals(existingColumnNode.getRdfLiteralType())){
 							existingColumnNode.setRdfLiteralType(rdfLiteralType);
+						}
 					}
 					
 					// Add a class link if the domain is null

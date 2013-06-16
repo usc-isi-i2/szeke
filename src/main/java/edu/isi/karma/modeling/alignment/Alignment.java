@@ -98,7 +98,9 @@ public class Alignment implements OntologyUpdateListener {
 	}
 	
 	public DirectedWeightedMultigraph<Node, Link> getSteinerTree() {
-		if (this.steinerTree == null) align();
+		if (this.steinerTree == null){
+			align();
+		}
 		// GraphUtil.printGraph(this.steinerTree);
 		return this.steinerTree;
 	}
@@ -158,10 +160,13 @@ public class Alignment implements OntologyUpdateListener {
 	public ColumnNode getColumnNodeByHNodeId(String hNodeId) {
 
 		List<Node> columnNodes = this.getNodesByType(NodeType.ColumnNode);
-		if (columnNodes == null) return null;
+		if (columnNodes == null){
+			return null;
+		}
 		for (Node cNode : columnNodes) {
-			if (((ColumnNode)cNode).getHNodeId().equals(hNodeId))
+			if (((ColumnNode)cNode).getHNodeId().equals(hNodeId)){
 				return (ColumnNode)cNode;
+			}
 		}
 		return null;
 	}
@@ -172,7 +177,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		// use hNodeId as id of the node
 		ColumnNode node = new ColumnNode(hNodeId, hNodeId, columnName, rdfLiteralType);
-		if (this.graphBuilder.addNode(node)) return node;
+		if (this.graphBuilder.addNode(node)){
+			return node;
+		}
 		return null;
 	}
 	
@@ -180,7 +187,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = nodeIdFactory.getNodeId(label.getUri());
 		InternalNode node = new InternalNode(id, label);
-		if (this.graphBuilder.addNode(node)) return node;
+		if (this.graphBuilder.addNode(node)){
+			return node;
+		}
 		return null;	
 	}
 	
@@ -188,7 +197,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		// use hNodeId as id of the node
 		ColumnNode node = new ColumnNode(hNodeId, hNodeId, columnName, rdfLiteralType);
-		if (this.graphBuilder.addNodeWithoutUpdatingGraph(node)) return node;
+		if (this.graphBuilder.addNodeWithoutUpdatingGraph(node)){
+			return node;
+		}
 		return null;
 	}
 	
@@ -196,7 +207,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = nodeIdFactory.getNodeId(label.getUri());
 		InternalNode node = new InternalNode(id, label);
-		if (this.graphBuilder.addNodeWithoutUpdatingGraph(node)) return node;
+		if (this.graphBuilder.addNodeWithoutUpdatingGraph(node)){
+			return node;
+		}
 		return null;	
 	}
 	
@@ -228,7 +241,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(label.getUri(), source.getId(), target.getId());	
 		DataPropertyLink link = new DataPropertyLink(id, label, partOfKey);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;
 	}
 	
@@ -237,7 +252,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(label.getUri(), source.getId(), target.getId());	
 		ObjectPropertyLink link = new ObjectPropertyLink(id, label);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;	
 	}
 	
@@ -246,7 +263,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(Uris.RDFS_SUBCLASS_URI, source.getId(), target.getId());
 		SubClassLink link = new SubClassLink(id);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;	
 	}
 	
@@ -254,7 +273,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(Uris.CLASS_INSTANCE_LINK_URI, source.getId(), target.getId());
 		ClassInstanceLink link = new ClassInstanceLink(id, keyInfo);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;
 	}
 	
@@ -262,14 +283,18 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(Uris.DATAPROPERTY_OF_COLUMN_LINK_URI, source.getId(), target.getId());
 		DataPropertyOfColumnLink link = new DataPropertyOfColumnLink(id, specializedColumnHNodeId);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;	
 	}
 	
 	public ObjectPropertySpecializationLink addObjectPropertySpecializationLink(Node source, Node target, Link specializedLink) {
 		String id = LinkIdFactory.getLinkId(Uris.OBJECTPROPERTY_SPECIALIZATION_LINK_URI, source.getId(), target.getId());
 		ObjectPropertySpecializationLink link = new ObjectPropertySpecializationLink(id, specializedLink);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;
 	}
 
@@ -277,7 +302,9 @@ public class Alignment implements OntologyUpdateListener {
 		
 		String id = LinkIdFactory.getLinkId(Uris.COLUMN_SUBCLASS_LINK_URI, source.getId(), target.getId());
 		ColumnSubClassLink link = new ColumnSubClassLink(id);
-		if (this.graphBuilder.addLink(source, target, link)) return link;
+		if (this.graphBuilder.addLink(source, target, link)){
+			return link;
+		}
 		return null;	
 	}
 	
@@ -306,17 +333,19 @@ public class Alignment implements OntologyUpdateListener {
 				Node target = this.getNodeById(LinkIdFactory.getLinkTargetId(linkId));
 				String linkUri = LinkIdFactory.getLinkUri(linkId);
 				Link newLink;
-				if (linkUri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI))
+				if (linkUri.equalsIgnoreCase(Uris.RDFS_SUBCLASS_URI)){
 					newLink = new SubClassLink(linkId);
-				else
+				}else{
 					newLink = new ObjectPropertyLink(linkId, 
 							this.graphBuilder.getOntologyManager().getUriLabel(linkUri));
+				}
 				
 				newLink.setStatus(LinkStatus.ForcedByUser);
 				this.graphBuilder.addLink(source, target, newLink);
 			}
-		} else
+		}else{
 			this.graphBuilder.changeLinkStatus(link, newStatus);
+		}
 	}
 	
 	/**
@@ -348,8 +377,9 @@ public class Alignment implements OntologyUpdateListener {
 	public boolean removeLink(String linkId) {
 		
 		Link link = this.getLinkById(linkId);
-		if (link != null)
+		if (link != null){
 			return this.graphBuilder.removeLink(link);
+		}
 		logger.debug("Cannot find the link " + linkId + " in the graph.");
 		return false;
 	}
@@ -357,8 +387,12 @@ public class Alignment implements OntologyUpdateListener {
 	public Set<Link> getCurrentLinksToNode(String nodeId) {
 		
 		Node node = this.getNodeById(nodeId);
-		if (node == null) return null;
-		if (!this.steinerTree.containsVertex(node)) return null;
+		if (node == null){
+			return null;
+		}
+		if (!this.steinerTree.containsVertex(node)){
+			return null;
+		}
 			
 		return this.steinerTree.incomingEdgesOf(node);
 	}
@@ -374,7 +408,9 @@ public class Alignment implements OntologyUpdateListener {
 		HashSet<Link> allLinks = new HashSet<Link>();
 
 		Node node = this.getNodeById(nodeId);
-		if (node == null) return possibleLinks;
+		if (node == null){
+			return possibleLinks;
+		}
 		
 		Set<Link> incomingLinks = this.graphBuilder.getGraph().incomingEdgesOf(node);
 		if (incomingLinks != null) {
@@ -387,8 +423,9 @@ public class Alignment implements OntologyUpdateListener {
 			allLinks.addAll(outgoingLinks);
 		}
 		
-		if (allLinks.size() == 0)
+		if (allLinks.size() == 0){
 			return possibleLinks;
+		}
 		
 		String sourceId, targetId;
 		for (Link e : allLinks) {
@@ -400,8 +437,9 @@ public class Alignment implements OntologyUpdateListener {
 				targetId = nodeId;
 			}
 			temp = getLinks(sourceId, targetId);
-			if (temp != null)
+			if (temp != null){
 				possibleLinks.addAll(temp);
+			}
 		}
 		
 		Collections.sort(possibleLinks);
@@ -426,7 +464,9 @@ public class Alignment implements OntologyUpdateListener {
 		HashSet<Link> allLinks = new HashSet<Link>();
 
 		Node node = this.getNodeById(nodeId);
-		if (node == null) return possibleLinks;
+		if (node == null){
+			return possibleLinks;
+		}
 		
 		Set<Link> incomingLinks = this.graphBuilder.getGraph().incomingEdgesOf(node);
 		if (incomingLinks != null) {
@@ -439,8 +479,9 @@ public class Alignment implements OntologyUpdateListener {
 			allLinks.addAll(outgoingLinks);
 		}
 		
-		if (allLinks.size() == 0)
+		if (allLinks.size() == 0){
 			return possibleLinks;
+		}
 		
 		String sourceId, targetId;
 		for (Link e : allLinks) {
@@ -452,8 +493,9 @@ public class Alignment implements OntologyUpdateListener {
 				targetId = e.getSource().getId();
 			}
 			temp = getLinks(sourceId, targetId);
-			if (temp != null)
+			if (temp != null){
 				possibleLinks.addAll(temp);
+			}
 		}
 		
 		Collections.sort(possibleLinks);
@@ -464,15 +506,17 @@ public class Alignment implements OntologyUpdateListener {
 	
 	private void updateLinksPreferredByUI() {
 		
-		if (this.steinerTree == null)
+		if (this.steinerTree == null){
 			return;
+		}
 		
 		// Change the status of previously preferred links to normal
 		List<Link> linksInPreviousTree = this.getLinksByStatus(LinkStatus.PreferredByUI);
 		if (linksInPreviousTree != null) {
 			Link[] links = linksInPreviousTree.toArray(new Link[0]);
-			for (Link link : links)
+			for (Link link : links){
 				this.graphBuilder.changeLinkStatus(link, LinkStatus.Normal);
+			}
 		}
 		
 		List<Link> linksForcedByUser = this.getLinksByStatus(LinkStatus.ForcedByUser);
@@ -499,8 +543,9 @@ public class Alignment implements OntologyUpdateListener {
 					steinerNodes.add(n);
 					// adding the domain
 					steinerNodes.add(domain);
-				} else 
+				}else{
 					logger.error("The column node " + n.getId() + " does not have any domain or it has more than one domain.");
+				}
 			}
 		}
 
@@ -509,11 +554,13 @@ public class Alignment implements OntologyUpdateListener {
 		if (linksForcedByUser != null) {
 			for (Link link : linksForcedByUser) {
 				
-				if (!steinerNodes.contains(link.getSource()))
+				if (!steinerNodes.contains(link.getSource())){
 					steinerNodes.add(link.getSource());
+				}
 	
-				if (!steinerNodes.contains(link.getTarget()))
-					steinerNodes.add(link.getTarget());			
+				if (!steinerNodes.contains(link.getTarget())){
+					steinerNodes.add(link.getTarget());
+				}			
 			}
 		}
 		

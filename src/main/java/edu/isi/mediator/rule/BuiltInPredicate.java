@@ -95,8 +95,9 @@ public class BuiltInPredicate extends Predicate{
 			Term t1 = terms.get(0);
 			Term t2 = terms.get(1);
 			if(t1 instanceof ConstTerm && t2 instanceof ConstTerm){
-				if(((ConstTerm)t1).equalsValue(((ConstTerm)t2)))
+				if(((ConstTerm)t1).equalsValue(((ConstTerm)t2))){
 					return true;
+				}
 			}
 		}
 		return false;
@@ -112,10 +113,11 @@ public class BuiltInPredicate extends Predicate{
 			s+= terms.get(i).toString();
 		}
 		s += ")";
-		if(isAssignment)
+		if(isAssignment){
 			s += " (assign) ";
-		else
+		}else{
 			s += " (select) ";
+		}
 		return s;
 	}
 

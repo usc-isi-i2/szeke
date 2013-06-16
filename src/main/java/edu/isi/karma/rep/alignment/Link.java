@@ -48,25 +48,40 @@ public abstract class Link extends DefaultWeightedEdge implements Comparable<Lin
 		super();
 
 		this.init();
-		if (id != null && id.trim().length() > 0) this.id = id;
-		if (label != null) this.label = label;
-		if (type != null) this.type = type;
+		if (id != null && id.trim().length() > 0){
+			this.id = id;
+		}
+		if (label != null){
+			this.label = label;
+		}
+		if (type != null){
+			this.type = type;
+		}
 	}
 	
 	public Link(String id, Label label, LinkType type, LinkKeyInfo keyInfo) {
 		super();
 
 		this.init();
-		if (id != null && id.trim().length() > 0) this.id = id;
-		if (label != null) this.label = label;
-		if (type != null) this.type = type;
-		if (keyInfo != null) this.keyInfo = keyInfo;
+		if (id != null && id.trim().length() > 0){
+			this.id = id;
+		}
+		if (label != null){
+			this.label = label;
+		}
+		if (type != null){
+			this.type = type;
+		}
+		if (keyInfo != null){
+			this.keyInfo = keyInfo;
+		}
 	}
 	
 	public Link(Link e) {
 		super();
-		if (e == null) this.init();
-		else {
+		if (e == null){
+			this.init();
+		}else {
 			this.id = e.id;
 			this.label = e.label;
 			this.type = e.type;
@@ -98,16 +113,18 @@ public abstract class Link extends DefaultWeightedEdge implements Comparable<Lin
 		
 		String s = this.id;
 
-		if (this.label.getNs() != null)
+		if (this.label.getNs() != null){
 			s = s.replaceAll(this.label.getNs(), "");
+		}
 		
 		return s;
 	}
 	
 	public String getDisplayId() {
 		
-		if (this.label.getPrefix() == null)
+		if (this.label.getPrefix() == null){
 			return this.getLocalId();
+		}
 		
 		return this.label.getPrefix() + ":" + this.getLocalId();
 	}

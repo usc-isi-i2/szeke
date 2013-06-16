@@ -35,12 +35,14 @@ public class Feature1 implements RecFeature{
 	public double computerScore()
 	{
 		double res = 0.0;
-		if(xNodes == null)
+		if(xNodes == null){
 			return 0.0;
+		}
 		for(TNode x:xNodes)
 		{
-			if(x.text.compareTo(target)==0)
+			if(x.text.compareTo(target)==0){
 				res += 1;
+			}
 		}
 		return res;
 	}

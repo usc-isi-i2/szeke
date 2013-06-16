@@ -48,8 +48,9 @@ public class Lexer {
 		String tmp_field = "" ;
 		for(int i=0;i<field.length();i++) {
 			char c = field.charAt(i) ;
-			if((int) c == 160)
+			if((int) c == 160){
 				c = ' '	;
+			}
 			tmp_field+=c ;
 		}
 		field = tmp_field ;
@@ -79,30 +80,33 @@ public class Lexer {
 				end_index = matcher.end() ;
 				part_list.add(new Part(field.substring(start_index, end_index), Type.pure_alpha)) ;
 				field = field.substring(end_index).trim() ;
-				if(field.equals(""))
+				if(field.equals("")){
 					break ;
-				else
+				}else{
 					continue ;
+				}
 			}
 			matcher = number.matcher(field) ;          // for pure number 
 			if(matcher.find() && (start_index = matcher.start()) == 0) {
 				end_index = matcher.end() ;
 				part_list.add(new Part(field.substring(start_index, end_index), Type.number)) ;
 				field = field.substring(end_index).trim() ;
-				if(field.equals(""))
+				if(field.equals("")){
 					break ;
-				else
+				}else{
 					continue ;
+				}
 			}
 			matcher = pure_symbol.matcher(field) ;      // for symbol
 			if(matcher.find() && (start_index = matcher.start()) == 0) {
 				end_index = matcher.end() ;
 				part_list.add(new Part(field.substring(start_index, end_index), Type.symbol)) ;
 				field = field.substring(end_index).trim() ;
-				if(field.equals(""))
+				if(field.equals("")){
 					break ;
-				else 
+				}else{
 					continue ;
+				}
 			}
 			Prnt.endIt("Can't tokenize since field part not matching either alpha or numeric or symbol") ;
 		}
@@ -201,27 +205,30 @@ public class Lexer {
 	
 	// this func tells if the given char is an alphabet (caps or lowercase)
 	static boolean isAlpha(char c) {
-		if((c >= 'A' && c <= 'Z') || (c>='a' && c<='z'))
+		if((c >= 'A' && c <= 'Z') || (c>='a' && c<='z')){
 			return true ;
-		else
+		}else{
 			return false ;
+		}
 	}
 	
 	// this func tells if the given char is numeric (0-9)
 	static boolean isNum(char c) {
-		if(c >='0' && c<='9')
+		if(c >='0' && c<='9'){
 			return true ;
-		else 
+		}else{
 			return false ;
+		}
 	}
 
 	// this func tells if the given char is a space
 	static boolean isSpace(char c) {
 		int i = (int) c ;
-		if(i == 32 || i==160) // 160 is also a space. It is interpreted as hard space on web pages to force a space.
+		if(i == 32 || i==160){
 			return true ;
-		else
+		}else{
 			return false ;
+		}
 	}
 	
 	

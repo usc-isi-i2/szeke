@@ -65,16 +65,18 @@ public class MultipleStringAlign {
 				length.add(e[2]-e[1]);
 			}
 			ANode aNode = new ANode(orgPos, tarPos, length, a.exps);
-			if(aNode.isvalid())
+			if(aNode.isvalid()){
 				a.addChild(aNode);
+			}
 		}
 	}
 	// iteratively generate the combinations
 	public void getCrossIndex(Vector<Long> indexs,Vector<Vector<Integer>> configs) {
 	    int k = indexs.size();
 		int[] com = new int[k];
-	    for (int i = 0; i < k; i++) 
-	    		com[i] = 0;
+	    for (int i = 0; i < k; i++){
+			com[i] = 0;
+		}
 	    while (com[k - 1] < indexs.get(k-1)) {
 	    		Vector<Integer> res = new Vector<Integer>();
 	        for (int i = 0; i < k; i++)
@@ -84,15 +86,17 @@ public class MultipleStringAlign {
 	        }
 	        configs.add(res);
 	        int t = k - 1;
-	        while (t != 0 && com[t] == indexs.get(t)-1) 
-	        		t--;
+	        while (t != 0 && com[t] == indexs.get(t)-1){
+				t--;
+			}
 	        com[t]++;
 	        if(t==0 && com[t] >= indexs.get(0))
 	        {
 	        		break;
 	        }
-	        for (int i = t + 1; i < k; i++) 
-	        		com[i] = 0;
+	        for (int i = t + 1; i < k; i++){
+				com[i] = 0;
+			}
 	    }
 	}
 	//{[orgstartPos, orgendPos ], ...}
@@ -105,8 +109,9 @@ public class MultipleStringAlign {
 			segs.add(elem);
 			return segs;
 		}
-		if (pos >= tar.length())
+		if (pos >= tar.length()){
 			return segs;
+		}
 		String tmp = "";
 		tmp += tar.charAt(pos);
 		// identify the const string	 
@@ -118,8 +123,9 @@ public class MultipleStringAlign {
 				tvec+= tar.charAt(cnt);
 				cnt++;
 				tmp = "";
-				if(cnt >= tar.length())
+				if(cnt >= tar.length()){
 					break;
+				}
 				tmp += tar.charAt(cnt);
 				q = org.indexOf(tmp);
 			}

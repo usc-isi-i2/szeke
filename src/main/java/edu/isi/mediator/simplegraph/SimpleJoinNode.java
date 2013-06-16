@@ -40,10 +40,12 @@ public class SimpleJoinNode extends SimpleBaseNode
     
     public ArrayList<SimpleBaseNode> getSubNodes() {
         ArrayList<SimpleBaseNode> subnodes = new ArrayList<SimpleBaseNode>();
-	if (child1 != null)
-	    subnodes.add(child1);
-	if (child2 != null)
-	    subnodes.add(child2);
+	if (child1 != null){
+		subnodes.add(child1);
+	}
+	if (child2 != null){
+		subnodes.add(child2);
+	}
 	return subnodes;
     }
     
@@ -51,8 +53,9 @@ public class SimpleJoinNode extends SimpleBaseNode
     	
 		//I already did setSQL() in this node
     	//because of binding patterns there may be 2 ways to this node
-		if(!sqlSelect.isEmpty())
+		if(!sqlSelect.isEmpty()){
 			return;
+		}
 
     	child1.setSQL();
     	child2.setSQL();
@@ -80,8 +83,9 @@ public class SimpleJoinNode extends SimpleBaseNode
     	sqlSelect.addAll(selectWithoutJoinAttrs);
     	for(int i=0; i<selectWithoutJoinAttrs.size(); i++){
     		String oneSelect = selectWithoutJoinAttrs.get(i);
-    		if(!sqlSelect.contains(oneSelect))
-    			sqlSelect.add(oneSelect);
+    		if(!sqlSelect.contains(oneSelect)){
+				sqlSelect.add(oneSelect);
+			}
     	}
 		//System.out.println("Join select=" + sqlSelect);
     }
@@ -91,21 +95,23 @@ public class SimpleJoinNode extends SimpleBaseNode
     	String s = "";
     	s += getPrintName();
     	s += "joinAttributes=" + joinAttributes + "\n";
-    	if(child1 == null)
-    		s += "child1=NULL\n";
-    	else{
-    		if(child1.alreadyPrinted)
-    			s += "child1=" + child1.getPrintName();
-    		else
-    			s += "child1=" + child1.getString();
+    	if(child1 == null){
+			s += "child1=NULL\n";
+		}else{
+    		if(child1.alreadyPrinted){
+				s += "child1=" + child1.getPrintName();
+			}else{
+				s += "child1=" + child1.getString();
+			}
     	}
-    	if(child2 == null)
-    		s += "child2=NULL\n";
-    	else{
-    		if(child2.alreadyPrinted)
-    			s += "child2=" + child2.getPrintName();
-    		else
-    			s += "child2=" + child2.getString();
+    	if(child2 == null){
+			s += "child2=NULL\n";
+		}else{
+    		if(child2.alreadyPrinted){
+				s += "child2=" + child2.getPrintName();
+			}else{
+				s += "child2=" + child2.getString();
+			}
     	}
     	s += "-------------------------------------\n";
     	return s;

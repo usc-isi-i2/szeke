@@ -80,6 +80,7 @@ public class RuleRDFGeneratorAccess extends RuleRDFGenerator{
 		
 		Table table = Database.open(new File(accessDB)).getTable(tableName);
 		if(table==null)
+		 {
 			throw new MediatorException("Table " + lavRule.getHead().getName() + " not found in " + accessDB);
 		///////////////////////////
 		/*
@@ -94,6 +95,7 @@ public class RuleRDFGeneratorAccess extends RuleRDFGenerator{
 		System.out.println("]");
 		*/
 		//////////////////////
+		}
 		
 		//column names used in the rule
 		ArrayList<String> colNamesInHead = lavRule.getHead().getVars();
@@ -123,14 +125,15 @@ public class RuleRDFGeneratorAccess extends RuleRDFGenerator{
 				if(valO==null){
 					//it is possible that the value is NULL
 					val="NULL";
-				}
-				else
+				}else{
 					val = valO.toString();
+				}
 				//I need only values used in the rule
 				values.put(colName, val);
 			}
-			if(l%10000==0)
+			if(l%10000==0){
 				logger.info("Processed " + l + " rows");
+			}
 			//for one row
 			generateTriples(values);
 			//if(row==3) break;

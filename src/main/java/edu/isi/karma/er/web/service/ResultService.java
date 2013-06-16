@@ -137,8 +137,9 @@ public class ResultService {
 		for (int j = 0; j < resultList.size() ; j++) {
 			ScoreBoard sb = resultList.get(j);
 			onto = util.createMatchOntology(sb, map);
-			if (onto != null)
+			if (onto != null){
 				count ++;
+			}
 			
 		}
 

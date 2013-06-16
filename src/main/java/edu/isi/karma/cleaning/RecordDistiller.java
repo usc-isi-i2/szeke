@@ -216,8 +216,9 @@ public class RecordDistiller {
 					int id = 0;
 					HashMap<String, String> id2String = new HashMap<String, String>();
 					while ((pair = cr.readNext()) != null) {
-						if (pair == null || pair.length <= 1)
+						if (pair == null || pair.length <= 1){
 							break;
+						}
 						Ruler ruler = new Ruler();
 						ruler.setNewInput(pair[0]);
 						distiller.readRecord(""+id, ruler.vec);

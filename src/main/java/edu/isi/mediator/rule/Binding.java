@@ -93,8 +93,9 @@ public class Binding{
 	public boolean unify(String key, String val){
 		//System.out.println("Unify: key=" + key + " val=" + val);
 		boolean valIsConstant=false;
-		if(!MediatorUtil.isVar(val))
+		if(!MediatorUtil.isVar(val)){
 			valIsConstant=true;
+		}
 		String existingVal = bindingList.get(key);
 		while(existingVal!=null){
 			if(!MediatorUtil.isVar(existingVal)){
@@ -163,7 +164,9 @@ public class Binding{
 				var2=var1;
 				var1=bindingList.get(var1);
 				if(var2.equals(var1))
+				 {
 					return var1; //otherwise I get in infinite cycle
+				}
 			}
 		}
 		
@@ -209,9 +212,9 @@ public class Binding{
 				String var2 = t2.getTermValue();
 				if(t1 instanceof ConstTerm){
 					return unify(var2, var1);
-				}
-				else
+				}else{
 					return unify(var1, var2);
+				}
 			}
 		}
 		return true;

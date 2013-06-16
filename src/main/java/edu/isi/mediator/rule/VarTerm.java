@@ -66,11 +66,14 @@ public class VarTerm extends Term{
 	 * @see edu.isi.mediator.gav.domain.Term#equals(edu.isi.mediator.gav.domain.Term)
 	 */
 	public boolean equals(Term t){
-		if(!(t instanceof VarTerm))
+		if(!(t instanceof VarTerm)){
 			return false;
-		if(var.equals(t.var))
+		}
+		if(var.equals(t.var)){
 			return true;
-		else return false;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -91,8 +94,9 @@ public class VarTerm extends Term{
 	 */
 	public String toString(){
 		String s = var;
-		if(queryName!=null)
+		if(queryName!=null){
 			s += ":" + queryName;
+		}
 		//s += " " + isAllowedAfterUAC;
 		return s;
 	}

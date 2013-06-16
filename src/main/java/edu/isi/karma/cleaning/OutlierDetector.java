@@ -39,8 +39,9 @@ public class OutlierDetector {
 	}
 	public double getDistance(double[] x,double[] y)
 	{
-		if(x.length != y.length)
+		if(x.length != y.length){
 			return Double.MAX_VALUE;
+		}
 		double value = 0.0;
 		for(int i = 0; i<x.length; i++)
 		{
@@ -80,8 +81,9 @@ public class OutlierDetector {
 	// pid: [{rawstring, code}]
 	public void buildMeanVector(HashMap<String,Vector<String[]>> data)
 	{
-		if(data == null)
+		if(data == null){
 			return;
+		}
 		for(String key:data.keySet())
 		{
 			Vector<String[]> vs = data.get(key);

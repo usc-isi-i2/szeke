@@ -11,8 +11,9 @@ public class UtilTools {
 	public static Vector<Integer> getStringPos(int tokenpos,Vector<TNode> example)
 	{
 		Vector<Integer> poss = new Vector<Integer>();
-		if(tokenpos < 0)
+		if(tokenpos < 0){
 			return poss;
+		}
 		int pos = 0;
 		int strleng = 0;
 		for(int i=0;i<example.size();i++)
@@ -59,19 +60,23 @@ public class UtilTools {
 
 	public static String print(Vector<TNode> x) {
 		String str = "";
-		if(x == null)
+		if(x == null){
 			return "null";
-		for (TNode t : x)
-			if(t.text.compareTo("ANYTOK")==0)
+		}
+		for (TNode t : x){
+			if(t.text.compareTo("ANYTOK")==0){
 				str += t.getType();
-			else
+			}else{
 				str += t.text;
+			}
+		}
 		return str;
 	}
 
 	public static boolean samesteplength(Vector<Integer> s) {
-		if (s.size() <= 1)
+		if (s.size() <= 1){
 			return false;
+		}
 		if (s.size() == 2) {
 			if (s.get(1) - s.get(0) >= 1) {
 				return true;
@@ -81,8 +86,9 @@ public class UtilTools {
 		}
 		int span = s.get(1) - s.get(0);
 		for (int i = 2; i < s.size(); i++) {
-			if ((s.get(i) - s.get(i - 1)) != span)
+			if ((s.get(i) - s.get(i - 1)) != span){
 				return false;
+			}
 		}
 		return true;
 	}
@@ -151,13 +157,15 @@ public class UtilTools {
 				{
 					tardis += String.format("{%s}",str);
 					tar += str;
-					if(!inloop)
+					if(!inloop){
 						segmentCnt ++;
+					}
 				}
 			}
 		}
-		if(pre<org.length())
+		if(pre<org.length()){
 			orgdis += org.substring(pre);
+		}
 		dict.put("Org", org);
 		dict.put("Tar",tar );
 		dict.put("Orgdis", orgdis);
@@ -423,7 +431,8 @@ class DoubleCompare implements Comparator {
 			return -1;
 		} else if (a1.score < a2.score) {
 			return 1;
-		} else
+		}else{
 			return 0;
+		}
 	}
 }

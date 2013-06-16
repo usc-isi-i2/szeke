@@ -60,8 +60,9 @@ public class GetRequestManager extends LinkedApiRequestManager {
 					getResponse().setContentType(MimeType.TEXT_PLAIN);
 					pw.write(sparql);
 					return;
-				} else
+				}else{
 					m = servicePublisher.generateInputPart();
+				}
 			}
 
 			if (getResourceType() == ResourceType.Output) {
@@ -70,17 +71,19 @@ public class GetRequestManager extends LinkedApiRequestManager {
 					getResponse().setContentType(MimeType.TEXT_PLAIN);
 					pw.write(sparql);
 					return;
-				} else
-					m = servicePublisher.generateOutputPart();;
+				}else{
+					m = servicePublisher.generateOutputPart();
+				};
 			}
 		}
 		
-		if (getFormat().equalsIgnoreCase(SerializationLang.XML))
-			getResponse().setContentType(MimeType.APPLICATION_XML); 
-		else if (getFormat().equalsIgnoreCase(SerializationLang.XML_ABBREV))
-			getResponse().setContentType(MimeType.APPLICATION_XML); 
-		else
+		if (getFormat().equalsIgnoreCase(SerializationLang.XML)){
+			getResponse().setContentType(MimeType.APPLICATION_XML);
+		}else if (getFormat().equalsIgnoreCase(SerializationLang.XML_ABBREV)){
+			getResponse().setContentType(MimeType.APPLICATION_XML);
+		}else{
 			getResponse().setContentType(MimeType.TEXT_PLAIN);
+		}
 
 		m.write(pw, getFormat());
 	}

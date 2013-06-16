@@ -48,8 +48,9 @@ public class PairPropertyUtil {
 	
 	public double getPairCount(Map<String, Map<String, Double>> map, String s1, String s2) {
 		double count = 0;
-		if (map.containsKey(s1) && map.get(s1).containsKey(s2))
+		if (map.containsKey(s1) && map.get(s1).containsKey(s2)){
 			count = map.get(s1).get(s2);
+		}
 		return count;
 	}
 	

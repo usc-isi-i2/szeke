@@ -68,8 +68,9 @@ public class RuleParser {
 					SourceSchema s = dm.getSourceSchema(p.getName());
 					p.setSource(s);
 				}
-				if(p.getType().equals(MediatorConstants.FUNCTION))
+				if(p.getType().equals(MediatorConstants.FUNCTION)){
 					p= new FunctionPredicate(p);
+				}
 				predicates.add(p);
 			}
 			else if(predicate.getText().equals(MediatorConstants.BUILTIN_PRED)){
@@ -215,10 +216,12 @@ public class RuleParser {
 		String var1 = predicate.getChild(1).getText();
 		String var2 = MediatorConstants.NULL_VALUE;
 		if(predicate.getChild(2)!=null)
+		 {
 			var2 = predicate.getChild(2).getText();
 		//System.out.println("R=" + var1);
 		//System.out.println("R=" + op);
 		//System.out.println("R=" + var2);
+		}
 
 		p.addTerm(var1);
 		p.addTerm(var2);
@@ -255,32 +258,33 @@ public class RuleParser {
 	 */
 	private String getOperator(String op) throws MediatorException{
 		String name;
-		if(op.equals("="))
+		if(op.equals("=")){
 			name=MediatorConstants.EQUALS;
-		else if(op.equals("!="))
+		}else if(op.equals("!=")){
 			name=MediatorConstants.NOT_EQUAL1;
-		else if(op.equals("<>"))
+		}else if(op.equals("<>")){
 			name=MediatorConstants.NOT_EQUAL2;
-		else if(op.equals("<"))
+		}else if(op.equals("<")){
 			name=MediatorConstants.LESS_THAN;
-		else if(op.equals("<="))
+		}else if(op.equals("<=")){
 			name=MediatorConstants.LESS_THAN_EQ;
-		else if(op.equals(">"))
+		}else if(op.equals(">")){
 			name=MediatorConstants.GREATER_THAN;
-		else if(op.equals(">="))
+		}else if(op.equals(">=")){
 			name=MediatorConstants.GREATER_THAN_EQ;
-		else if(op.equals("LIKE"))
+		}else if(op.equals("LIKE")){
 			name=MediatorConstants.LIKE;
-		else if(op.equals("IN"))
+		}else if(op.equals("IN")){
 			name=MediatorConstants.IN;
-		else if(op.equals("NOT_IN"))
+		}else if(op.equals("NOT_IN")){
 			name=MediatorConstants.NOT_IN;
-		else if(op.equals("IS_NULL"))
+		}else if(op.equals("IS_NULL")){
 			name=MediatorConstants.IS_NULL;
-		else if(op.equals("ISNOT_NULL"))
+		}else if(op.equals("ISNOT_NULL")){
 			name=MediatorConstants.ISNOT_NULL;
-		else
-			throw new MediatorException("Operator not supported: " + op);				
+		}else{
+			throw new MediatorException("Operator not supported: " + op);
+		}				
 		return name;
 	}
 }

@@ -59,10 +59,11 @@ public class Coordinate implements Comparable<Coordinate> {
 					// left and top is always less than right, center, and
 					// bottom
 					if (this.position == Position.left
-							|| this.position == Position.top)
+							|| this.position == Position.top){
 						return -1;
-					else
+					}else{
 						return 1;
+					}
 
 				} else {
 					return this.index - o.index;
@@ -74,10 +75,11 @@ public class Coordinate implements Comparable<Coordinate> {
 					// left and top is always less than right, center, and
 					// bottom
 					if (o.position == Position.left
-							|| o.position == Position.top)
+							|| o.position == Position.top){
 						return 1;
-					else
+					}else{
 						return -1;
+					}
 
 				} else {
 					return this.index - o.index;
@@ -88,19 +90,20 @@ public class Coordinate implements Comparable<Coordinate> {
 					// if the position is same, use the depth
 					if (this.position == o.position) {
 						if (this.position == Position.left
-								|| this.position == Position.top)
+								|| this.position == Position.top){
 							return this.depth - o.depth;
-						else if (this.position == Position.right
+						}else if (this.position == Position.right
 								|| this.position == Position.bottom) {
 							return o.depth - this.depth;
 						}
 					}
 					// top is always less then bottom and center
 					if (this.position == Position.left
-							|| this.position == Position.top)
+							|| this.position == Position.top){
 						return -1;
-					else
+					}else{
 						return 1;
+					}
 
 				} else {
 					return this.index - o.index;
@@ -111,16 +114,18 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
+		if (obj == null){
 			return false;
+		}
 		if (obj.getClass() != getClass()) {
 			return false;
 		}
 		
 		Coordinate cr = (Coordinate) obj;
 		if(cr.type == this.type && cr.depth == this.depth 
-				&& cr.index == this.index && cr.position == this.position)
+				&& cr.index == this.index && cr.position == this.position){
 			return true;
+		}
 		return false;
 	}
 
@@ -151,11 +156,13 @@ public class Coordinate implements Comparable<Coordinate> {
 		c.add(new Coordinate(1, Position.right, 1));
 		c.add(new Coordinate(1, Position.left, 1));
 
-		for(Coordinate cr:c)
+		for(Coordinate cr:c){
 			System.out.println(cr);
+		}
 		System.out.println("SORTING ***************");
 		Collections.sort(c);
-		for(Coordinate cr:c)
+		for(Coordinate cr:c){
 			System.out.println(cr);
+		}
 	}
 }

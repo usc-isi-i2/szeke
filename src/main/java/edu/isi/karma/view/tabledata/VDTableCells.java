@@ -551,10 +551,11 @@ public class VDTableCells {
 			strokeStyles.setStrokeStyle(Position.left, leftStrokeStyle);
 			strokeStyles.setStrokeStyle(Position.right, rightStrokeStyle);
 
-			if (separatorDepth >= columnDepth)
+			if (separatorDepth >= columnDepth){
 				cssDepth = columnDepth;
-			else
+			}else{
 				cssDepth = separatorDepth;
+			}
 
 			String attributes = encodeForJson(CellType.rowSpace,
 					strokeTB.getHTableId(),

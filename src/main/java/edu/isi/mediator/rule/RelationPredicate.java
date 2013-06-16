@@ -134,9 +134,11 @@ public class RelationPredicate extends Predicate{
 	 * <br> false if source predicate
 	 */
 	public boolean isDomainPredicate(){
-		if(source==null)
+		if(source==null){
 			return true;
-		else return false;
+		}else{
+			return false;
+		}
 	}
 
 	/**	Returns all variables that need to be bound
@@ -152,9 +154,9 @@ public class RelationPredicate extends Predicate{
 			if(t.needsBinding(sa.needsBinding())){
 				if(t instanceof FunctionTerm){
 					vars.addAll(t.getFunction().getNeedBindingVars());
-				}
-				else
+				}else{
 					vars.add(var);
+				}
 			}
 		}
 		return vars;
@@ -168,9 +170,11 @@ public class RelationPredicate extends Predicate{
 	 */
 	public boolean needsBinding(){
 		ArrayList<String> bindVars = getNeedBindingVars();
-		if(bindVars.isEmpty())
+		if(bindVars.isEmpty()){
 			return false;
-		else return true;
+		}else{
+			return true;
+		}
 	}
 	
     /**
@@ -181,10 +185,11 @@ public class RelationPredicate extends Predicate{
      */
     public String needsBinding(String attr){
     	SourceAttribute sa = getSourceAttribute(attr);
-    	if(sa.needsBinding)
-    		return "@";
-    	else 
-    		return "";
+    	if(sa.needsBinding){
+			return "@";
+		}else{
+			return "";
+		}
     }
 	
 	/**
@@ -199,8 +204,9 @@ public class RelationPredicate extends Predicate{
 		for(int i=0; i<terms.size(); i++){
 			Term t = terms.get(i);
 			String var = t.getVar();
-			if(var!=null && p.containsTerm(t))
+			if(var!=null && p.containsTerm(t)){
 				attrs.add(var);
+			}
 		}
 		return attrs;
 	}
@@ -225,8 +231,9 @@ public class RelationPredicate extends Predicate{
 					//no source predicate is associated with this pred
 					//just return the domainAttr
 					return new SourceAttribute(domainAttr, "string", "F");
+				}else{
+					return source.getAttr(i);
 				}
-				else return source.getAttr(i);
 			}
 		}
 		return null;
@@ -368,7 +375,9 @@ public class RelationPredicate extends Predicate{
 		String s = "";
 		s += name + "(";
 		for(int i=0; i<terms.size(); i++){
-			if(i>0) s += ",";
+			if(i>0){
+				s += ",";
+			}
 			s += terms.get(i).toString();
 		}
 		s+= ")";

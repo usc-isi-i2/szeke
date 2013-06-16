@@ -156,13 +156,13 @@ public class ImportCSVFileCommand extends CommandWithPreview {
 	public UpdateContainer handleUserActions(HttpServletRequest request) {
 		/** Set the parameters **/
 		// Set the delimiter
-		if (request.getParameter("delimiter").equals("comma"))
+		if (request.getParameter("delimiter").equals("comma")){
 			setDelimiter(',');
-		else if (request.getParameter("delimiter").equals("tab"))
+		}else if (request.getParameter("delimiter").equals("tab")){
 			setDelimiter('\t');
-		else if (request.getParameter("delimiter").equals("space"))
+		}else if (request.getParameter("delimiter").equals("space")){
 			setDelimiter(' ');
-		else {
+		}else {
 			// TODO What to do with manual text delimiter
 		}
 
@@ -177,8 +177,9 @@ public class ImportCSVFileCommand extends CommandWithPreview {
 				logger.error("Wrong user input for CSV Header line index");
 				return null;
 			}
-		} else
+		}else{
 			setHeaderRowIndex(0);
+		}
 
 		// Set the data start row index
 		String dataIndex = request.getParameter("startRowIndex");
@@ -190,8 +191,9 @@ public class ImportCSVFileCommand extends CommandWithPreview {
 				logger.error("Wrong user input for Data start line index");
 				return null;
 			}
-		} else
+		}else{
 			setDataStartRowIndex(2);
+		}
 
 		/** Send response based on the interaction type **/
 		UpdateContainer c = null;

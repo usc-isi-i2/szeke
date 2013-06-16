@@ -54,12 +54,13 @@ public class SemanticType implements Jsonizable  {
 		this.clazz = domain;
 		this.isPartOfKey = isPartOfKey;
 		
-		if(probability > 0.8)
+		if(probability > 0.8){
 			confidenceLevel = ConfidenceLevel.High;
-		else if (probability < 0.8 && probability > 0.4)
+		}else if (probability < 0.8 && probability > 0.4){
 			confidenceLevel = ConfidenceLevel.Medium;
-		else
+		}else{
 			confidenceLevel = ConfidenceLevel.Low;
+		}
 	}
 
 	public String getHNodeId() {
@@ -80,16 +81,17 @@ public class SemanticType implements Jsonizable  {
 
 	@Override
 	public String toString() {
-		if (isClass())
+		if (isClass()){
 			return "SemanticType [hNodeId=" + hNodeId + ", type=" + type.getUri()
 				+ ", origin=" + origin
 				+ ", isPartOfKey=" + isPartOfKey + ", confidenceLevel="
 				+ confidenceLevel + "]";
-		else
+		}else{
 			return "SemanticType [hNodeId=" + hNodeId + ", type=" + type.getUri()
 					+ ", domain=" + clazz.getUri() + ", origin=" + origin
 					+ ", isPartOfKey=" + isPartOfKey + ", confidenceLevel="
 					+ confidenceLevel + "]";
+		}
 	}
 
 	//mariam
@@ -99,8 +101,9 @@ public class SemanticType implements Jsonizable  {
 	 * 		true if this type is a Class; false if it is a data property.
 	 */
 	public boolean isClass(){
-		if(clazz==null || clazz.getUri().trim().isEmpty())
+		if(clazz==null || clazz.getUri().trim().isEmpty()){
 			return true;
+		}
 		//it is a data property
 		return false;
 	}
@@ -115,10 +118,11 @@ public class SemanticType implements Jsonizable  {
 	public JSONObject getJSONArrayRepresentation() throws JSONException {
 		JSONObject typeObj = new JSONObject();
 		typeObj.put(ClientJsonKeys.FullType.name(), type.getUri());
-		if(isClass())
+		if(isClass()){
 			typeObj.put(ClientJsonKeys.Domain.name(), "");
-		else
+		}else{
 			typeObj.put(ClientJsonKeys.Domain.name(), clazz.getUri());
+		}
 		typeObj.put(ClientJsonKeys.isPrimary.name(), isPartOfKey);
 		return typeObj;
 	}

@@ -73,14 +73,19 @@ class OntologyHandler {
 			return null;
 		}
 		String ns = r.getNameSpace();
-		if (ns == null || ns.trim().length() == 0) ns = null;
+		if (ns == null || ns.trim().length() == 0){
+			ns = null;
+		}
 		String prefix = ontModel.getNsURIPrefix(r.getNameSpace());
-		if (prefix == null || prefix.trim().length() == 0) prefix = null;
+		if (prefix == null || prefix.trim().length() == 0){
+			prefix = null;
+		}
 		
 		OntResource ontR = null;
 		try { ontR = (OntResource)r;} catch(Exception e) {}
-		if (ontR == null)
+		if (ontR == null){
 			return new Label(r.getURI(), ns, prefix);
+		}
 		
 		String rdfsLabel = ontR.getLabel(null);
 		String rdfsComment = ontR.getComment(null);
@@ -96,10 +101,11 @@ class OntologyHandler {
 	 */
 	public HashSet<String> getResourcesUris(HashSet<OntResource> resources) {
 		HashSet<String> resourcesURIs = new HashSet<String>();
-		if (resources != null)
+		if (resources != null){
 			for (OntResource r: resources) {
 				resourcesURIs.add(r.getURI());
 			}
+		}
 		return resourcesURIs;
 	}
 	
@@ -110,18 +116,20 @@ class OntologyHandler {
 	 */
 	public HashMap<String, Label> getResourcesLabels(HashSet<OntResource> resources) {
 		HashMap<String, Label> resourcesLabels = new HashMap<String, Label>();
-		if (resources != null)
+		if (resources != null){
 			for (OntResource r: resources) {
 				resourcesLabels.put(r.getURI(), getResourceLabel(r));
 			}
+		}
 		return resourcesLabels;
 	}
 	
 	public boolean isClass(String uri) {
 		
 		OntClass c = ontModel.getOntClass(uri);
-		if (c != null)
+		if (c != null){
 			return true;
+		}
 		
 		return false;
 	}
@@ -129,8 +137,9 @@ class OntologyHandler {
 	public boolean isDataProperty(String uri) {
 
 		DatatypeProperty dp = ontModel.getDatatypeProperty(uri);
-		if (dp != null)
+		if (dp != null){
 			return true;
+		}
 		
 		return false;
 	}
@@ -138,8 +147,9 @@ class OntologyHandler {
 	public boolean isProperty(String uri) {
 
 		Property p = ontModel.getProperty(uri);
-		if (p != null)
+		if (p != null){
 			return true;
+		}
 		
 		return false;
 	}
@@ -147,8 +157,9 @@ class OntologyHandler {
 	public boolean isObjectProperty(String uri) {
 
 		ObjectProperty op = ontModel.getObjectProperty(uri);
-		if (op != null)
+		if (op != null){
 			return true;
+		}
 		
 		return false;
 	}
@@ -160,17 +171,18 @@ class OntologyHandler {
 	 */
 	public Label getInverseProperty(String uri) {
 		ObjectProperty op = ontModel.getObjectProperty(uri);
-		if (op == null)
+		if (op == null){
 			return null;
+		}
 		OntProperty inverseProp = null;
 		try {
 			inverseProp = op.getInverse();
 		} catch (ConversionException e) {}
 		if (inverseProp != null) {
 			return getUriLabel(inverseProp.getURI());
-		}
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	/**
@@ -180,17 +192,18 @@ class OntologyHandler {
 	 */
 	public Label getInverseOfProperty(String uri) {
 		ObjectProperty op = ontModel.getObjectProperty(uri);
-		if (op == null)
+		if (op == null){
 			return null;
+		}
 		OntProperty inverseOfProp = null;
 		try {
 			inverseOfProp = op.getInverse();
 		} catch (ConversionException e) {}
 		if (inverseOfProp != null) {
 			return getUriLabel(inverseOfProp.getURI());
-		}
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	/**
@@ -205,18 +218,21 @@ class OntologyHandler {
 		OntClass c = null;
 		OntProperty p = null;
 		
-		if (resources == null) 
+		if (resources == null){
 			resources = new HashSet<OntResource>();
+		}
 
-		if (r == null)
+		if (r == null){
 			return;
+		}
 		
-		if (r.isClass())
+		if (r.isClass()){
 			c = r.asClass();
-		else if  (r.isProperty())
+		}else if  (r.isProperty()){
 			p = r.asProperty();
-		else
+		}else{
 			return;
+		}
 		
 		if (c != null) { // && c.hasSuperClass()) {
 			ExtendedIterator<OntClass> i = null;
@@ -232,15 +248,17 @@ class OntologyHandler {
                 OntClass superC = (OntClass) i.next();
                 if (superC.isURIResource()) {
                 	resources.add(superC);
-                	if (recursive)
-                		getParents(superC, resources, recursive);
+                	if (recursive){
+						getParents(superC, resources, recursive);
+					}
                 } else {
                 	HashSet<OntResource> members = new HashSet<OntResource>();
                 	getMembers(superC, members, false);
                 	for (OntResource or : members) {
                 		resources.add(or);
-                		if (recursive)
-                			getParents(or, resources, recursive);
+                		if (recursive){
+							getParents(or, resources, recursive);
+						}
                 	}
                 }
             }
@@ -262,8 +280,9 @@ class OntologyHandler {
             	//if (superP.a)
                 if (superP.isURIResource()) {
                 	resources.add(superP);
-                	if (recursive)
-                		getParents(superP, resources, recursive);
+                	if (recursive){
+						getParents(superP, resources, recursive);
+					}
                 } 
 //                else {
 //            		List<OntResource> members = new ArrayList<OntResource>();
@@ -290,18 +309,21 @@ class OntologyHandler {
 		OntClass c = null;
 		OntProperty p = null;
 		
-		if (resources == null) 
+		if (resources == null){
 			resources = new HashSet<OntResource>();
+		}
 
-		if (r == null)
+		if (r == null){
 			return;
+		}
 
-		if (r.isClass())
+		if (r.isClass()){
 			c = r.asClass();
-		else if  (r.isProperty())
+		}else if  (r.isProperty()){
 			p = r.asProperty();
-		else
+		}else{
 			return;
+		}
 		
 		if (c != null) {
 			ExtendedIterator<OntClass> i = null;
@@ -317,15 +339,17 @@ class OntologyHandler {
                 OntClass subC = (OntClass) i.next();
                 if (subC.isURIResource()) {
                 	resources.add(subC);
-                	if (recursive)
-                		getChildren(subC, resources, recursive);
+                	if (recursive){
+						getChildren(subC, resources, recursive);
+					}
                 } else {
                 	HashSet<OntResource> members = new HashSet<OntResource>();
                 	getMembers(subC, members, false);
                 	for (OntResource or : members) {
                 		resources.add(or);
-                		if (recursive)
-                			getChildren(or, resources, recursive);
+                		if (recursive){
+							getChildren(or, resources, recursive);
+						}
                 	}
                 }
             }
@@ -345,8 +369,9 @@ class OntologyHandler {
                 OntProperty subP = (OntProperty) i.next();
                 if (subP.isURIResource()) {
                 	resources.add(subP);
-                	if (recursive)
-                		getChildren(subP, resources, recursive);
+                	if (recursive){
+						getChildren(subP, resources, recursive);
+					}
                 }
 //                else {
 //            		List<OntResource> members = new ArrayList<OntResource>();
@@ -371,11 +396,13 @@ class OntologyHandler {
 	 */
 	public void getMembers(OntResource r, HashSet<OntResource> resources, boolean recursive) {
 
-		if (resources == null) 
+		if (resources == null){
 			resources = new HashSet<OntResource>();
+		}
 
-		if (r == null)
+		if (r == null){
 			return;
+		}
 
 		if (r.isClass()) { 
 			OntClass c = r.asClass();
@@ -383,8 +410,9 @@ class OntologyHandler {
 			// simple class
 			if (c.isURIResource()) {
 				resources.add(c);
-				if (recursive)
+				if (recursive){
 					getChildren(c, resources, true);
+				}
 				return;
 			}
 			
@@ -417,7 +445,9 @@ class OntologyHandler {
 
 		HashSet<OntResource> resources = new HashSet<OntResource>();
 		OntResource r = ontModel.getOntClass(classUri);
-		if (r == null) return new HashMap<String, Label>();
+		if (r == null){
+			return new HashMap<String, Label>();
+		}
 		getChildren(r, resources, recursive);
 		return getResourcesLabels(resources);
 	}
@@ -432,7 +462,9 @@ class OntologyHandler {
 		
 		HashSet<OntResource> resources = new HashSet<OntResource>();
 		OntResource r = ontModel.getOntClass(classUri);
-		if (r == null) return new HashMap<String, Label>();
+		if (r == null){
+			return new HashMap<String, Label>();
+		}
 		getParents(r, resources, recursive);
 		return getResourcesLabels(resources);
 	}
@@ -447,7 +479,9 @@ class OntologyHandler {
 
 		HashSet<OntResource> resources = new HashSet<OntResource>();
 		OntResource r = ontModel.getOntProperty(propertyUri);
-		if (r == null) return new HashMap<String, Label>();
+		if (r == null){
+			return new HashMap<String, Label>();
+		}
 		getChildren(r, resources, recursive);
 		return getResourcesLabels(resources);
 	}
@@ -462,7 +496,9 @@ class OntologyHandler {
 
 		HashSet<OntResource> resources = new HashSet<OntResource>();
 		OntResource r = ontModel.getOntProperty(propertyUri);
-		if (r == null) return new HashMap<String, Label>();
+		if (r == null){
+			return new HashMap<String, Label>();
+		}
 		getParents(r, resources, recursive);
 		return getResourcesLabels(resources);
 	}

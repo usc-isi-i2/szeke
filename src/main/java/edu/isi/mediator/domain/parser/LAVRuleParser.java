@@ -57,9 +57,9 @@ public class LAVRuleParser{
 			if(prefix.startsWith(RDFDomainModel.SOURCE_PREFIX)){
 				//will look like sourcePrefix:thePrefix
 				dm.addSourceNamespace(prefix.substring(RDFDomainModel.SOURCE_PREFIX.length()), namespace);
-			}
-			else
+			}else{
 				dm.addOntologyNamespace(prefix, namespace);
+			}
 		}
 	}
 	
@@ -89,8 +89,9 @@ public class LAVRuleParser{
 	 * @throws MediatorException
 	 */
 	public LAVRule parseLAVRule(String rule) throws MediatorException{
-		if(!rule.startsWith("LAV_RULES:"))
+		if(!rule.startsWith("LAV_RULES:")){
 			rule = "LAV_RULES:" + rule;
+		}
 		
 		DomainParser dp = new DomainParser();
 		CommonTree t = dp.parse(rule);
@@ -138,9 +139,9 @@ public class LAVRuleParser{
 		if(r.isValid()){
 			// all vars in the head are in the body
 			return r;
-		}
-		else
+		}else{
 			return null;
+		}
 	}	
 
 }

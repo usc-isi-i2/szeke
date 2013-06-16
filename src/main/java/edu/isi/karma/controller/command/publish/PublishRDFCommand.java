@@ -88,10 +88,11 @@ public class PublishRDFCommand extends Command {
 		this.dbName=dbName;
 		this.userName=userName;
 		this.password=password;
-		if(modelName==null || modelName.trim().isEmpty())
+		if(modelName==null || modelName.trim().isEmpty()){
 			this.modelName="karma";
-		else
+		}else{
 			this.modelName=modelName;
+		}
 	}
 
 	@Override

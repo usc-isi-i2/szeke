@@ -61,8 +61,9 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 			VWorkspace vWorkspace) {
 		List<String> hNodeIdList = new ArrayList<String>();
 		List<HNodePath> columns = vWorksheet.getColumns();
-		for(HNodePath path:columns)
+		for(HNodePath path:columns){
 			hNodeIdList.add(path.getLeaf().getId());
+		}
 		String alignmentId = AlignmentManager.Instance().constructAlignmentId(vWorkspace.getWorkspace().getId(), 
 				vWorksheet.getId());
 		
@@ -150,8 +151,9 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 
 					if(target.getType() == NodeType.ColumnNode && outEdges.isEmpty()) {
 						linkObj.put(JsonKeys.linkType.name(), JsonValues.holderLink.name());
-						if(link.getKeyType() == LinkKeyInfo.PartOfKey)
+						if(link.getKeyType() == LinkKeyInfo.PartOfKey){
 							linkObj.put(JsonKeys.label.name(), link.getLabel().getLocalName()+"*");
+						}
 					}
 
 					linksArr.put(linkObj);
@@ -308,8 +310,9 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 		nodeObj.put(JsonKeys.nodeType.name(), nodeType);
 		nodeObj.put(JsonKeys.height.name(), height);
 		nodeObj.put(JsonKeys.hNodesCovered.name(), hNodeIdsCoveredByVertex);
-		if (!hNodeId.equals(""))
+		if (!hNodeId.equals("")){
 			nodeObj.put(JsonKeys.hNodeId.name(), hNodeId);
+		}
 		return nodeObj;
 	}
 	
@@ -321,12 +324,15 @@ public class SVGAlignmentUpdate_ForceKarmaLayout extends AbstractUpdate {
 		linkObj.put(JsonKeys.source.name(), sourceIndex);
 		linkObj.put(JsonKeys.target.name(), targetIndex);
 		linkObj.put(JsonKeys.linkType.name(), linkType);
-		if (!sourceNodeId.equals(""))
+		if (!sourceNodeId.equals("")){
 			linkObj.put(JsonKeys.sourceNodeId.name(), sourceNodeId);
-		if (!targetNodeId.equals(""))
+		}
+		if (!targetNodeId.equals("")){
 			linkObj.put(JsonKeys.targetNodeId.name(), targetNodeId);
-		if (!linkStatus.equals(""))
+		}
+		if (!linkStatus.equals("")){
 			linkObj.put(JsonKeys.linkStatus.name(), linkStatus);
+		}
 		return linkObj;
 	}
 	

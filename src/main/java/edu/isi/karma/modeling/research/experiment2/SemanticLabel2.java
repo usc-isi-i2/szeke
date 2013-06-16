@@ -53,8 +53,12 @@ public class SemanticLabel2{
 	
 	public void print() {
 		String s = "";
-		if (this.nodeUri != null) s += this.nodeUri;
-		if (this.linkUri != null) s += this.linkUri;
+		if (this.nodeUri != null){
+			s += this.nodeUri;
+		}
+		if (this.linkUri != null){
+			s += this.linkUri;
+		}
 		logger.info(s);
 	}
 
@@ -71,23 +75,30 @@ public class SemanticLabel2{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj){
 			return true;
-		if (obj == null)
+		}
+		if (obj == null){
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()){
 			return false;
+		}
 		SemanticLabel2 other = (SemanticLabel2) obj;
 		if (linkUri == null) {
-			if (other.linkUri != null)
+			if (other.linkUri != null){
 				return false;
-		} else if (!linkUri.equalsIgnoreCase(other.linkUri))
+			}
+		} else if (!linkUri.equalsIgnoreCase(other.linkUri)){
 			return false;
+		}
 		if (nodeUri == null) {
-			if (other.nodeUri != null)
+			if (other.nodeUri != null){
 				return false;
-		} else if (!nodeUri.equalsIgnoreCase(other.nodeUri))
+			}
+		} else if (!nodeUri.equalsIgnoreCase(other.nodeUri)){
 			return false;
+		}
 		return true;
 	}
 

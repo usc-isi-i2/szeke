@@ -84,9 +84,9 @@ public class GAVRuleParser {
 		if(r.isValid()){
 			// all vars in the head are in the body
 			return r;
-		}
-		else
+		}else{
 			return null;
+		}
 	}	
 
 }

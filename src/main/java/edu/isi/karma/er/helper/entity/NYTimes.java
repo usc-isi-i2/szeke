@@ -73,8 +73,9 @@ public class NYTimes {
 			ent.setSubject(subj.getURI());
 			ent.setName(subj.getProperty(NameSpace.SKOS_PREF_LABEL).getObject().asLiteral().getString());
 			stmt = subj.getProperty(NameSpace.NYTIMES_TOPIC_PAGE);
-			if (stmt != null)
+			if (stmt != null){
 				ent.setTopicPage(stmt.getObject().asResource().getURI());
+			}
 			ent.setSearchLink(subj.getProperty(NameSpace.NYTIMES_SEARCH_API_QUERY).getObject().asLiteral().getString());
 			
 			StmtIterator sit = subj.listProperties(NameSpace.OWL_SAME_AS);
@@ -112,8 +113,9 @@ public class NYTimes {
 			ent.setSubject(subj.getURI());
 			ent.setName(subj.getProperty(NameSpace.SKOS_PREF_LABEL).getObject().asLiteral().getString());
 			stmt = subj.getProperty(NameSpace.NYTIMES_TOPIC_PAGE);
-			if (stmt != null)
+			if (stmt != null){
 				ent.setTopicPage(stmt.getObject().asResource().getURI());
+			}
 			ent.setSearchLink(subj.getProperty(NameSpace.NYTIMES_SEARCH_API_QUERY).getObject().asLiteral().getString());
 			
 			StmtIterator sit = subj.listProperties(NameSpace.OWL_SAME_AS);

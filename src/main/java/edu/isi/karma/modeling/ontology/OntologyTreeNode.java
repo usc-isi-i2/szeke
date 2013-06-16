@@ -65,14 +65,21 @@ public class OntologyTreeNode {
 	}
 	
 	private void printRecursively(OntologyTreeNode node, int level) {
-		for (int i = 0; i < level; i++) System.out.print("---"); System.out.print(" ");
+		for (int i = 0; i < level; i++){
+			System.out.print("---");
+		} System.out.print(" ");
 		System.out.println("URI: " + node.getLabel().getUri());
-		for (int i = 0; i < level; i++) System.out.print("   "); System.out.print(" ");
+		for (int i = 0; i < level; i++){
+			System.out.print("   ");
+		} System.out.print(" ");
 		System.out.println("Label: " + node.getLabel().getRdfsLabel());
-		for (int i = 0; i < level; i++) System.out.print("   "); System.out.print(" ");
+		for (int i = 0; i < level; i++){
+			System.out.print("   ");
+		} System.out.print(" ");
 		System.out.println("Comment: " + node.getLabel().getRdfsComment());
-		if (node.children == null || node.children.size() == 0)
+		if (node.children == null || node.children.size() == 0){
 			return;
+		}
 		for (OntologyTreeNode child : node.getChildren()) {
 			printRecursively(child, level + 1);
 		}

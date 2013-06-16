@@ -42,8 +42,9 @@ public class Util {
 	public static List<Node> getAttributes(DirectedWeightedMultigraph<Node, Link> graph) {
 		List<Node> attributes = new ArrayList<Node>();
 		for (Node n : graph.vertexSet()) {
-			if (n instanceof ColumnNode || n instanceof LiteralNode)
+			if (n instanceof ColumnNode || n instanceof LiteralNode){
 				attributes.add(n);
+			}
 		}
 		Collections.sort(attributes);
 		return attributes;
@@ -63,9 +64,9 @@ public class Util {
 				new HashMap<Node, edu.isi.karma.modeling.research.graph.roek.nlpged.graph.Node>();
 		
 		for (Node n : g.vertexSet()) {
-			if (n instanceof InternalNode)
+			if (n instanceof InternalNode){
 				label = n.getLabel().getUri();
-			else {
+			}else {
 				Set<Link> incomingLinks = g.incomingEdgesOf(n);
 				link = incomingLinks.toArray(new Link[0])[0];
 				domain = link.getSource();
@@ -111,11 +112,11 @@ public class Util {
 		
 		for (Node n : graph.vertexSet()) {
 			nodeToIds.put(n, nodeCount);
-			if (n instanceof InternalNode)
+			if (n instanceof InternalNode){
 				s += "<node id=\"" + nodeCount + 
 						"\"><attr name=\"label\"><string>" + 
 						n.getLabel().getUri() + "</string></attr></node>";
-			else {
+			}else {
 				Set<Link> incomingLinks = graph.incomingEdgesOf(n);
 				if (incomingLinks != null && incomingLinks.size() > 0) { 
 					link = incomingLinks.toArray(new Link[0])[0];

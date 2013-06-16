@@ -83,8 +83,9 @@ public class Worksheet extends RepEntity {
 	}
 
 	public MetadataContainer getMetadataContainer() {
-		if (metadataContainer == null)
+		if (metadataContainer == null){
 			metadataContainer = new MetadataContainer();
+		}
 		return metadataContainer;
 	}
 
@@ -145,21 +146,25 @@ public class Worksheet extends RepEntity {
 	}
 
 	public boolean containService() {
-		if (this.getMetadataContainer() == null)
+		if (this.getMetadataContainer() == null){
 			return false;
+		}
 
-		if (this.getMetadataContainer().getService() == null)
+		if (this.getMetadataContainer().getService() == null){
 			return false;
+		}
 
 		return true;
 	}
 
 	public boolean containSource() {
-		if (this.getMetadataContainer() == null)
+		if (this.getMetadataContainer() == null){
 			return false;
+		}
 
-		if (this.getMetadataContainer().getSource() == null)
+		if (this.getMetadataContainer().getSource() == null){
 			return false;
+		}
 
 		return true;
 	}
