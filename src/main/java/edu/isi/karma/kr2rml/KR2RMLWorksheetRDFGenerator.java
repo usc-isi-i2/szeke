@@ -34,12 +34,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.isi.karma.kr2rml.ErrorReport.Priority;
+import edu.isi.karma.modeling.Namespaces;
 import edu.isi.karma.modeling.Uris;
 import edu.isi.karma.modeling.ontology.OntologyManager;
+import edu.isi.karma.rep.HNode;
 import edu.isi.karma.rep.Node;
 import edu.isi.karma.rep.RepFactory;
 import edu.isi.karma.rep.Row;
@@ -53,8 +56,10 @@ public class KR2RMLWorksheetRDFGenerator {
 	private String outputFileName;
 	private OntologyManager ontMgr;
 	private ErrorReport errorReport;
+	private boolean addColumnContextInformation;
 	private KR2RMLMappingAuxillaryInformation auxInfo;
 	private Map<String, String> prefixToNamespaceMap;
+	private Map<String, String> hNodeToContextUriMap;
 	
 	private PrintWriter outWriter;
 	
@@ -62,7 +67,7 @@ public class KR2RMLWorksheetRDFGenerator {
 	public static String BLANK_NODE_PREFIX = "_:";
 
 	public KR2RMLWorksheetRDFGenerator(Worksheet worksheet, RepFactory factory, 
-			OntologyManager ontMgr, String outputFileName, 
+			OntologyManager ontMgr, String outputFileName, boolean addColumnContextInformation, 
 			KR2RMLMappingAuxillaryInformation auxInfo, ErrorReport errorReport) {
 		super();
 		this.ontMgr = ontMgr;
@@ -72,13 +77,15 @@ public class KR2RMLWorksheetRDFGenerator {
 		this.outputFileName = outputFileName;
 		this.errorReport = errorReport;
 		this.prefixToNamespaceMap = new HashMap<String, String>();
+		this.hNodeToContextUriMap = new HashMap<String, String>();
+		this.addColumnContextInformation = addColumnContextInformation;
 		
 		populatePrefixToNamespaceMap();
 	}
 	
 	public KR2RMLWorksheetRDFGenerator(Worksheet worksheet, RepFactory factory, 
 			OntologyManager ontMgr, PrintWriter writer, KR2RMLMappingAuxillaryInformation auxInfo, 
-			ErrorReport errorReport) {
+			ErrorReport errorReport, boolean addColumnContextInformation) {
 		super();
 		this.ontMgr = ontMgr;
 		this.auxInfo = auxInfo;
@@ -87,6 +94,8 @@ public class KR2RMLWorksheetRDFGenerator {
 		this.outWriter = writer;;
 		this.errorReport = errorReport;
 		this.prefixToNamespaceMap = new HashMap<String, String>();
+		this.hNodeToContextUriMap = new HashMap<String, String>();
+		this.addColumnContextInformation = addColumnContextInformation;
 	
 		populatePrefixToNamespaceMap();
 	}
@@ -97,11 +106,11 @@ public class KR2RMLWorksheetRDFGenerator {
 		// Prepare the output writer
 		BufferedWriter bw = null;
 		try {
-			if(this.outputFileName != null){
+			if(this.outWriter == null && this.outputFileName != null){
 				bw = new BufferedWriter(
 						new OutputStreamWriter(new FileOutputStream(this.outputFileName),"UTF-8"));
 				outWriter = new PrintWriter (bw);
-			}else{
+			} else if (this.outWriter == null && this.outputFileName == null) {
 				outWriter = new PrintWriter (System.out);			
 			}
 			
@@ -112,8 +121,10 @@ public class KR2RMLWorksheetRDFGenerator {
 			for (Row row:rows) {
 				Set<String> rowTriplesSet = new HashSet<String>();
 				Set<String> rowPredicatesCovered = new HashSet<String>();
+				Set<String> predicatesSuccessful = new HashSet<String>();
 				Map<String, ReportMessage> predicatesFailed = new HashMap<String,ReportMessage>();
-				generateTriplesForRow(row, rowTriplesSet, rowPredicatesCovered, predicatesFailed);
+				generateTriplesForRow(row, rowTriplesSet, rowPredicatesCovered, predicatesFailed, predicatesSuccessful);
+
 				outWriter.println();
 				if (i++%2000 == 0)
 					logger.info("Done processing " + i + " rows");
@@ -121,6 +132,12 @@ public class KR2RMLWorksheetRDFGenerator {
 					this.errorReport.addReportMessage(errMsg);
 				}
 			}
+			
+			// Generate column provenance information if required
+			if (addColumnContextInformation) {
+				generateColumnProvenanceInformation();
+			}
+				
 		} finally {
 			outWriter.flush();
 			outWriter.close();
@@ -132,7 +149,8 @@ public class KR2RMLWorksheetRDFGenerator {
 	}
 	
 	private void generateTriplesForRow(Row row, Set<String> existingTopRowTriples, 
-			Set<String> predicatesCovered, Map<String, ReportMessage> predicatesFailed) {
+			Set<String> predicatesCovered, Map<String, ReportMessage> predicatesFailed, 
+			Set<String> predicatesSuccessful) {
 		Map<String, Node> rowNodes = row.getNodesMap();
 		for (String hNodeId:rowNodes.keySet()) {
 			Node rowNode = rowNodes.get(hNodeId);
@@ -142,19 +160,19 @@ public class KR2RMLWorksheetRDFGenerator {
 					for (Row nestedTableRow:rowNodeTable.getRows(0, rowNodeTable.getNumRows())) {
 						Set<String> rowPredicatesCovered = new HashSet<String>();
 						generateTriplesForRow(nestedTableRow, existingTopRowTriples, 
-								rowPredicatesCovered, predicatesFailed);
+								rowPredicatesCovered, predicatesFailed, predicatesSuccessful);
 					}
 				}
 			} else {
 				generateTriplesForCell(rowNode, existingTopRowTriples, hNodeId, 
-						predicatesCovered, predicatesFailed);
+						predicatesCovered, predicatesFailed, predicatesSuccessful);
 			}
 		}
 	}
 	
 	private void generateTriplesForCell(Node node, Set<String> existingTopRowTriples, 
 			String hNodeId, Set<String> predicatesCovered, 
-			Map<String, ReportMessage> predicatesFailed) {
+			Map<String, ReportMessage> predicatesFailed, Set<String> predicatesSuccessful) {
 		Map<String, String> columnValues = node.getColumnValues();
 		List<PredicateObjectMap> pomList = this.auxInfo.getHNodeIdToPredObjLinks().get(hNodeId);
 		if (pomList == null || pomList.isEmpty())
@@ -174,7 +192,7 @@ public class KR2RMLWorksheetRDFGenerator {
 			for (PredicateObjectMap pom:trMap.getPredicateObjectMaps()) {
 				if (!predicatesCovered.contains(pom.getPredicate().getId())) {
 					generatePropertyForPredObjMap(pom, columnValues, predicatesCovered, 
-							existingTopRowTriples, hNodeId, predicatesFailed);
+							existingTopRowTriples, hNodeId, predicatesFailed, predicatesSuccessful);
 				}
 			}
 			
@@ -209,10 +227,30 @@ public class KR2RMLWorksheetRDFGenerator {
 	private void generatePropertyForPredObjMap(PredicateObjectMap pom,
 			Map<String, String> columnValues, Set<String> predicatesCovered, 
 			Set<String> existingTopRowTriples, String hNodeId, 
-			Map<String, ReportMessage> predicatesFailed) {
+			Map<String, ReportMessage> predicatesFailed, Set<String> predicatesSuccessful) {
+		SubjectMap subjMap = pom.getTriplesMap().getSubject();
+		
+		// Generate the predicate RDF
+		String predicateUri = "";
+		try {
+			predicateUri = getTemplateTermSetPopulatedWithValues(columnValues,  
+					pom.getPredicate().getTemplate()).replaceAll(" ", "");
+			if (predicateUri.equals(Uris.CLASS_INSTANCE_LINK_URI))
+				return;
+		} catch (ValueNotFoundKarmaException ve) {
+			ReportMessage msg = createReportMessage("Could not generate predicate's URI for <i>predicate:" + 
+					pom.getPredicate().getTemplate().toString().replaceAll("<", "{").replaceAll(">", "}") + 
+					", subject node: " + subjMap.getId() + "</i>",  ve, 
+					this.factory.getHNode(hNodeId).getColumnName());
+			if (!predicatesSuccessful.contains(pom.getPredicate().getId()))
+				predicatesFailed.put(pom.getPredicate().getId(), msg);
+			return;
+		} catch (NoValueFoundInNodeException e) {
+			logger.debug("No value found in a node required to generate predicate's URI.");
+			return;
+		}
 		
 		// Generate subject RDF
-		SubjectMap subjMap = pom.getTriplesMap().getSubject();
 		String subjUri = "";
 		try {
 			subjUri = generateSubjectMapRDF(subjMap, existingTopRowTriples, columnValues);
@@ -221,27 +259,12 @@ public class KR2RMLWorksheetRDFGenerator {
 					 pom.getPredicate().getTemplate().toString().replaceAll("<", "{").replaceAll(">", "}") +
 					 ", subject node: " + subjMap.getId()+"</i>", ve, 
 					 this.factory.getHNode(hNodeId).getColumnName());
-			predicatesFailed.put(pom.getPredicate().getId(), msg);
+			if (!predicatesSuccessful.contains(pom.getPredicate().getId()))
+				predicatesFailed.put(pom.getPredicate().getId(), msg);
 			return;
 		} catch (NoValueFoundInNodeException e) {
 			logger.debug("No value found in a node required to generate subject's RDF or URI.");
-		}
-		
-		
-		// Generate the predicate RDF
-		String predicateUri = "";
-		try {
-			predicateUri = getTemplateTermSetPopulatedWithValues(columnValues,  
-					pom.getPredicate().getTemplate()).replaceAll(" ", "");
-		} catch (ValueNotFoundKarmaException ve) {
-			ReportMessage msg = createReportMessage("Could not generate predicate's URI for <i>predicate:" + 
-					pom.getPredicate().getTemplate().toString().replaceAll("<", "{").replaceAll(">", "}") + 
-					", subject node: " + subjMap.getId() + "</i>",  ve, 
-					this.factory.getHNode(hNodeId).getColumnName());
-			predicatesFailed.put(pom.getPredicate().getId(), msg);
 			return;
-		} catch (NoValueFoundInNodeException e) {
-			logger.debug("No value found in a node required to generate predicate's URI.");
 		}
 		
 		// Object property
@@ -259,10 +282,12 @@ public class KR2RMLWorksheetRDFGenerator {
 						.replaceAll("<", "{").replaceAll(">", "}") + 
 						", subject node: " + pom.getTriplesMap().getSubject().getId()+"</i>", ve
 						, this.factory.getHNode(hNodeId).getColumnName());
-				predicatesFailed.put(pom.getPredicate().getId(), msg);
+				if (!predicatesSuccessful.contains(pom.getPredicate().getId()))
+					predicatesFailed.put(pom.getPredicate().getId(), msg);
 				return;
 			} catch (NoValueFoundInNodeException e) {
 				logger.debug("No value found in a node required to generate object's URI for a predicate.");
+				return;
 			}
 			
 			String triple = constructTripleWithURIObject(subjUri, predicateUri, objUri);
@@ -284,18 +309,34 @@ public class KR2RMLWorksheetRDFGenerator {
 						pom.getPredicate().getTemplate().toString().replaceAll("<", "{").replaceAll(">", "}") +
 						", subject node: " + subjMap.getId()+"</i>", ve, 
 						this.factory.getHNode(hNodeId).getColumnName());
-				predicatesFailed.put(pom.getPredicate().getId(), msg);
+				if (!predicatesSuccessful.contains(pom.getPredicate().getId()))
+					predicatesFailed.put(pom.getPredicate().getId(), msg);
 				return;
 			} catch (NoValueFoundInNodeException e) {
 				logger.debug("No value found in a node required to generate value for a predicate.");
+				return;
 			}
-			String triple = constructTripleWithLiteralObject(subjUri, predicateUri, value, "");
-			if (!existingTopRowTriples.contains(triple)) {
-				existingTopRowTriples.add(triple);
-				outWriter.println(triple);
+			if (addColumnContextInformation) {
+				TemplateTermSet templ = pom.getObject().getTemplate();
+				if (templ.isSingleColumnTerm()) {
+					String hNodeId_val = templ.getAllTerms().get(0).getTemplateTermValue();
+					String quad = constructQuadWithLiteralObject(subjUri, predicateUri, value,
+							"", hNodeId_val);
+					if (!existingTopRowTriples.contains(quad)) {
+						existingTopRowTriples.add(quad);
+						outWriter.println(quad);
+					}
+				}
+			} else {
+				String triple = constructTripleWithLiteralObject(subjUri, predicateUri, value, "");
+				if (!existingTopRowTriples.contains(triple)) {
+					existingTopRowTriples.add(triple);
+					outWriter.println(triple);
+				}
 			}
 		}
 		predicatesCovered.add(pom.getPredicate().getId());
+		predicatesSuccessful.add(pom.getPredicate().getId());
 		if (predicatesFailed.containsKey(pom.getPredicate().getId()))
 			predicatesFailed.remove(pom.getPredicate().getId());
 	}
@@ -351,7 +392,7 @@ public class KR2RMLWorksheetRDFGenerator {
 		value = value.replaceAll("\\\\", "\\\\\\\\");
 		value = value.replaceAll("\"", "\\\\\"");
 		
-		// Take care of the new lines that may appear iin text
+		// Take care of the new lines that may appear in text
 		if (value.contains("\n") || value.contains("\r")) {
 			value = "\"\"\"" + value + "\"\"\"";
 		} else {
@@ -365,6 +406,18 @@ public class KR2RMLWorksheetRDFGenerator {
 		}
 		return subjUri + " " + getNormalizedPredicateUri(predicateUri) + " " + value + " .";
 	}
+	
+	private String constructQuadWithLiteralObject(String subjUri, String predicateUri, 
+			String value, String literalType, String valueHNodeId) {
+		String triple = constructTripleWithLiteralObject(subjUri, predicateUri, value, literalType);
+		String columnContextUri = getColumnContextUri(valueHNodeId);
+		if (triple.length() > 2)
+			return triple.substring(0, triple.length()-1) + "<" + columnContextUri + "> ." ;
+		else
+			return "";
+	}
+
+	
 
 	private String getBlankNodeUri(String subjMapid, Map<String, String> columnValues) 
 			throws ValueNotFoundKarmaException {
@@ -417,7 +470,7 @@ public class KR2RMLWorksheetRDFGenerator {
 					}
 				} else {
 					String columnName = this.factory.getHNode(hNodeId).getColumnName();
-					throw new ValueNotFoundKarmaException("Could not retrieve value from column: " + 
+					throw new ValueNotFoundKarmaException("Could not retrieve value of column: " + 
 							columnName + ".", hNodeId);
 				}
 			}
@@ -449,6 +502,61 @@ public class KR2RMLWorksheetRDFGenerator {
 			String prefix = prefixMapOntMgr.get(ns);
 			this.prefixToNamespaceMap.put(prefix, ns);
 		}
+	}
+	
+	private String getColumnContextUri (String hNodeId) {
+		if (hNodeToContextUriMap.containsKey(hNodeId))
+			return hNodeToContextUriMap.get(hNodeId);
+		else {
+			String randomId = RandomStringUtils.randomAlphanumeric(10);
+			String uri = Namespaces.KARMA_DEV + randomId + "_" + hNodeId;
+			hNodeToContextUriMap.put(hNodeId, uri);
+			return uri;
+		}
+	}
+	
+	private void generateColumnProvenanceInformation() {
+		for (String hNodeId:hNodeToContextUriMap.keySet()) {
+			List<String> columnTriples = getColumnContextTriples(hNodeId);
+			for (String triple:columnTriples) {
+				outWriter.println(triple);
+			}
+			
+			// Generate wasDerivedFrom property if required
+			HNode hNode = factory.getHNode(hNodeId);
+			if (hNode.isDerivedFromAnotherColumn()) {
+				HNode originalHNode = factory.getHNode(hNode.getOriginalColumnHNodeId());
+				if (originalHNode != null) {
+					columnTriples = getColumnContextTriples(originalHNode.getId());
+					for (String triple:columnTriples) {
+						outWriter.println(triple);
+					}
+					
+					String derivedFromTriple = constructTripleWithURIObject(
+							hNodeToContextUriMap.get(hNodeId), Uris.PROV_WAS_DERIVED_FROM_URI, 
+							getColumnContextUri(originalHNode.getId()));
+					outWriter.println(derivedFromTriple);
+				}
+			}
+		}
+	}
+	
+	private List<String> getColumnContextTriples(String hNodeId) {
+		List<String> colContextTriples = new ArrayList<String>();
+		String colUri = getColumnContextUri(hNodeId);
+		
+		// Generate the type
+		String typeTriple = constructTripleWithURIObject(colUri, Uris.RDF_TYPE_URI, 
+				Uris.PROV_ENTITY_URI);
+		colContextTriples.add(typeTriple);
+		
+		// Generate the label
+		HNode hNode = factory.getHNode(hNodeId);
+		String labelTriple = constructTripleWithLiteralObject(colUri, Uris.RDFS_LABEL_URI, 
+				hNode.getColumnName(), "");
+		colContextTriples.add(labelTriple);
+		
+		return colContextTriples;
 	}
 }
 
