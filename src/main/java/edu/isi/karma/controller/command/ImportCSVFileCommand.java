@@ -158,6 +158,8 @@ public class ImportCSVFileCommand extends CommandWithPreview {
 		// Set the delimiter
 		if (request.getParameter("delimiter").equals("comma"))
 			setDelimiter(',');
+		else if (request.getParameter("delimiter").equals("semi colon"))
+			setDelimiter(';');
 		else if (request.getParameter("delimiter").equals("tab"))
 			setDelimiter('\t');
 		else if (request.getParameter("delimiter").equals("space"))
