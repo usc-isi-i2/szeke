@@ -67,6 +67,11 @@ function styleAndAssignHandlersToWorksheetOptionButtons() {
         });
         
     });
+	 
+//	$('button#saveR2RMLToTripleStore').click(function(event){
+//		handlePublishModelToStoreButton(event);
+//	});
+	 
     $("button#mdbExport").click(function(){
         optionsDiv.hide();
         var info = new Object();
@@ -158,6 +163,17 @@ function styleAndAssignHandlersToWorksheetOptionButtons() {
 		});
 	});
 	
+	
+	$("button#showR2RMLFromTripleStore").click(function(event) {
+		var dialog = $('#FetchR2RMLModelDialogBox');
+		$('#txtR2RML_URL_fetch').val('http://'+window.location.host + '/openrdf-sesame/repositories/karma_models');
+		$('#browseRepo_fetch').attr('href', 'http://'+window.location.host + '/openrdf-workbench/repositories/karma_models/summary');
+		dialog.dialog(
+			{ title: 'SPARQL End point',
+				buttons: { "Cancel": function() { $(this).dialog("close"); }, 
+					"Fetch": renderR2RMLModels }, width: 400, height: 170});
+	});
+	
 	$("button#showAutoModel").click(function(){
 		optionsDiv.hide();
 		 //alert("test");
@@ -232,9 +248,11 @@ function styleAndAssignHandlersToWorksheetOptionButtons() {
 		showHideRdfInfo();
 		getRDFPreferences();
 		var rdfDialogBox = $("div#PublishRDFDialogBox");
+		$('#rdfSPAQRLEndPoint').val('http://'+window.location.host + '/openrdf-sesame/repositories/karma_data');
+		$('#rdfBrowseRepo').attr('href', 'http://'+window.location.host + '/openrdf-workbench/repositories/karma_data/summary');
 		// Show the dialog box
-		rdfDialogBox.dialog({width: 300
-			, buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": publishRDFFunction }});
+		rdfDialogBox.dialog({width: 400, title:'Publish RDF',
+			buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": publishRDFFunction }});
 
 	});
 
@@ -366,9 +384,12 @@ function styleAndAssignHandlersToWorksheetOptionButtons() {
     // in pytransform.js
     $("button#pyTransform").click(openPyTransformDialogBox);
 
-    $("button#publishR2RML").click(function(){
+    $("button#publishR2RML").click(function(event){
         optionsDiv.hide();
+        handlePublishModelToStoreButton(event);
 
+        
+        /*
         var info = new Object();
         info["vWorksheetId"] = optionsDiv.data("worksheetId");
         info["workspaceId"] = $.workspaceGlobalInformation.id;
@@ -392,9 +413,58 @@ function styleAndAssignHandlersToWorksheetOptionButtons() {
                     hideLoading(info["vWorksheetId"]);
                 }
         });
+        */
 
     });
 
+    $('#serviceOptions').click( function() {
+        $('#worksheetServiceOptions').toggle();
+    });
+
+
+    $('#serviceRequestMethod').change(function() {
+        if ($(this).attr('value') == "POST") {
+            $("#servicePostOptions").show();
+        } else {
+            $("#servicePostOptions").hide();
+        }
+    });
+
+    $("#setWorksheetProperties").click(function(){
+        optionsDiv.hide();
+        var settingsBox = $("div#setPropertiesDialog");
+
+        // Show the dialog box
+        settingsBox.dialog({width: 300, title: "Set Properties"
+            , buttons: { "Cancel": function() { $(this).dialog("close"); }, "Submit": submitWorksheetProperties }});
+
+        // Close the service options
+        if ($('#worksheetServiceOptions').is(':visible')) {
+            $('#serviceOptions').trigger('click');
+        }
+
+        // Check for existing values
+        fetchExistingWorksheetOptions(optionsDiv.data("worksheetId"));
+    });
+    
+    $('body').delegate('.smallChart', 'click', function() {
+    	var pid = $(this).parent().attr('id');
+    	//console.log(pid);
+    	var chartTitle = drawBigChart(pid);
+    	var dialogBox = $("div#drawBigChartId");
+		dialogBox.dialog({width: 550, title: chartTitle
+			, buttons: { "Close": function() { $(this).dialog("close"); } }})
+    });
+    
+    /*
+    $("div#smallChart").click(function(){
+    	alert("Reached here smallchart");
+		var rdfDialogBox = $("div#PublishRDFDialogBox");
+		rdfDialogBox.dialog({width: 700
+			, buttons: { "Ok": function() { $(this).dialog("close"); } });
+
+	});*/
+    
 }
 
 function openWorksheetOptions(event) {
@@ -586,6 +656,8 @@ function styleAndAssignHandlersToColumnHeadingMenu() {
     // Assign handler to the add column button (in table_manipulation.js)
     $("button#addColumnButton").click(openAddNewColumnDialog);
 
+    // Assign handler to the show chart button (in cleaning-charts.js)
+    $("button#showChartButton").click(showChartButtonHandler);
 }
 
 function splitColumnByComma() {
@@ -721,13 +793,156 @@ function styleAndAssignHandlersToMergeButton() {
 	});
 }
 
+function submitWorksheetProperties() {
+    // Prepare the input data
+    var worksheetProps = new Object();
+    worksheetProps["graphName"] = $("#graphNameInput").val();
+
+    // Set service options if the window is visible
+    if ($('#worksheetServiceOptions').is(':visible')) {
+        worksheetProps["hasServiceProperties"] = true;
+        worksheetProps["serviceUrl"] = $("#serviceUrlInput").val();
+        worksheetProps["serviceRequestMethod"] = $("#serviceRequestMethod option:selected").text();
+        if ($("#serviceRequestMethod option:selected").text() == "POST") {
+            worksheetProps["serviceDataPostMethod"] = $("input:radio[name=serviceDataPostMethod]:checked").val();
+        }
+
+    } else {
+        worksheetProps["hasServiceProperties"] = false;
+    }
+
+    var info = new Object();
+    info["workspaceId"] = $.workspaceGlobalInformation.id;
+    info["command"] = "SetWorksheetPropertiesCommand";
+
+    var newInfo = [];   // for input parameters
+    newInfo.push(getParamObject("vWorksheetId", $("div#WorksheetOptionsDiv").data("worksheetId") ,"vWorksheetId"));
+    newInfo.push(getParamObject("properties", worksheetProps, "other"));
+    info["newInfo"] = JSON.stringify(newInfo);
+    // Store the data to be shown later when the dialog is opened again
+    $("div#" + info["vWorksheetId"]).data("worksheetProperties", worksheetProps);
+
+    var returned = $.ajax({
+        url: "RequestController",
+        type: "POST",
+        data : info,
+        dataType : "json",
+        complete :
+            function (xhr, textStatus) {
+                //alert(xhr.responseText);
+                var json = $.parseJSON(xhr.responseText);
+                parse(json);
+            },
+        error :
+            function (xhr, textStatus) {
+                $.sticky("Error occurred while setting properties!");
+            }
+    });
+    $("div#setPropertiesDialog").dialog("close");
+}
 
 
+function fetchExistingWorksheetOptions(worksheetId) {
+    // Uncheck the service options
+    if ($("#serviceOptions").is(":checked")) {
+        $("#serviceOptions").trigger("click");
+    }
+    $('#serviceRequestMethod').val('GET')
+        .trigger('change');
+    $("#servicePostOptions").hide();
 
+    var info = new Object();
+    info["workspaceId"] = $.workspaceGlobalInformation.id;
+    info["command"] = "FetchExistingWorksheetPropertiesCommand";
+    info["vWorksheetId"] = worksheetId;
 
+    var returned = $.ajax({
+        url: "RequestController",
+        type: "POST",
+        data : info,
+        dataType : "json",
+        complete :
+            function (xhr, textStatus) {
+                var json = $.parseJSON(xhr.responseText);
+                var props = json["elements"][0]["properties"];
 
+                // Set model name
+                if (props["graphName"] != null) {
+                    $("#graphNameInput").val(props["graphName"]);
+                } else {
+                    $("#graphNameInput").val("");
+                }
+                // Set service options if present
+                if (props["hasServiceProperties"]) {
+                    // Select the service option checkbox
+                    $("#serviceOptions").trigger("click");
 
+                    // Set the service URL
+                    if (props["serviceUrl"] != null) {
+                        $("#serviceUrlInput").val(props["serviceUrl"]);
+                    } else {
+                        $("#serviceUrlInput").val("");
+                    }
 
+                    // Set the request method
+                    var index = (props["serviceRequestMethod"] === "GET") ? 0 : 1;
+                    $('#serviceRequestMethod option').eq(index).prop('selected', true);
 
+                    // Set the POST request invocation method
+                    if (props["serviceRequestMethod"] === "POST") {
+                        $("#servicePostOptions").show();
+                        $(":radio[value=" +props["serviceDataPostMethod"]+"]").prop('checked',true);
+                    }
 
+                } else {
+                    $("#serviceUrlInput").val("");
+                    $('#serviceRequestMethod option').eq(0).prop('selected', true);
+                }
+            },
+        error :
+            function (xhr, textStatus) {
+                $.sticky("Error occurred while fetching worksheet properties!");
+            }
+    });
+}
 
+function renderR2RMLModels() {
+	var optionsDiv = $("div#WorksheetOptionsDiv");
+	$('#FetchR2RMLModelDialogBox').dialog("close");
+	var info = new Object();
+	info["vWorksheetId"] = optionsDiv.data("worksheetId");
+	info["workspaceId"] = $.workspaceGlobalInformation.id;
+	info["command"] = "FetchR2RMLModelsCommand";
+	info['tripleStoreUrl'] = $('#txtR2RML_URL_fetch').val();
+	
+	var returned = $.ajax({
+	   	url: "RequestController", 
+	   	type: "POST",
+	   	data : info,
+	   	dataType : "json",
+	   	complete : 
+	   		function (xhr, textStatus) {
+	    		var json = $.parseJSON(xhr.responseText);
+	    		parse(json);
+	    		hideLoading(info["vWorksheetId"]);
+		   	},
+		error :
+			function (xhr, textStatus) {
+	   			alert("Error occured while generating the automatic model!" + textStatus);
+	   			hideLoading(info["vWorksheetId"]);
+		   	}		   
+	});				
+}
+
+/*function drawBigChart() {
+	var bigChartDiv = $("div#drawBigChartId");
+
+	$("div#smallChart").click(function(){
+		var rdfDialogBox = $("div#PublishRDFDialogBox");
+		rdfDialogBox.dialog({width: 700
+			, buttons: { "Ok": function() { $(this).dialog("close"); } });
+
+	});
+	
+	
+}*/

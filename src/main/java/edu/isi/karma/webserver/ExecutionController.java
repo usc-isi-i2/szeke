@@ -28,71 +28,53 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.isi.karma.controller.command.AddColumnCommand;
-import edu.isi.karma.controller.command.AddColumnCommandFactory;
-import edu.isi.karma.controller.command.ApplyHistoryFromR2RMLModelCommand;
-import edu.isi.karma.controller.command.ApplyHistoryFromR2RMLModelCommandFactory;
-import edu.isi.karma.controller.command.ApplyWorksheetHistoryCommand;
-import edu.isi.karma.controller.command.ApplyWorksheetHistoryCommandFactory;
 import edu.isi.karma.controller.command.CloseWorkspaceCommand;
 import edu.isi.karma.controller.command.CloseWorkspaceCommandFactory;
 import edu.isi.karma.controller.command.Command;
 import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.CommandFactory;
 import edu.isi.karma.controller.command.CommandWithPreview;
-import edu.isi.karma.controller.command.EditCellCommand;
-import edu.isi.karma.controller.command.EditCellCommandFactory;
 import edu.isi.karma.controller.command.FetchPreferencesCommand;
 import edu.isi.karma.controller.command.FetchPreferencesCommandFactory;
-import edu.isi.karma.controller.command.ImportCSVFileCommand;
-import edu.isi.karma.controller.command.ImportCSVFileCommandFactory;
-import edu.isi.karma.controller.command.ImportDatabaseTableCommand;
-import edu.isi.karma.controller.command.ImportDatabaseTableCommandFactory;
-import edu.isi.karma.controller.command.ImportExcelFileCommand;
-import edu.isi.karma.controller.command.ImportExcelFileCommandFactory;
-import edu.isi.karma.controller.command.ImportJSONFileCommand;
-import edu.isi.karma.controller.command.ImportJSONFileCommandFactory;
-import edu.isi.karma.controller.command.ImportOntologyCommand;
-import edu.isi.karma.controller.command.ImportOntologyCommandFactory;
-import edu.isi.karma.controller.command.ImportServiceCommand;
-import edu.isi.karma.controller.command.ImportServiceCommandFactory;
-import edu.isi.karma.controller.command.ImportUnionResultCommand;
-import edu.isi.karma.controller.command.ImportUnionResultCommandFactory;
-import edu.isi.karma.controller.command.ImportXMLFileCommand;
-import edu.isi.karma.controller.command.ImportXMLFileCommandFactory;
 import edu.isi.karma.controller.command.JSONInputCommandFactory;
-import edu.isi.karma.controller.command.MultipleValueEditColumnCommand;
-import edu.isi.karma.controller.command.MultipleValueEditColumnCommandFactory;
-import edu.isi.karma.controller.command.RenameColumnCommand;
-import edu.isi.karma.controller.command.RenameColumnCommandFactory;
 import edu.isi.karma.controller.command.ResetKarmaCommand;
 import edu.isi.karma.controller.command.ResetKarmaCommandFactory;
-import edu.isi.karma.controller.command.SplitByCommaCommand;
-import edu.isi.karma.controller.command.SplitByCommaCommandFactory;
-import edu.isi.karma.controller.command.TablePagerCommand;
-import edu.isi.karma.controller.command.TablePagerCommandFactory;
-import edu.isi.karma.controller.command.TablePagerResizeCommand;
-import edu.isi.karma.controller.command.TablePagerResizeCommandFactory;
 import edu.isi.karma.controller.command.UndoRedoCommand;
 import edu.isi.karma.controller.command.UndoRedoCommandFactory;
 import edu.isi.karma.controller.command.alignment.AddUserLinkToAlignmentCommand;
 import edu.isi.karma.controller.command.alignment.AddUserLinkToAlignmentCommandFactory;
+import edu.isi.karma.controller.command.alignment.ApplyModelFromTripleStoreCommand;
+import edu.isi.karma.controller.command.alignment.ApplyModelFromTripleStoreCommandFactory;
+import edu.isi.karma.controller.command.alignment.ChangeInternalNodeLinksCommand;
+import edu.isi.karma.controller.command.alignment.ChangeInternalNodeLinksCommandFactory;
+import edu.isi.karma.controller.command.alignment.CreateNewModelCommand;
+import edu.isi.karma.controller.command.alignment.CreateNewModelCommandFactory;
+import edu.isi.karma.controller.command.alignment.FetchExistingModelsForWorksheetCommand;
+import edu.isi.karma.controller.command.alignment.FetchExistingModelsForWorksheetCommandFactory;
+import edu.isi.karma.controller.command.alignment.FetchR2RMLModelsCommand;
+import edu.isi.karma.controller.command.alignment.FetchR2RMLModelsCommandFactory;
 import edu.isi.karma.controller.command.alignment.GenerateR2RMLModelCommand;
 import edu.isi.karma.controller.command.alignment.GenerateR2RMLModelCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetAlternativeLinksCommand;
 import edu.isi.karma.controller.command.alignment.GetAlternativeLinksCommandFactory;
+import edu.isi.karma.controller.command.alignment.GetCurrentLinksOfInternalNodeCommand;
+import edu.isi.karma.controller.command.alignment.GetCurrentLinksOfInternalNodeCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetDataPropertiesForClassCommand;
 import edu.isi.karma.controller.command.alignment.GetDataPropertiesForClassCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetDataPropertyHierarchyCommand;
 import edu.isi.karma.controller.command.alignment.GetDataPropertyHierarchyCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetDomainsForDataPropertyCommand;
 import edu.isi.karma.controller.command.alignment.GetDomainsForDataPropertyCommandFactory;
+import edu.isi.karma.controller.command.alignment.GetInternalNodesListOfAlignmentCommand;
+import edu.isi.karma.controller.command.alignment.GetInternalNodesListOfAlignmentCommandFactory;
+import edu.isi.karma.controller.command.alignment.GetLinksOfAlignmentCommand;
+import edu.isi.karma.controller.command.alignment.GetLinksOfAlignmentCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetOntologyClassHierarchyCommand;
 import edu.isi.karma.controller.command.alignment.GetOntologyClassHierarchyCommandFactory;
 import edu.isi.karma.controller.command.alignment.GetPropertiesAndClassesList;
 import edu.isi.karma.controller.command.alignment.GetPropertiesAndClassesListCommandFactory;
-import edu.isi.karma.controller.command.alignment.ResetModelCommand;
-import edu.isi.karma.controller.command.alignment.ResetModelCommandFactory;
+import edu.isi.karma.controller.command.alignment.InvokeDataMiningServiceCommand;
+import edu.isi.karma.controller.command.alignment.InvokeDataMiningServiceCommandFactory;
 import edu.isi.karma.controller.command.alignment.SetMetaPropertyCommand;
 import edu.isi.karma.controller.command.alignment.SetMetaPropertyCommandFactory;
 import edu.isi.karma.controller.command.alignment.SetSemanticTypeCommand;
@@ -107,8 +89,26 @@ import edu.isi.karma.controller.command.cleaning.FetchTransformingDataCommand;
 import edu.isi.karma.controller.command.cleaning.FetchTransformingDataFactory;
 import edu.isi.karma.controller.command.cleaning.GenerateCleaningRulesCommand;
 import edu.isi.karma.controller.command.cleaning.GenerateCleaningRulesCommandFactory;
+import edu.isi.karma.controller.command.cleaning.InvokeCleaningServiceCommand;
+import edu.isi.karma.controller.command.cleaning.InvokeCleaningServiceCommandFactory;
 import edu.isi.karma.controller.command.cleaning.SubmitCleaningCommand;
 import edu.isi.karma.controller.command.cleaning.SubmitCleaningCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportCSVFileCommand;
+import edu.isi.karma.controller.command.importdata.ImportCSVFileCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportDatabaseTableCommand;
+import edu.isi.karma.controller.command.importdata.ImportDatabaseTableCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportExcelFileCommand;
+import edu.isi.karma.controller.command.importdata.ImportExcelFileCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportJSONFileCommand;
+import edu.isi.karma.controller.command.importdata.ImportJSONFileCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportOntologyCommand;
+import edu.isi.karma.controller.command.importdata.ImportOntologyCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportServiceCommand;
+import edu.isi.karma.controller.command.importdata.ImportServiceCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportUnionResultCommand;
+import edu.isi.karma.controller.command.importdata.ImportUnionResultCommandFactory;
+import edu.isi.karma.controller.command.importdata.ImportXMLFileCommand;
+import edu.isi.karma.controller.command.importdata.ImportXMLFileCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishCSVCommand;
 import edu.isi.karma.controller.command.publish.PublishCSVCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishDatabaseCommand;
@@ -125,6 +125,8 @@ import edu.isi.karma.controller.command.publish.PublishSpatialDataCommand;
 import edu.isi.karma.controller.command.publish.PublishSpatialDataCommandFactory;
 import edu.isi.karma.controller.command.publish.PublishWorksheetHistoryCommand;
 import edu.isi.karma.controller.command.publish.PublishWorksheetHistoryCommandFactory;
+import edu.isi.karma.controller.command.reconciliation.InvokeRubenReconciliationService;
+import edu.isi.karma.controller.command.reconciliation.InvokeRubenReconciliationServiceFactory;
 import edu.isi.karma.controller.command.service.InvokeServiceCommand;
 import edu.isi.karma.controller.command.service.InvokeServiceCommandFactory;
 import edu.isi.karma.controller.command.service.PopulateCommand;
@@ -135,8 +137,31 @@ import edu.isi.karma.controller.command.transformation.PreviewPythonTransformati
 import edu.isi.karma.controller.command.transformation.PreviewPythonTransformationResultsCommandFactory;
 import edu.isi.karma.controller.command.transformation.SubmitPythonTransformationCommand;
 import edu.isi.karma.controller.command.transformation.SubmitPythonTransformationCommandFactory;
+import edu.isi.karma.controller.command.worksheet.AddColumnCommand;
+import edu.isi.karma.controller.command.worksheet.AddColumnCommandFactory;
+import edu.isi.karma.controller.command.worksheet.ApplyHistoryFromR2RMLModelCommand;
+import edu.isi.karma.controller.command.worksheet.ApplyHistoryFromR2RMLModelCommandFactory;
+import edu.isi.karma.controller.command.worksheet.ApplyWorksheetHistoryCommand;
+import edu.isi.karma.controller.command.worksheet.ApplyWorksheetHistoryCommandFactory;
+import edu.isi.karma.controller.command.worksheet.EditCellCommand;
+import edu.isi.karma.controller.command.worksheet.EditCellCommandFactory;
+import edu.isi.karma.controller.command.worksheet.FetchExistingWorksheetPropertiesCommand;
+import edu.isi.karma.controller.command.worksheet.FetchExistingWorksheetPropertiesCommandFactory;
+import edu.isi.karma.controller.command.worksheet.MultipleValueEditColumnCommand;
+import edu.isi.karma.controller.command.worksheet.MultipleValueEditColumnCommandFactory;
+import edu.isi.karma.controller.command.worksheet.RenameColumnCommand;
+import edu.isi.karma.controller.command.worksheet.RenameColumnCommandFactory;
+import edu.isi.karma.controller.command.worksheet.SetWorksheetPropertiesCommand;
+import edu.isi.karma.controller.command.worksheet.SetWorksheetPropertiesCommandFactory;
+import edu.isi.karma.controller.command.worksheet.SplitByCommaCommand;
+import edu.isi.karma.controller.command.worksheet.SplitByCommaCommandFactory;
+import edu.isi.karma.controller.command.worksheet.TablePagerCommand;
+import edu.isi.karma.controller.command.worksheet.TablePagerCommandFactory;
+import edu.isi.karma.controller.command.worksheet.TablePagerResizeCommand;
+import edu.isi.karma.controller.command.worksheet.TablePagerResizeCommandFactory;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.view.VWorkspace;
+
 
 /**
  * There is one ExecutionManager per user. In the HttpServlet implementation we
@@ -221,8 +246,6 @@ public class ExecutionController {
 				new PublishRDFCellCommandFactory());
 		commandFactoryMap.put(FetchPreferencesCommand.class.getSimpleName(),
 				new FetchPreferencesCommandFactory());
-		commandFactoryMap.put(ResetModelCommand.class.getSimpleName(),
-				new ResetModelCommandFactory());
 		commandFactoryMap.put(GenerateCleaningRulesCommand.class.getSimpleName(),
 				new GenerateCleaningRulesCommandFactory());
 		commandFactoryMap.put(InvokeServiceCommand.class.getSimpleName(),
@@ -265,6 +288,32 @@ public class ExecutionController {
 				new GenerateR2RMLModelCommandFactory());
 		commandFactoryMap.put(ApplyHistoryFromR2RMLModelCommand.class.getSimpleName(), 
 				new ApplyHistoryFromR2RMLModelCommandFactory());
+		commandFactoryMap.put(GetCurrentLinksOfInternalNodeCommand.class.getSimpleName(), 
+				new GetCurrentLinksOfInternalNodeCommandFactory());
+		commandFactoryMap.put(GetInternalNodesListOfAlignmentCommand.class.getSimpleName(), 
+				new GetInternalNodesListOfAlignmentCommandFactory());
+		commandFactoryMap.put(GetLinksOfAlignmentCommand.class.getSimpleName(), 
+				new GetLinksOfAlignmentCommandFactory());
+		commandFactoryMap.put(ChangeInternalNodeLinksCommand.class.getSimpleName(), 
+				new ChangeInternalNodeLinksCommandFactory());
+		commandFactoryMap.put(InvokeCleaningServiceCommand.class.getSimpleName(), 
+				new InvokeCleaningServiceCommandFactory());
+		commandFactoryMap.put(SetWorksheetPropertiesCommand.class.getSimpleName(), 
+				new SetWorksheetPropertiesCommandFactory());
+		commandFactoryMap.put(FetchExistingWorksheetPropertiesCommand.class.getSimpleName(), 
+				new FetchExistingWorksheetPropertiesCommandFactory());
+		commandFactoryMap.put(FetchR2RMLModelsCommand.class.getSimpleName(), 
+				new FetchR2RMLModelsCommandFactory());
+		commandFactoryMap.put(FetchExistingModelsForWorksheetCommand.class.getSimpleName(), 
+				new FetchExistingModelsForWorksheetCommandFactory());
+		commandFactoryMap.put(ApplyModelFromTripleStoreCommand.class.getSimpleName(), 
+				new ApplyModelFromTripleStoreCommandFactory());
+		commandFactoryMap.put(CreateNewModelCommand.class.getSimpleName(), 
+				new CreateNewModelCommandFactory());
+		commandFactoryMap.put(InvokeDataMiningServiceCommand.class.getSimpleName(), 
+				new InvokeDataMiningServiceCommandFactory());
+		commandFactoryMap.put(InvokeRubenReconciliationService.class.getSimpleName(), 
+				new InvokeRubenReconciliationServiceFactory());
 	}
 
 	public VWorkspace getvWorkspace() {

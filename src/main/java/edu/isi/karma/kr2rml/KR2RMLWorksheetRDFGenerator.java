@@ -103,7 +103,7 @@ public class KR2RMLWorksheetRDFGenerator {
 	
 	
 	
-	public void generateRDF() throws IOException {
+	public void generateRDF(boolean closeWriterAfterGeneration) throws IOException {
 		// Prepare the output writer
 		BufferedWriter bw = null;
 		try {
@@ -140,17 +140,19 @@ public class KR2RMLWorksheetRDFGenerator {
 			}
 				
 		} finally {
-			outWriter.flush();
-			outWriter.close();
-			if(bw != null)
-				bw.close();
+			if (closeWriterAfterGeneration) {
+				outWriter.flush();
+				outWriter.close();
+				if(bw != null)
+					bw.close();
+			}
 		}
 		// An attempt to prevent an occasional error that occurs on Windows platform
 		// The requested operation cannot be performed on a file with a user-mapped section open
 		System.gc();
 	}
 	
-	private void generateTriplesForRow(Row row, Set<String> existingTopRowTriples, 
+	public void generateTriplesForRow(Row row, Set<String> existingTopRowTriples, 
 			Set<String> predicatesCovered, Map<String, ReportMessage> predicatesFailed, 
 			Set<String> predicatesSuccessful) {
 		Map<String, Node> rowNodes = row.getNodesMap();
@@ -172,7 +174,7 @@ public class KR2RMLWorksheetRDFGenerator {
 		}
 	}
 	
-	private void generateTriplesForCell(Node node, Set<String> existingTopRowTriples, 
+	public void generateTriplesForCell(Node node, Set<String> existingTopRowTriples, 
 			String hNodeId, Set<String> predicatesCovered, 
 			Map<String, ReportMessage> predicatesFailed, Set<String> predicatesSuccessful) {
 		Map<String, String> columnValues = node.getColumnValues();
@@ -373,6 +375,10 @@ public class KR2RMLWorksheetRDFGenerator {
 		return uri;
 	}
 	
+	public String normalizeUri(String inputUri) {
+		return inputUri.replaceAll(" ", "").replaceAll("[,`']", "_");
+	}
+	
 	private String constructTripleWithURIObject(String subjUri, String predicateUri, String objectUri) {
 		if (!subjUri.startsWith(BLANK_NODE_PREFIX))
 			subjUri = "<" + subjUri + ">";
@@ -442,7 +448,7 @@ public class KR2RMLWorksheetRDFGenerator {
 		return output.toString();
 	}
 
-	private String getTemplateTermSetPopulatedWithValues(Map<String, String> columnValues, 
+	public String getTemplateTermSetPopulatedWithValues(Map<String, String> columnValues, 
 			TemplateTermSet termSet) throws ValueNotFoundKarmaException, NoValueFoundInNodeException {
 		StringBuilder output = new StringBuilder();
 		for (TemplateTerm term:termSet.getAllTerms()) {

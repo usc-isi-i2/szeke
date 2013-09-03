@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+import org.apache.commons.httpclient.URIException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -41,12 +42,15 @@ import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.update.AbstractUpdate;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
+import edu.isi.karma.er.helper.TripleStoreUtil;
 import edu.isi.karma.kr2rml.ErrorReport;
 import edu.isi.karma.kr2rml.KR2RMLMappingGenerator;
 import edu.isi.karma.kr2rml.KR2RMLWorksheetRDFGenerator;
 import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
 import edu.isi.karma.rep.Worksheet;
+import edu.isi.karma.rep.metadata.WorksheetProperties;
+import edu.isi.karma.rep.metadata.WorksheetProperties.Property;
 import edu.isi.karma.view.VWorkspace;
 import edu.isi.karma.webserver.ServletContextParameterMap;
 import edu.isi.karma.webserver.ServletContextParameterMap.ContextParameter;
@@ -63,6 +67,7 @@ public class PublishRDFCommand extends Command {
 	private String password;
 	private String modelName;
 	private String worksheetName;
+	private String tripleStoreUrl;
 	
 	public enum JsonKeys {
 		updateType, fileUrl, vWorksheetId, errorReport
@@ -72,12 +77,12 @@ public class PublishRDFCommand extends Command {
 			.getLogger(PublishRDFCommand.class);
 
 	public enum PreferencesKeys {
-		rdfPrefix, rdfNamespace, addInverseProperties, saveToStore, dbName, hostName, userName, modelName
+		rdfPrefix, rdfNamespace, addInverseProperties, saveToStore, dbName, hostName, userName, modelName, tripleStoreUrl
 	}
 
 	protected PublishRDFCommand(String id, String vWorksheetId,
 			String publicRDFAddress, String rdfSourcePrefix, String rdfSourceNamespace, String addInverseProperties,
-			String saveToStore,String hostName,String dbName,String userName,String password, String modelName) {
+			String saveToStore,String hostName,String dbName,String userName,String password, String modelName, String tripleStoreUrl) {
 		super(id);
 		this.vWorksheetId = vWorksheetId;
 		this.rdfSourcePrefix = rdfSourcePrefix;
@@ -92,6 +97,7 @@ public class PublishRDFCommand extends Command {
 			this.modelName="karma";
 		else
 			this.modelName=modelName;
+		this.tripleStoreUrl = tripleStoreUrl;
 	}
 
 	@Override
@@ -152,7 +158,7 @@ public class PublishRDFCommand extends Command {
 		
 		// Generate the RDF using KR2RML data structures
 		try {
-			rdfGen.generateRDF();
+			rdfGen.generateRDF(true);
 			logger.info("RDF written to file: " + rdfFileLocalPath);
 			if(saveToStore){
 				//take the contents of the RDF file and save them to the store
@@ -164,7 +170,32 @@ public class PublishRDFCommand extends Command {
 			return new UpdateContainer(new ErrorUpdate(
 					"Error occured while generating RDF!"));
 		}
-
+		try {
+			// Get the graph name from properties
+			String graphName = worksheet.getMetadataContainer().getWorksheetProperties()
+					.getPropertyValue(Property.graphName);
+			if (graphName == null || graphName.isEmpty()) {
+				// Set to default
+				worksheet.getMetadataContainer().getWorksheetProperties().setPropertyValue(
+						Property.graphName, WorksheetProperties.createDefaultGraphName(worksheet.getTitle()));
+				graphName = WorksheetProperties.createDefaultGraphName(worksheet.getTitle());
+			}
+			if (tripleStoreUrl == null || tripleStoreUrl.isEmpty()) {
+				tripleStoreUrl = TripleStoreUtil.defaultDataRepoUrl;
+			}
+			logger.info("tripleStoreURl : " + tripleStoreUrl);
+			TripleStoreUtil utilObj = new TripleStoreUtil();
+			boolean result = utilObj.saveToStore(rdfFileLocalPath, tripleStoreUrl, graphName, true);
+			if(result) {
+				logger.info("Saved rdf to store");
+			} else {
+				logger.error("Falied to store rdf to karma_data store");
+			}
+		} catch (URIException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
 		try {
 			return new UpdateContainer(new AbstractUpdate() {
 				public void generateJson(String prefix, PrintWriter pw,

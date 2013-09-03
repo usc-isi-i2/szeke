@@ -727,7 +727,34 @@ function parse(data) {
 			// In d3-alignment-vis.js
 		} else if(element["updateType"] == "KarmaInfo") {
 			$.sticky(element["Info"]);
-		}
+		} else if(element["updateType"] == "R2RMLModelUpdate") {
+			
+			var modelListRadioBtnGrp = $("#modelListRadioBtnGrp");
+			modelListRadioBtnGrp.html('');
+			var rows = element["models"]
+			for(var x in rows) {
+				modelListRadioBtnGrp.append('<input type="radio" name="group1" id="model_'+x+'" value="'+rows[x].name+'" /> <label for="model_'+x+'">'+rows[x].name+' ('+rows[x].url+') </label> <br />');
+			}
+			var positionArray = [200		// distance from left
+			 					, 200];	// distance from top
+			var modelListDiv = $('div#modelListDiv');
+			modelListDiv.dialog({ title: 'Select a service',
+				buttons: { "Cancel": function() { $(this).dialog("close"); }, "Select": submitSelectedModelNameToBeLoaded }, width: 300, height: 150, position: positionArray});
+			
+		} else if(element["updateType"] == "CleaningServiceOutput") {
+			//console.log(element);
+			//console.log(element["hNodeId"]);
+			//console.log(element["chartData"]);
+				
+			drawChart(element);
+			//drawBigChart() ;
+		} else if (element["updateType"] === "WorksheetCleaningServiceInvocationResultsUpdate") {
+            var worksheetChartData = element["worksheetChartData"];
+            $.each(worksheetChartData, function(index, columnData){
+                //console.log(columnData)
+                drawChart(columnData);
+            });
+        }
 	});
 }
 

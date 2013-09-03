@@ -40,9 +40,12 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import edu.isi.karma.controller.command.SplitByCommaCommandFactory.Arguments;
-import edu.isi.karma.controller.command.SplitColumnByDelimiter;
+import edu.isi.karma.controller.command.CommandException;
 import edu.isi.karma.controller.command.cleaning.SubmitCleaningCommand;
+import edu.isi.karma.controller.command.transformation.SubmitPythonTransformationCommand;
+import edu.isi.karma.controller.command.worksheet.RenameColumnCommand;
+import edu.isi.karma.controller.command.worksheet.SplitByCommaCommandFactory.Arguments;
+import edu.isi.karma.controller.command.worksheet.SplitColumnByDelimiter;
 import edu.isi.karma.controller.history.CommandHistoryWriter.HistoryArguments;
 import edu.isi.karma.controller.history.HistoryJsonUtil;
 import edu.isi.karma.controller.history.WorksheetCommandHistoryReader;
@@ -76,7 +79,9 @@ public class WorksheetR2RMLJenaModelParser {
 	private static Logger logger = LoggerFactory.getLogger(WorksheetR2RMLJenaModelParser.class);
 	
 	private enum TransformationCommandKeysAndValues {
-		commandName, SubmitCleaningCommand, SplitByCommaCommand, examples
+		commandName, SubmitCleaningCommand, SplitByCommaCommand, examples, 
+		SubmitPythonTransformationCommand, newColumnName, transformationCode,
+		errorDefaultValue, RenameColumnCommand
 	}
 	
 	public WorksheetR2RMLJenaModelParser(VWorksheet vWorksheet, VWorkspace vWorkspace, Model model,
@@ -151,6 +156,32 @@ public class WorksheetR2RMLJenaModelParser {
 				SubmitCleaningCommand comm = new SubmitCleaningCommand("", hNodeId, 
 						vWorksheet.getId(), examples);
 				comm.doIt(vWorkspace);
+			} else if (commandName.equals(TransformationCommandKeysAndValues.SubmitPythonTransformationCommand.name())) {
+				String newColumnName = HistoryJsonUtil.getStringValue(
+						TransformationCommandKeysAndValues.newColumnName.name(), inputParams);
+				String transformationCode = HistoryJsonUtil.getStringValue(
+						TransformationCommandKeysAndValues.transformationCode.name(), inputParams);
+				String errorDefaultValue = HistoryJsonUtil.getStringValue(
+						TransformationCommandKeysAndValues.errorDefaultValue.name(), inputParams);
+				SubmitPythonTransformationCommand comm = new SubmitPythonTransformationCommand(
+						"", newColumnName, transformationCode, vWorksheet.getId(), hNodeId, 
+						"", errorDefaultValue);
+				try {
+					comm.doIt(vWorkspace);
+				} catch (CommandException e) {
+					logger.error("Error executing Python Transformation command", e);
+					e.printStackTrace();
+				}
+			} else if (commandName.equals(TransformationCommandKeysAndValues.RenameColumnCommand.name())) {
+				String newColumnName = HistoryJsonUtil.getStringValue(
+						TransformationCommandKeysAndValues.newColumnName.name(), inputParams);
+				RenameColumnCommand comm = new RenameColumnCommand("", newColumnName, hNodeId, vWorksheet.getId());
+				try {
+					comm.doIt(vWorkspace);
+				} catch (CommandException e) {
+					logger.error("Error executing Rename Column command", e);
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -248,7 +279,6 @@ public class WorksheetR2RMLJenaModelParser {
 			ObjectMap objMap = null;
 			NodeIterator pomObjItr = model.listObjectsOfProperty(pomBlankNode, objectMapProp);
 			
-			
 			while (pomObjItr.hasNext()) {
 				Resource objNode = pomObjItr.next().asResource();
 				
@@ -314,6 +344,7 @@ public class WorksheetR2RMLJenaModelParser {
 		Property subjMapProp = model.getProperty(Uris.RR_SUBJECTMAP_URI);
 		Property templateProp = model.getProperty(Uris.RR_TEMPLATE_URI);
 		Property rdfTypeProp = model.getProperty(Uris.RDF_TYPE_URI);
+		Property rrClassProp = model.getProperty(Uris.RR_CLASS_URI);
 		Resource steinerTreeRootNodeRes = model.getResource(Uris.KM_STEINER_TREE_ROOT_NODE);
 		
 		NodeIterator subjMapsItr = model.listObjectsOfProperty(trMapRes, subjMapProp);
@@ -337,9 +368,25 @@ public class WorksheetR2RMLJenaModelParser {
 			subjMap.setTemplate(subjTemplTermSet);
 			
 			// Get the subject type
-			NodeIterator rdfTypesItr = model.listObjectsOfProperty(subjMapBlankRes, rdfTypeProp);
+			NodeIterator rdfTypesItr = model.listObjectsOfProperty(subjMapBlankRes, rrClassProp);
 			while (rdfTypesItr.hasNext()) {
 				RDFNode typeNode = rdfTypesItr.next();
+				
+				if (typeNode.isAnon()) {
+					NodeIterator typeTemplItr = model.listObjectsOfProperty(typeNode.asResource(),
+							templateProp);
+					
+					while (typeTemplItr.hasNext()) {
+						RDFNode templNode = typeTemplItr.next();
+						String template = templNode.toString();
+						TemplateTermSet typeTermSet = TemplateTermSetBuilder.
+								constructTemplateTermSetFromR2rmlTemplateString(
+								template, worksheet, factory);
+						subjMap.addRdfsType(typeTermSet);
+					}
+					continue;
+				}
+				
 				if (typeNode instanceof Resource) {
 					// Skip the steiner tree root type
 					if(((Resource) typeNode).getURI().equals(Uris.KM_STEINER_TREE_ROOT_NODE))

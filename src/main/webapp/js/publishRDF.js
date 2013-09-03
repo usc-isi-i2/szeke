@@ -44,6 +44,7 @@ function publishRDFFunction() {
 		info["userName"] = $("input#userName").val();
 		info["password"] = $("input#password").val();
 		info["modelName"] = $("input#modelName").val();
+		info["tripleStoreUrl"] = $("input#rdfSPAQRLEndPoint").val();
 
 		if( $("input#saveToRDFStore").is(":checked")) {
 			publishRDFToStore(info);
@@ -128,7 +129,7 @@ function getRDFPreferences() {
 		   	},
 		error :
 			function (xhr, textStatus) {
-	   			alert("Error occured with fetching new rows! " + textStatus);
+	   			alert("Error occurred with fetching new rows! " + textStatus);
 		   	}		   
 	});
 }

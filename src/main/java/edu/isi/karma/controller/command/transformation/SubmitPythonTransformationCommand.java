@@ -22,6 +22,7 @@
 package edu.isi.karma.controller.command.transformation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +30,30 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.python.core.PyException;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.isi.karma.controller.command.AddColumnCommand;
-import edu.isi.karma.controller.command.AddColumnCommandFactory;
 import edu.isi.karma.controller.command.Command;
 import edu.isi.karma.controller.command.CommandException;
-import edu.isi.karma.controller.command.MultipleValueEditColumnCommand;
-import edu.isi.karma.controller.command.MultipleValueEditColumnCommandFactory;
+import edu.isi.karma.controller.command.worksheet.AddColumnCommand;
+import edu.isi.karma.controller.command.worksheet.AddColumnCommandFactory;
+import edu.isi.karma.controller.command.worksheet.MultipleValueEditColumnCommand;
+import edu.isi.karma.controller.command.worksheet.MultipleValueEditColumnCommandFactory;
 import edu.isi.karma.controller.history.HistoryJsonUtil.ParameterType;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.InfoUpdate;
+import edu.isi.karma.controller.update.SVGAlignmentUpdate_ForceKarmaLayout;
+import edu.isi.karma.controller.update.SemanticTypesUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
+import edu.isi.karma.modeling.alignment.Alignment;
+import edu.isi.karma.modeling.alignment.AlignmentManager;
+import edu.isi.karma.modeling.semantictypes.SemanticTypeUtil;
+import edu.isi.karma.rep.HNode;
+import edu.isi.karma.rep.Node;
+import edu.isi.karma.rep.RepFactory;
 import edu.isi.karma.rep.Row;
 import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.transformation.PythonTransformationHelper;
@@ -64,7 +74,7 @@ public class SubmitPythonTransformationCommand extends Command {
 	private static Logger logger = LoggerFactory
 			.getLogger(SubmitPythonTransformationCommand.class);
 
-	protected SubmitPythonTransformationCommand(String id, String newColumnName, String transformationCode, 
+	public SubmitPythonTransformationCommand(String id, String newColumnName, String transformationCode, 
 			String vWorksheetId, String hNodeId, String hTableId, String errorDefaultValue) {
 		super(id);
 		this.newColumnName = newColumnName;
@@ -73,11 +83,13 @@ public class SubmitPythonTransformationCommand extends Command {
 		this.hNodeId = hNodeId;
 		this.hTableId = hTableId;
 		this.errorDefaultValue = errorDefaultValue;
+		
+		addTag(CommandTag.Transformation);
 	}
 
 	@Override
 	public String getCommandName() {
-		return this.getClass().getName();
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
@@ -97,17 +109,41 @@ public class SubmitPythonTransformationCommand extends Command {
 
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
-		PythonTransformationHelper pyHelper = new PythonTransformationHelper();
-		ExecutionController ctrl = WorkspaceRegistry.getInstance().getExecutionController(vWorkspace.getWorkspace().getId());
 		Worksheet worksheet = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId).getWorksheet();
-		List<String> hNodeIds = new ArrayList<String>();
-		Map<String,String> columnNameMap = new HashMap<String,String>();
-		String clsStmt = pyHelper.getPythonClassCreationStatement(worksheet, hNodeIds, columnNameMap);
+		RepFactory f = vWorkspace.getRepFactory();
+		HNode hNode = f.getHNode(hNodeId);
+		ExecutionController ctrl = WorkspaceRegistry.getInstance().getExecutionController(
+				vWorkspace.getWorkspace().getId());
+		
+		List<HNode> accessibleHNodes = f.getHNode(hNodeId).getHNodesAccessibleList(f);
+		List<HNode> nodesWithNestedTable = new ArrayList<HNode>();
+		Map<String, String> hNodeIdtoColumnNameMap = new HashMap<String, String>();
+		for (HNode accessibleHNode:accessibleHNodes) {
+			if(accessibleHNode.hasNestedTable()) {
+				nodesWithNestedTable.add(accessibleHNode);
+			} else {
+				hNodeIdtoColumnNameMap.put(accessibleHNode.getId(), accessibleHNode.getColumnName());
+			}
+		}
+		accessibleHNodes.removeAll(nodesWithNestedTable);
+		
+		PythonTransformationHelper pyHelper = new PythonTransformationHelper();
+		Map<String,String> normalizedColumnNameMap = new HashMap<String,String>();
+		String clsStmt = pyHelper.getPythonClassCreationStatement(worksheet, normalizedColumnNameMap, accessibleHNodes);
 		String transformMethodStmt = pyHelper.getPythonTransformMethodDefinitionState(worksheet, transformationCode);
-		String columnNameDictStmt = pyHelper.getColumnNameDictionaryStatement(columnNameMap);
-		String defGetValueStmt = pyHelper.getGetValueDefStatement(columnNameMap);
+		String columnNameDictStmt = pyHelper.getColumnNameDictionaryStatement(normalizedColumnNameMap);
+		String defGetValueStmt = pyHelper.getGetValueDefStatement(normalizedColumnNameMap);
+		
+		
+		// Create a map from hNodeId to normalized column name
+		Map<String, String> hNodeIdToNormalizedColumnName = new HashMap<String, String>();
+		for (HNode accHNode:accessibleHNodes) {
+			hNodeIdToNormalizedColumnName.put(accHNode.getId(), 
+					normalizedColumnNameMap.get(accHNode.getColumnName()));
+		}
 		
 		try {
+			// Prepare the Python interpreter
 			PythonInterpreter interpreter = new PythonInterpreter();
 			interpreter.exec(pyHelper.getImportStatements());
 			interpreter.exec(clsStmt);
@@ -115,38 +151,56 @@ public class SubmitPythonTransformationCommand extends Command {
 			interpreter.exec(defGetValueStmt);
 			interpreter.exec(transformMethodStmt);
 			
-			List<Row> rows = worksheet.getDataTable().getRows(0, worksheet.getDataTable().getNumRows());
+			Collection<Node> nodes = new ArrayList<Node>();
+			worksheet.getDataTable().collectNodes(hNode.getHNodePath(f), nodes);
+			
 			Map<String, String> rowToValueMap = new HashMap<String, String>();
-			// Invoke the transformation and store the values in map
-			for (Row row:rows) {
+			
+			// Go through all nodes collected for the column with given hNodeId
+			for (Node node:nodes) {
+				Row row = node.getBelongsToRow();
+				Map<String, String> values = node.getColumnValues();
 				StringBuilder objectCreationStmt = new StringBuilder();
 				objectCreationStmt.append("r = " + pyHelper.normalizeString(worksheet.getTitle()) + "(");
-				int counter = 0;
-				for (String hNodeId:hNodeIds) {
-					String nodeVal = row.getNode(hNodeId).getValue().asString();
-					if (counter++ != 0)
+				
+				int keyCounter = 0;
+				for (String valHNodeId : values.keySet()) {
+					String nodeId = values.get(valHNodeId);
+					String nodeVal = f.getNode(nodeId).getValue().asString();
+					
+					if (keyCounter++ != 0)
 						objectCreationStmt.append(",");
-					if (nodeVal == null || nodeVal.equals("")) {
-						objectCreationStmt.append("\"\"");
+					if (nodeVal == null || nodeVal.isEmpty()) {
+						objectCreationStmt.append(hNodeIdToNormalizedColumnName.get(valHNodeId) + "=\"\"");
 					} else {
 						nodeVal = nodeVal.replaceAll("\"", "\\\\\"");
-						nodeVal = nodeVal.replaceAll("\n", "");
-						objectCreationStmt.append("\"" + nodeVal + "\"");
+						nodeVal = nodeVal.replaceAll("\n", " ");
+						objectCreationStmt.append(hNodeIdToNormalizedColumnName.get(valHNodeId) + "=\"" + nodeVal + "\"");
 					}
 				}
 				objectCreationStmt.append(")");
+				
 				interpreter.exec(objectCreationStmt.toString());
 				try {
 					PyObject output = interpreter.eval("transform(r)");
+					// Execution ran successfully, put the value returned in the HashMap
 					rowToValueMap.put(row.getId(), pyHelper.getPyObjectValueAsString(output));
-				} catch (Exception e) {
+				} catch (PyException p) {
+					p.printStackTrace();
+					// Error occured in the Python method execution
+					rowToValueMap.put(row.getId(), errorDefaultValue);
+				} catch (Exception t) {
+					// Error occured in the Python method execution
+					t.printStackTrace();
+					logger.debug("Error occured while transforming.", t);
 					rowToValueMap.put(row.getId(), errorDefaultValue);
 				}
 			}
 			
 			// Invoke the add column command
 			JSONArray addColumnInput = getAddColumnCommandInputJSON();
-			AddColumnCommandFactory addColumnFac = (AddColumnCommandFactory)ctrl.getCommandFactoryMap().get(AddColumnCommand.class.getSimpleName());
+			AddColumnCommandFactory addColumnFac = (AddColumnCommandFactory)ctrl.
+					getCommandFactoryMap().get(AddColumnCommand.class.getSimpleName());
 			addColCmd = (AddColumnCommand) addColumnFac.createCommand(addColumnInput, vWorkspace);
 			addColCmd.saveInHistory(false);
 			addColCmd.doIt(vWorkspace);
@@ -168,6 +222,10 @@ public class SubmitPythonTransformationCommand extends Command {
 		UpdateContainer c = new UpdateContainer();
 		vWorkspace.getViewFactory().updateWorksheet(vWorksheetId, worksheet,worksheet.getHeaders().getAllPaths(), vWorkspace);
 		vWorkspace.getViewFactory().getVWorksheet(this.vWorksheetId).update(c);
+		
+		/** Add the alignment update **/
+		 addAlignmentUpdate(c, vWorkspace, worksheet);
+		
 		c.add(new InfoUpdate("Transformation complete"));
 		return c;
 	}
@@ -210,4 +268,19 @@ public class SubmitPythonTransformationCommand extends Command {
 		return c;
 	}
 
+	private void addAlignmentUpdate(UpdateContainer c, VWorkspace vWorkspace, Worksheet worksheet) {
+		String alignmentId = AlignmentManager.Instance().constructAlignmentId(
+				vWorkspace.getWorkspace().getId(), vWorksheetId);
+		Alignment alignment = AlignmentManager.Instance().getAlignment(alignmentId);
+		if (alignment == null) {
+			alignment = new Alignment(vWorkspace.getWorkspace().getOntologyManager());
+			AlignmentManager.Instance().addAlignmentToMap(alignmentId, alignment);
+		}
+		// Compute the semantic type suggestions
+		SemanticTypeUtil.computeSemanticTypesSuggestion(worksheet, vWorkspace.getWorkspace()
+				.getCrfModelHandler(), vWorkspace.getWorkspace().getOntologyManager(), alignment);
+		c.add(new SemanticTypesUpdate(worksheet, vWorksheetId, alignment));
+		c.add(new SVGAlignmentUpdate_ForceKarmaLayout(vWorkspace.getViewFactory().
+				getVWorksheet(vWorksheetId), alignment));
+	}
 }

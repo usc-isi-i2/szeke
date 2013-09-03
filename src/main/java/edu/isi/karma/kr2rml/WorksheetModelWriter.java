@@ -24,9 +24,11 @@ package edu.isi.karma.kr2rml;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jetty.http.HttpMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +55,9 @@ import edu.isi.karma.modeling.Uris;
 import edu.isi.karma.modeling.ontology.OntologyManager;
 import edu.isi.karma.rep.HNode;
 import edu.isi.karma.rep.RepFactory;
+import edu.isi.karma.rep.Worksheet;
+import edu.isi.karma.rep.metadata.WorksheetProperties;
+import edu.isi.karma.rep.metadata.WorksheetProperties.Property;
 import edu.isi.karma.util.FileUtil;
 
 public class WorksheetModelWriter {
@@ -91,6 +96,10 @@ public class WorksheetModelWriter {
 		this.worksheetName = worksheetName;
 		Value srcNameVal = f.createLiteral(worksheetName);
 		con.add(mappingRes, sourceNameUri, srcNameVal);
+		
+		// Add the timestamp
+		URI pubTime = f.createURI(Uris.KM_MODEL_PUBLICATION_TIME_URI);
+		con.add(mappingRes, pubTime, f.createLiteral(new Date().getTime()));
 	}
 	
 	public boolean writeR2RMLMapping(OntologyManager ontManager, KR2RMLMappingGenerator mappingGen)
@@ -115,6 +124,7 @@ public class WorksheetModelWriter {
 			URI termTypeUri = f.createURI(Uris.RR_TERM_TYPE_URI);
 			URI logicalTableUri = f.createURI(Uris.RR_LOGICAL_TABLE_URI);
 			URI tableNameUri = f.createURI(Uris.RR_TABLENAME_URI);
+			URI classUri = f.createURI(Uris.RR_CLASS_URI);
 			
 			URI coversColUri = f.createURI(Uris.KM_BLANK_NODE_COVERS_COLUMN_URI);
 			URI bnNamePrefixUri = f.createURI(Uris.KM_BLANK_NODE_PREFIX_URI);
@@ -153,7 +163,14 @@ public class WorksheetModelWriter {
 				for (TemplateTermSet typeTermSet:rdfsTypes) {
 					if (typeTermSet.isSingleUriString()) {
 						URI sjTypeUri = f.createURI(typeTermSet.getR2rmlTemplateString(factory));
-						con.add(sjBlankNode, RDF.TYPE, sjTypeUri);
+						con.add(sjBlankNode, classUri, sjTypeUri);
+					} else {
+						if (typeTermSet.isSingleColumnTerm()) {
+							BNode typeBlankNode = f.createBNode();
+							String colRepr  = typeTermSet.getR2rmlTemplateString(factory);
+							con.add(typeBlankNode, templateUri, f.createLiteral(colRepr));
+							con.add(sjBlankNode, classUri, typeBlankNode);
+						}
 					}
 				}
 				
@@ -292,6 +309,37 @@ public class WorksheetModelWriter {
 		} catch (IOException e) {
 			logger.error("IO Exception occured while writing worksheet history into R2RML model", e);
 			return;
+		}
+	}
+	
+	public void writeWorksheetProperties(Worksheet worksheet) throws RepositoryException {
+		WorksheetProperties props = worksheet.getMetadataContainer().getWorksheetProperties();
+		if (props == null) {
+			return;
+		}
+		
+		// Service options (if present)
+		if (props.hasServiceProperties()) {
+			if (props.getPropertyValue(Property.serviceUrl) == null) {
+				return;
+			}
+			
+			// Request method triple
+			URI reqMethodUri = f.createURI(Uris.KM_SERVICE_REQ_METHOD_URI);
+			Value method = f.createLiteral(props.getPropertyValue(Property.serviceRequestMethod));
+			con.add(mappingRes, reqMethodUri, method);
+			
+			// Service Url triple
+			URI serUrlUri = f.createURI(Uris.KM_SERVICE_URL_URI);
+			Value servUrl = f.createLiteral(props.getPropertyValue(Property.serviceUrl));
+			con.add(mappingRes, serUrlUri, servUrl);
+			
+			if (props.getPropertyValue(Property.serviceRequestMethod).equals(HttpMethods.POST)) {
+				// POST method related option triple
+				URI postMethodUri = f.createURI(Uris.KM_SERVICE_POST_METHOD_TYPE_URI);
+				Value methodUrl = f.createLiteral(props.getPropertyValue(Property.serviceDataPostMethod));
+				con.add(mappingRes, postMethodUri, methodUrl);
+			}
 		}
 	}
 }
