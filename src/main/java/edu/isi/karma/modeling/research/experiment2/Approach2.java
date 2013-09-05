@@ -22,7 +22,6 @@
 package edu.isi.karma.modeling.research.experiment2;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import edu.isi.karma.modeling.ModelingParams;
 import edu.isi.karma.modeling.Uris;
@@ -78,7 +76,7 @@ public class Approach2 {
 	private static String graphDir1 = "/Users/mohsen/Desktop/graphs/iswc2013-exp2/";
 	private static String graphResultsDir1 = "/Users/mohsen/Dropbox/Service Modeling/iswc2013-exp2/jgraph/";
 	
-	private HashMap<SemanticLabel2, Set<LabelStruct>> labelToLabelStructs;
+	private HashMap<SemanticLabel2, Set<MappingStruct>> labelToMappingStructs;
 	
 	private NodeIdFactory nodeIdFactory;
 	
@@ -110,31 +108,33 @@ public class Approach2 {
 		
 		public double getWeight() {
 			
-			double w = 0.0;
+			double weight = 0.0;
+			double w = ModelingParams.PROPERTY_DIRECT_WEIGHT;
+			double epsilon = ModelingParams.PATTERN_LINK_WEIGHT;
 //			double factor = 0.01;
-			int c = this.count;
+			int c = this.count < (int)w ? this.count : (int)w - 1;
 			
-			if (type == 1)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT - ((c) / ModelingParams.PROPERTY_DIRECT_WEIGHT);
-			else if (type == 2)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT - ((c/10) / ModelingParams.PROPERTY_DIRECT_WEIGHT);
-			else if (type == 3)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT - ((c/10) / ModelingParams.PROPERTY_DIRECT_WEIGHT);
-			else if (type == 4)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT - ((c/50) / ModelingParams.PROPERTY_DIRECT_WEIGHT);
-			else if (type == 5)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT;
-			else if (type == 6)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT + 0.01;
-			else if (type == 7)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT + 0.02;
-			else if (type == 8)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT + 0.03;
-			else if (type == 9)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT + 0.04;
-			else if (type == 10)
-				w = ModelingParams.PROPERTY_DIRECT_WEIGHT + 0.05;
-			return w;
+			if (type == 1) // match domain, link, and range
+				weight = w - (epsilon / (w - c));
+			else if (type == 2) // match link and range
+				weight = w - (epsilon / ((w - c) * w));
+			else if (type == 3) // match domain and link
+				weight = w - (epsilon / ((w - c) * w));
+			else if (type == 4) // match link
+				weight = w - (epsilon / ((w - c) * w * w));
+			else if (type == 5) // direct property
+				weight = w;
+			else if (type == 6) // indirect property
+				weight = w + epsilon - (epsilon / (w - c));
+			else if (type == 7) // property with only domain
+				weight = w + epsilon + (epsilon / ((w - c) * w));
+			else if (type == 8) // property with only range
+				weight = w + epsilon + (epsilon / ((w - c) * w));
+			else if (type == 9) // subClass
+				weight = w + epsilon + (epsilon / ((w - c) * w * w));
+			else if (type == 10) // property without domain and range
+				weight = w + epsilon + (epsilon / ((w - c) * w * w * w));
+			return weight;
 		}
 		
 		@Override
@@ -172,7 +172,7 @@ public class Approach2 {
 		
 		this.graphBuilder = new GraphBuilder(ontologyManager, nodeIdFactory);//, linkIdFactory);
 
-		this.labelToLabelStructs = new HashMap<SemanticLabel2, Set<LabelStruct>>();
+		this.labelToMappingStructs = new HashMap<SemanticLabel2, Set<MappingStruct>>();
 		this.patternLinks = new HashSet<Link>();
 		
 		this.linkCountMap = new HashMap<String, Integer>();
@@ -227,6 +227,7 @@ public class Approach2 {
 
 	private void updateHashMaps() {
 		
+		this.labelToMappingStructs.clear();
 		List<Node> columnNodes = this.graphBuilder.getTypeToNodesMap().get(NodeType.ColumnNode);
 		if (columnNodes != null) {
 			for (Node n : columnNodes) {
@@ -240,12 +241,12 @@ public class Approach2 {
 						
 						SemanticLabel2 sl = new SemanticLabel2(domain.getLabel().getUri(), link.getLabel().getUri(), n.getId());
 						
-						Set<LabelStruct> labelStructs = this.labelToLabelStructs.get(sl);
+						Set<MappingStruct> labelStructs = this.labelToMappingStructs.get(sl);
 						if (labelStructs == null) {
-							labelStructs = new HashSet<LabelStruct>();
-							this.labelToLabelStructs.put(sl, labelStructs);
+							labelStructs = new HashSet<MappingStruct>();
+							this.labelToMappingStructs.put(sl, labelStructs);
 						}
-						labelStructs.add(new LabelStruct((InternalNode)domain, link, (ColumnNode)n));
+						labelStructs.add(new MappingStruct((InternalNode)domain, link, (ColumnNode)n));
 					}
 					
 				} else 
@@ -475,8 +476,9 @@ public class Approach2 {
 		String key1, key2;
 		for (Link link : this.graphBuilder.getGraph().edgeSet()) {
 			
-			if (!(link instanceof SimpleLink))
+			if (!(link instanceof SimpleLink)) {
 				continue;
+			}
 			
 			key1 = link.getSource().getLabel().getUri() + 
 					link.getTarget().getLabel().getUri();
@@ -540,190 +542,176 @@ public class Approach2 {
 		}
 	}
 	
-	private List<Set<LabelStruct>> getLabelStructSets(List<SemanticLabel2> semanticLabels) {
+	private Set<Node> addDataPropertyToDomainNodes(String domainUri, String propertyUri, String columnNodeName) {
+		
+		Set<Node> addedNodes = new HashSet<Node>();
+		
+		// add dataproperty to existing classes if sl is a data node mapping
+		List<Node> nodesWithSameUriOfDomain = this.graphBuilder.getUriToNodesMap().get(domainUri);
+		if (nodesWithSameUriOfDomain != null) {
+			for (Node source : nodesWithSameUriOfDomain) {
+				if (source instanceof InternalNode && 
+						source.getPatternIds().size() > 0) {
+					
+//					boolean propertyLinkExists = false;
+					int countOfExistingPropertyLinks = 0;
+					List<Link> linkWithSameUris = this.graphBuilder.getUriToLinksMap().get(propertyUri);
+					if (linkWithSameUris != null)
+					for (Link l : linkWithSameUris) {
+						if (l.getSource().equals(source)) {
+							countOfExistingPropertyLinks ++;
+//							propertyLinkExists = true;
+//							break;
+						}
+					}
+					
+					if (countOfExistingPropertyLinks >= 1)
+						continue;
 
-		List<Set<LabelStruct>> labelStructSets = new ArrayList<Set<LabelStruct>>();
+					String nodeId = nodeIdFactory.getNodeId(columnNodeName);
+					ColumnNode target = new ColumnNode(nodeId, "", "", "");
+					this.graphBuilder.addNodeWithoutUpdatingGraph(target);
+					addedNodes.add(target);
 		
-//		HashSet<Node> patternNodes = getPatternNodes();
-		Set<Node> newInternalNodes = new HashSet<Node>();
-//		HashMap<SemanticLabel2, Set<LabelStruct>> matchedLabels = new HashMap<SemanticLabel2, Set<LabelStruct>>();
+					String linkId = LinkIdFactory.getLinkId(propertyUri, source.getId(), target.getId());	
+					Link link = new DataPropertyLink(linkId, new Label(propertyUri), false);
+					this.graphBuilder.addLink(source, target, link);
+				}
+			}
+		}
+		return addedNodes;
+	}
+	
+	private Set<Node> addSemanticLabel(SemanticLabel2 sl) {
+
+		Set<Node> addedNodes = new HashSet<Node>();
+
+		InternalNode source = null;
+		String nodeId;
+		nodeId = nodeIdFactory.getNodeId(sl.getNodeUri());
+		source = new InternalNode(nodeId, new Label(sl.getNodeUri()));
+		this.graphBuilder.addNodeWithoutUpdatingGraph(source);
+		addedNodes.add(source);
 		
+		if (sl.getType() == SemanticLabelType.DataProperty) {
+			nodeId = nodeIdFactory.getNodeId(sl.getLeafName());
+			ColumnNode target = new ColumnNode(nodeId, "", "", "");
+			this.graphBuilder.addNodeWithoutUpdatingGraph(target);
+			addedNodes.add(target);
+	
+			String linkId = LinkIdFactory.getLinkId(sl.getLinkUri(), source.getId(), target.getId());	
+			Link link = new DataPropertyLink(linkId, new Label(sl.getLinkUri()), false);
+			this.graphBuilder.addLink(source, target, link);
+		}
+		return addedNodes;
+	}
+	
+	private CandidateSteinerSets getCandidateSteinerSets(List<SemanticLabel2> semanticLabels, Set<Node> addedNodes) {
+
+		int maxNumberOfMappedNodes = 0;
+		for (SemanticLabel2 sl : semanticLabels) {
+			if (sl.getType() == SemanticLabelType.Class)
+				maxNumberOfMappedNodes += 1;
+			else
+				maxNumberOfMappedNodes += 2;
+		}
+		
+		CandidateSteinerSets candidateSteinerSets = new CandidateSteinerSets(maxNumberOfMappedNodes);
+		if (addedNodes == null) 
+			addedNodes = new HashSet<Node>();
+		
+		Set<Node> tempNodeSet = null;
 		for (SemanticLabel2 sl : semanticLabels) {
 			
-			//TODO
+			SemanticTypeMapping mapping;
+			if (sl.getType() == SemanticLabelType.Class)
+				mapping = new SemanticTypeMapping(null, MappingType.ClassNode);
+			else
+				mapping = new SemanticTypeMapping(null, MappingType.DataNode);
 			
-//			if (sl.getLinkUri().contains("classLink"))
-//				System.out.println("debug");
+			boolean addSemanticLabel = false;
+			Set<MappingStruct> similarStructsInGraph = this.labelToMappingStructs.get(sl);
 			
-			boolean createNew = false;
-			
-			Set<LabelStruct> labelStructs = null;
-			
-//			if (matchedLabels.containsKey(sl)) {
-//				Set<LabelStruct> temp = matchedLabels.get(sl);
-//				if (temp.size() == 1)
-//					createNew = true;
-//				else {
-//					LabelStruct ll = temp.iterator().next();
-//					temp.remove(ll);
-//					labelStructs = new HashSet<LabelStruct>();
-//					labelStructs.add(ll);
-//				}
-//			} else {
-//				labelStructs = this.labelToLabelStructs.get(sl);
-//				if (labelStructs != null)
-//					matchedLabels.put(sl, labelStructs);
-//			}
-			
-			labelStructs = this.labelToLabelStructs.get(sl);
-
-			// semantic label is not in the graph
-			if (labelStructs == null || labelStructs.size() == 0 || createNew) {
-				
-				labelStructs = new HashSet<LabelStruct>();
-				
-				InternalNode source = null;
-				String nodeId;
-				
-				boolean existOutsideOfPattern = false;
-				List<Node> nodesWithSameUriOfDomain = this.graphBuilder.getUriToNodesMap().get(sl.getNodeUri());
-				if (nodesWithSameUriOfDomain != null) {
-					for (Node n : nodesWithSameUriOfDomain) {
-						if (n instanceof InternalNode && 
-								!newInternalNodes.contains(n) && 
-								n.getPatternIds().size() == 0) {
-							source = (InternalNode)n;
-							existOutsideOfPattern = true;
-							break;
-						}
-					}
-				}
-				
-				if (!existOutsideOfPattern || createNew) {
-					nodeId = nodeIdFactory.getNodeId(sl.getNodeUri());
-					source = new InternalNode(nodeId, new Label(sl.getNodeUri()));
-					this.graphBuilder.addNodeWithoutUpdatingGraph(source);
-					newInternalNodes.add(source);
-				}
-				
-				nodeId = nodeIdFactory.getNodeId(sl.getLeafName());
-				ColumnNode target = new ColumnNode(nodeId, "", "", "");
-				this.graphBuilder.addNodeWithoutUpdatingGraph(target);
-
-				String linkId = LinkIdFactory.getLinkId(sl.getLinkUri(), source.getId(), target.getId());	
-				Link link = new DataPropertyLink(linkId, new Label(sl.getLinkUri()), false);
-				this.graphBuilder.addLink(source, target, link);
-
-				LabelStruct lbStruct = new LabelStruct(source, link, target);
-				labelStructs.add(lbStruct);
-
-				
-			} 
-//			else {
-//				labelStructSets.add(labelStructs);
-//			}
-			
-			// add dataproperty to existing classes 
-			List<Node> nodesWithSameUriOfDomain = this.graphBuilder.getUriToNodesMap().get(sl.getNodeUri());
-			if (nodesWithSameUriOfDomain != null) {
-				for (Node source : nodesWithSameUriOfDomain) {
-					if (source instanceof InternalNode && 
-							!newInternalNodes.contains(source) &&
-							source.getPatternIds().size() > 0) {
-						
-//						boolean propertyLinkExists = false;
-						int countOfExistingPropertyLinks = 0;
-						List<Link> linkWithSameUris = this.graphBuilder.getUriToLinksMap().get(sl.getLinkUri());
-						if (linkWithSameUris != null)
-						for (Link l : linkWithSameUris) {
-							if (l.getSource().equals(source)) {
-								countOfExistingPropertyLinks ++;
-//								propertyLinkExists = true;
-//								break;
-							}
-						}
-						
-						if (countOfExistingPropertyLinks >= 1)
-							continue;
-
-						String nodeId = nodeIdFactory.getNodeId(sl.getLeafName());
-						ColumnNode target = new ColumnNode(nodeId, "", "", "");
-						this.graphBuilder.addNodeWithoutUpdatingGraph(target);
-			
-						String linkId = LinkIdFactory.getLinkId(sl.getLinkUri(), source.getId(), target.getId());	
-						Link link = new DataPropertyLink(linkId, new Label(sl.getLinkUri()), false);
-						this.graphBuilder.addLink(source, target, link);
-//						if (source.getPatternIds().size() > 0) {
-//							for (String s : source.getPatternIds())
-//								link.getPatternIds().add(s);
-//							this.graphBuilder.changeLinkWeight(link, ModelingParams.PATTERN_LINK_WEIGHT);
-//						}
-						LabelStruct lbStruct = new LabelStruct((InternalNode)source, link, target);
-						labelStructs.add(lbStruct);
-					}
-				}
+			// if semantic label is a data property, we add this property to all the nodes having the same domain
+			if (sl.getType() == SemanticLabelType.DataProperty) {
+				tempNodeSet = addDataPropertyToDomainNodes(sl.getNodeUri(), sl.getLinkUri(), sl.getLeafName());
+				addedNodes.addAll(tempNodeSet);
 			}
 			
-			labelStructSets.add(labelStructs);
-		}
-		
-		this.graphBuilder.updateGraph();
-		this.updateGraphWithUserLinks();
-//		this.updateHashMaps();
-		return labelStructSets;
-	}
-	
-	private List<RankedSteinerSet> rankSteinerSets(List<Set<Node>> steinerNodeSets) {
-		
-		List<RankedSteinerSet> rankedSteinerSets = new ArrayList<RankedSteinerSet>();
-		for (Set<Node> nodes : steinerNodeSets) {
-//			if (nodes.size() == 17)
-//				System.out.println(nodes.size());
-			RankedSteinerSet r = new RankedSteinerSet(nodes);
-			rankedSteinerSets.add(r);
-		}
-		
-		Collections.sort(rankedSteinerSets);
-
-
-		if (rankedSteinerSets != null && rankedSteinerSets.size() > MAX_STEINER_NODES_SETS )
-			return rankedSteinerSets.subList(0, MAX_STEINER_NODES_SETS);
-		
-		return rankedSteinerSets;
-	}
-	
-	private List<Set<Node>> getSteinerNodeSets(List<Set<LabelStruct>> labelStructSets, int numOfAttributes) {
-
-		if (labelStructSets == null)
-			return null;
-		
-		Set<List<LabelStruct>> labelStructLists = Sets.cartesianProduct(labelStructSets);
-		logger.info("cartesian product of label structs is done, size: " + labelStructLists.size());
-		
-		List<Set<Node>> steinerNodeSets = new ArrayList<Set<Node>>();
-		
-		int numOfTargets;
-		for (List<LabelStruct> labelStructs : labelStructLists) {
-//			System.out.println(i++);
-			numOfTargets = 0;
-			Set<Node> steinerNodes = new HashSet<Node>();
-//			Set<String> debug = new HashSet<String>();
-			for (LabelStruct ls : labelStructs) {
-				steinerNodes.add(ls.getSource());
-				if (!steinerNodes.contains(ls.getTarget()))
-					numOfTargets ++;
-				steinerNodes.add(ls.getTarget());
-//				if (debug.contains(ls.getSource().getId() + ls.getLink().getId()))
-//					System.out.println("debug");
-//				debug.add(ls.getSource().getId() + ls.getLink().getId());
+			if ((sl.getType() == SemanticLabelType.Class && similarStructsInGraph == null) ||
+					sl.getType() == SemanticLabelType.DataProperty && similarStructsInGraph == null && tempNodeSet.size() == 0) 
+				addSemanticLabel = true;
+			
+			if (addSemanticLabel) {
+				tempNodeSet = addSemanticLabel(sl);
+				addedNodes.addAll(tempNodeSet);
 			}
-			if (numOfTargets == numOfAttributes)
-				steinerNodeSets.add(steinerNodes);
+			
+			this.updateHashMaps();
+			similarStructsInGraph = this.labelToMappingStructs.get(sl); 
+			
+			for (MappingStruct ms : similarStructsInGraph) {
+				mapping.addMappingStruct(ms);
+			}
+			
+			candidateSteinerSets.updateSteinerSets(mapping);
+			
 		}
 		
-		return steinerNodeSets;
-		
+		return candidateSteinerSets;
 	}
+	
+//	private List<RankedSteinerSet> rankSteinerSets(List<Set<Node>> steinerNodeSets) {
+//		
+//		List<RankedSteinerSet> rankedSteinerSets = new ArrayList<RankedSteinerSet>();
+//		for (Set<Node> nodes : steinerNodeSets) {
+////			if (nodes.size() == 17)
+////				System.out.println(nodes.size());
+//			RankedSteinerSet r = new RankedSteinerSet(nodes);
+//			rankedSteinerSets.add(r);
+//		}
+//		
+//		Collections.sort(rankedSteinerSets);
+//
+//
+//		if (rankedSteinerSets != null && rankedSteinerSets.size() > MAX_STEINER_NODES_SETS )
+//			return rankedSteinerSets.subList(0, MAX_STEINER_NODES_SETS);
+//		
+//		return rankedSteinerSets;
+//	}
+//	
+//	private List<Set<Node>> getSteinerNodeSets(List<Set<MappingStruct>> labelStructSets, int numOfAttributes) {
+//
+//		if (labelStructSets == null)
+//			return null;
+//		
+//		Set<List<MappingStruct>> labelStructLists = Sets.cartesianProduct(labelStructSets);
+//		logger.info("cartesian product of label structs is done, size: " + labelStructLists.size());
+//		
+//		List<Set<Node>> steinerNodeSets = new ArrayList<Set<Node>>();
+//		
+//		int numOfTargets;
+//		for (List<MappingStruct> labelStructs : labelStructLists) {
+////			System.out.println(i++);
+//			numOfTargets = 0;
+//			Set<Node> steinerNodes = new HashSet<Node>();
+////			Set<String> debug = new HashSet<String>();
+//			for (MappingStruct ls : labelStructs) {
+//				steinerNodes.add(ls.getSource());
+//				if (!steinerNodes.contains(ls.getTarget()))
+//					numOfTargets ++;
+//				steinerNodes.add(ls.getTarget());
+////				if (debug.contains(ls.getSource().getId() + ls.getLink().getId()))
+////					System.out.println("debug");
+////				debug.add(ls.getSource().getId() + ls.getLink().getId());
+//			}
+//			if (numOfTargets == numOfAttributes)
+//				steinerNodeSets.add(steinerNodes);
+//		}
+//		
+//		return steinerNodeSets;
+//		
+//	}
 		
 	private DirectedWeightedMultigraph<Node, Link> computeSteinerTree(Set<Node> steinerNodes) {
 		
@@ -774,79 +762,91 @@ public class Approach2 {
 
 	}
 		
-	private List<RankedModel> rankModels(List<DirectedWeightedMultigraph<Node, Link>> models) {
-		
-		List<RankedModel> rankedModels = new ArrayList<RankedModel>();
-		if (models == null || models.size() == 0)
-			return rankedModels;
-
-		int count = 1;
-		
-		for (DirectedWeightedMultigraph<Node, Link> m : models) {
-			logger.info("computing raking factors for model " + count + " ...");
-			RankedModel r = new RankedModel(m);
-			rankedModels.add(r);
-			count ++;
-			logger.info("coherence=" + r.getCoherenceString() + ", cost=" + r.getCost());
-		}
-		
-		Collections.sort(rankedModels);
-		return rankedModels;
-	}
+//	private List<RankedModel> rankModels(List<DirectedWeightedMultigraph<Node, Link>> models) {
+//		
+//		List<RankedModel> rankedModels = new ArrayList<RankedModel>();
+//		if (models == null || models.size() == 0)
+//			return rankedModels;
+//
+//		int count = 1;
+//		
+//		for (DirectedWeightedMultigraph<Node, Link> m : models) {
+//			logger.info("computing raking factors for model " + count + " ...");
+//			RankedModel r = new RankedModel(m);
+//			rankedModels.add(r);
+//			count ++;
+//			logger.info("coherence=" + r.getCoherenceString() + ", cost=" + r.getCost());
+//		}
+//		
+////		Collections.sort(rankedModels);
+//		return rankedModels;
+//	}
 	
 	public List<RankedModel> hypothesize(List<SemanticLabel2> semanticLabels, int numOfAttributes) {
 
-		List<Set<LabelStruct>> labelStructSets = getLabelStructSets(semanticLabels);
-		if (labelStructSets == null || labelStructSets.size() == 0) return null;
+		Set<Node> addedNodes = new HashSet<Node>(); //They should be deleted from the graph after computing the semantic models
+		CandidateSteinerSets candidateSteinerSets = getCandidateSteinerSets(semanticLabels, addedNodes);
 		
-		for (Set<LabelStruct> labelStructs : labelStructSets) {
-			logger.info("set of " + labelStructs.size() + " label structs.");
-		}
+		logger.info("number of steiner sets: " + candidateSteinerSets.numberOfCandidateSets());
 
-		List<Set<Node>> steinerNodeSets = getSteinerNodeSets(labelStructSets, numOfAttributes);
-		if (steinerNodeSets == null || steinerNodeSets.size() == 0) return null;
-		
-		logger.info("number of possible steiner nodes sets:" + steinerNodeSets.size());
-		
-		
-//		for (List<Node> steinerNodes : steinerNodeSets) {
-//			System.out.println();
-//			System.out.println();
-//
-//			for (Node n : steinerNodes) {
-//				System.out.println(n.getId());
-//			}
-//			
-//			System.out.println();
-//			System.out.println();
-//		}
-		
-		List<RankedSteinerSet> rankedSteinerSets = rankSteinerSets(steinerNodeSets);
-		
-//		for (RankedSteinerSet r : rankedSteinerSets)
-//			System.out.println(r.getCohesionString());
+//		List<Set<Node>> steinerNodeSets = getSteinerNodeSets(labelStructSets, numOfAttributes);
+//		if (steinerNodeSets == null || steinerNodeSets.size() == 0) return null;
+//		
+//		logger.info("number of possible steiner nodes sets:" + steinerNodeSets.size());
+//		
+//		
+////		for (List<Node> steinerNodes : steinerNodeSets) {
+////			System.out.println();
+////			System.out.println();
+////
+////			for (Node n : steinerNodes) {
+////				System.out.println(n.getId());
+////			}
+////			
+////			System.out.println();
+////			System.out.println();
+////		}
+//		
+//		List<RankedSteinerSet> rankedSteinerSets = rankSteinerSets(steinerNodeSets);
+//		
+////		for (RankedSteinerSet r : rankedSteinerSets)
+////			System.out.println(r.getCohesionString());
 
-		List<DirectedWeightedMultigraph<Node, Link>> models = 
-				new ArrayList<DirectedWeightedMultigraph<Node,Link>>();
-		
 		logger.info("updating weights according to training data ...");
 		long start = System.currentTimeMillis();
 		this.updateWeights();
 		long updateWightsElapsedTimeMillis = System.currentTimeMillis() - start;
 		logger.info("time to update weights: " + (updateWightsElapsedTimeMillis/1000F));
 
+//		int count = 1;
+//		for (RankedSteinerSet r : rankedSteinerSets) {
+//			logger.info("computing steiner tree for steiner nodes set " + count + " ...");
+//			DirectedWeightedMultigraph<Node, Link> tree = computeSteinerTree(r.getNodes());
+//			count ++;
+//			if (tree != null) models.add(tree);
+//		}
+
+//		List<DirectedWeightedMultigraph<Node, Link>> models = 
+//				new ArrayList<DirectedWeightedMultigraph<Node,Link>>();
+		
+		List<RankedModel> rankedModels = new ArrayList<RankedModel>();
 		int count = 1;
-		for (RankedSteinerSet r : rankedSteinerSets) {
+		for (SteinerNodes sn : candidateSteinerSets.getSteinerSets()) {
 			logger.info("computing steiner tree for steiner nodes set " + count + " ...");
-			DirectedWeightedMultigraph<Node, Link> tree = computeSteinerTree(r.getNodes());
+			sn.print();
+			DirectedWeightedMultigraph<Node, Link> tree = computeSteinerTree(sn.getNodes());
 			count ++;
-			if (tree != null) models.add(tree);
+			if (tree != null) {
+				RankedModel r = new RankedModel(tree, sn);
+				rankedModels.add(r);
+			}
+			if (count == MAX_STEINER_NODES_SETS)
+				break;
 		}
 		
-		List<RankedModel> rankedModels = rankModels(models);
+		Collections.sort(rankedModels);
 		if (rankedModels != null && rankedModels.size() > MAX_CANDIDATES )
 			return rankedModels.subList(0, MAX_CANDIDATES);
-		
 		
 		return rankedModels;
 
@@ -962,19 +962,19 @@ public class Approach2 {
 		if (selectedLinkUri1 != null && selectedLinkUri1.trim().length() > 0) {
 			selectedLinkUri = selectedLinkUri1;
 			maxCount = maxCount1;
-			type = 1;
+			type = 1; // match domain and link and range
 		} else if (selectedLinkUri2 != null && selectedLinkUri2.trim().length() > 0) {
 			selectedLinkUri = selectedLinkUri2;
 			maxCount = maxCount2;
-			type = 2;
+			type = 2; // match link and range
 		} else if (selectedLinkUri3 != null && selectedLinkUri3.trim().length() > 0) {
 			selectedLinkUri = selectedLinkUri3;
 			maxCount = maxCount3;
-			type = 3;
+			type = 3; // match domain and link
 		} else if (selectedLinkUri4 != null && selectedLinkUri4.trim().length() > 0) {
 			selectedLinkUri = selectedLinkUri4;
 			maxCount = maxCount4;
-			type = 4;
+			type = 4; // match link label
 		} else {
 			if (objectPropertiesDirect != null && objectPropertiesDirect.size() > 0) {
 				selectedLinkUri = objectPropertiesDirect.iterator().next();
@@ -1005,10 +1005,10 @@ public class Approach2 {
 		
 	}
 	
-	private static double roundTwoDecimals(double d) {
-        DecimalFormat twoDForm = new DecimalFormat("#.##");
-        return Double.valueOf(twoDForm.format(d));
-	}
+//	private static double roundTwoDecimals(double d) {
+//        DecimalFormat twoDForm = new DecimalFormat("#.##");
+//        return Double.valueOf(twoDForm.format(d));
+//	}
 	
 	private static void testApproach() throws Exception {
 		
@@ -1042,8 +1042,8 @@ public class Approach2 {
 		ontManager.doImport(new File(Approach2.ontologyDir + "260_aac-ont.owl"));
 		ontManager.updateCache();
 
-//		for (int i = 0; i < serviceModels.size(); i++) {
-		int i = 5; {
+		for (int i = 0; i < serviceModels.size(); i++) {
+//		int i = 0; {
 			trainingData.clear();
 			int newServiceIndex = i;
 			ServiceModel2 newService = serviceModels.get(newServiceIndex);
@@ -1117,8 +1117,7 @@ public class Approach2 {
 					
 					String label = "candidate" + k + 
 							"--distance:" + distance +
-							"-coherence:" + m.getCoherenceString() +
-							"-cost:" + roundTwoDecimals(m.getCost()); 
+							"---" + m.getDescription();
 					
 					graphs.put(label, m.getModel());
 				}

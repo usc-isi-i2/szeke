@@ -25,7 +25,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.http.Header;
@@ -51,6 +53,7 @@ import edu.isi.karma.controller.command.publish.PublishRDFCommand.PreferencesKey
 import edu.isi.karma.controller.update.AbstractUpdate;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.FetchR2RMLUpdate;
+import edu.isi.karma.controller.update.InvokeDataMiningServiceUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.er.helper.SPARQLGeneratorUtil;
 import edu.isi.karma.er.helper.TripleStoreUtil;
@@ -62,13 +65,32 @@ import edu.isi.karma.modeling.alignment.Alignment;
 import edu.isi.karma.modeling.alignment.AlignmentManager;
 import edu.isi.karma.modeling.ontology.OntologyManager;
 import edu.isi.karma.rep.Worksheet;
+import edu.isi.karma.util.HTTPUtil;
 import edu.isi.karma.view.VWorkspace;
 
 public class InvokeDataMiningServiceCommand extends Command {
 	private final String vWorksheetId;
 	
 	private String tripleStoreUrl;
+	private String modelContext;
+	private String dataMiningURL;
 	
+	public String getDataMiningURL() {
+		return dataMiningURL;
+	}
+
+	public void setDataMiningURL(String dataMiningURL) {
+		this.dataMiningURL = dataMiningURL;
+	}
+
+	public String getModelContext() {
+		return modelContext;
+	}
+
+	public void setModelContext(String modelContext) {
+		this.modelContext = modelContext;
+	}
+
 	public String getTripleStoreUrl() {
 		return tripleStoreUrl;
 	}
@@ -79,13 +101,15 @@ public class InvokeDataMiningServiceCommand extends Command {
 
 	private static Logger logger = LoggerFactory.getLogger(InvokeDataMiningServiceCommand.class);
 
-	protected InvokeDataMiningServiceCommand(String id, String vWorksheetId, String url) {
+	protected InvokeDataMiningServiceCommand(String id, String vWorksheetId, String url, String graph, String miningUrl) {
 		super(id);
 		this.vWorksheetId = vWorksheetId;
 		if (url == null || url.isEmpty()) {
 			url = TripleStoreUtil.defaultDataRepoUrl;
 		}
 		this.tripleStoreUrl = url;
+		this.modelContext = graph;
+		this.dataMiningURL = miningUrl;
 	}
 
 	@Override
@@ -115,7 +139,7 @@ public class InvokeDataMiningServiceCommand extends Command {
 		StringBuffer jsonString = new StringBuffer();
 		try {
 
-			JSONObject result = utilObj.fetch_data("http://localhost/worksheets/converted_data_5.txt", null);
+			JSONObject result = utilObj.fetch_data(this.modelContext, null);
 			System.out.println(result.toString());
 			
 			List<NameValuePair> formparams = new ArrayList<NameValuePair>();
@@ -186,18 +210,31 @@ public class InvokeDataMiningServiceCommand extends Command {
 			KR2RMLMappingGenerator mappingGen = new KR2RMLMappingGenerator(ontMgr, alignment, 
 					worksheet.getSemanticTypes(), prefix, namespace, true, errorReport);
 			
-			SPARQLGeneratorUtil.get_query(mappingGen.getR2RMLMapping());
+			SPARQLGeneratorUtil genObj = new SPARQLGeneratorUtil();
+			String query = genObj.get_query(mappingGen.getR2RMLMapping(), this.modelContext);
+			
+			// execute the query on the triple store
+			TripleStoreUtil utilObj = new TripleStoreUtil();
+			String data = utilObj.invokeSparqlQuery(query, tripleStoreUrl, "application/sparql-results+json", null);
+
+			// prepare the input for the data mining service
+//			int row_num = 0;
+			
+			System.out.println(data);
+			
+			// post the results 
+			//TODO : integrate the service with karma
+			Map<String, String> formParameters = new HashMap<String, String>();
+			formParameters.put("data", data);
+			String response = HTTPUtil.executeHTTPPostRequest("http://localhost:1234/consumejson", null, null, formParameters);
+			return new UpdateContainer(new InvokeDataMiningServiceUpdate(new JSONObject().put("data", response), 
+					InvokeDataMiningServiceUpdate.DataPrcessingFormats.testFormat.name()));
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return new UpdateContainer(new ErrorUpdate("Error !"));
 		}
-//		return new UpdateContainer(new ErrorUpdate(jsonString));
-		return new UpdateContainer();
 
-//		TripleStoreUtil utilObj = new TripleStoreUtil();
-//		ArrayList<String> list = utilObj.fetchModelNames(this.tripleStoreUrl);
-//		return new UpdateContainer(new FetchR2RMLUpdate(list));
 	}
 	
 

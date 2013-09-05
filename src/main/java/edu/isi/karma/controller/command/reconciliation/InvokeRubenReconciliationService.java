@@ -81,6 +81,8 @@ public class InvokeRubenReconciliationService extends Command {
 		super(id);
 		this.alignmentNodeId = alignmentNodeId;
 		this.vWorksheetId = vWorksheetId;
+		
+		addTag(CommandTag.Transformation);
 	}
 
 	@Override
@@ -108,7 +110,8 @@ public class InvokeRubenReconciliationService extends Command {
 		RepFactory f = vWorkspace.getRepFactory();
 		Worksheet worksheet = vWorkspace.getViewFactory().getVWorksheet(vWorksheetId).getWorksheet();
 		Alignment alignment = AlignmentManager.Instance().getAlignment(
-				AlignmentManager.Instance().constructAlignmentId(vWorkspace.getWorkspace().getId(), vWorksheetId));
+				AlignmentManager.Instance().constructAlignmentId(vWorkspace.getWorkspace().getId(),
+						vWorksheetId));
 	
 		// Set the prefix and namespace to be used while generating RDF
 		fetchRdfPrefixAndNamespaceFromPreferences(vWorkspace);
@@ -169,6 +172,7 @@ public class InvokeRubenReconciliationService extends Command {
 				
 				// Check if the macthes already exist in the triple store
 				if (checkTripleStoreIfMatchAlreadyExists(keyUri)) {
+					System.out.println("Match already exists!");
 					outRdf.close();
 					pw.close();
 					count++;
@@ -220,8 +224,13 @@ public class InvokeRubenReconciliationService extends Command {
 						"  ?match d:entity ?entity . " +
 						"  ?match d:similarity ?score . " +
 						"} ORDER BY DESC(?score)";
-//				System.out.println(query);
-				JSONObject queryRes = TripleStoreUtil.invokeSparqlQuery(query, TripleStoreUtil.defaultDataRepoUrl);
+
+				String sData = TripleStoreUtil.invokeSparqlQuery(query, TripleStoreUtil.defaultDataRepoUrl, "application/sparql-results+json", null);
+				if (sData == null | sData.isEmpty()) {
+					System.out.println("Empty response object from query : " + query);
+				}
+				JSONObject queryRes = new JSONObject(sData);
+				
 				if (queryRes != null) {
 					Table linkingDataTable = row.getNode(linkingHNode.getId()).getNestedTable();
 					
@@ -270,7 +279,13 @@ public class InvokeRubenReconciliationService extends Command {
 				"{ <" + keyUri + "> <" + Uris.KM_LINKING_MATCHES_URI + "> ?x ." +
 				"  ?x d:possibleMatch ?match . " +
 				"}";
-		JSONObject queryRes = TripleStoreUtil.invokeSparqlQuery(query, TripleStoreUtil.defaultDataRepoUrl);
+		
+		String sData = TripleStoreUtil.invokeSparqlQuery(query, TripleStoreUtil.defaultDataRepoUrl, "application/sparql-results+json", null);
+		if (sData == null | sData.isEmpty()) {
+			System.out.println("Empty response object from query : " + query);
+		}
+		JSONObject queryRes = new JSONObject(sData);
+		
 		if (queryRes != null
 				&& queryRes.getJSONObject("results") != null 
 				&& queryRes.getJSONObject("results").getJSONArray("bindings") != null

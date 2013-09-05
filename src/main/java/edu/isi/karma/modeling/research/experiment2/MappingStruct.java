@@ -19,27 +19,41 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.controller.command.alignment;
+package edu.isi.karma.modeling.research.experiment2;
 
-import javax.servlet.http.HttpServletRequest;
+import edu.isi.karma.rep.alignment.ColumnNode;
+import edu.isi.karma.rep.alignment.InternalNode;
+import edu.isi.karma.rep.alignment.Link;
 
-import edu.isi.karma.controller.command.Command;
-import edu.isi.karma.controller.command.CommandFactory;
-import edu.isi.karma.view.VWorkspace;
+public class MappingStruct {
+	
+	private InternalNode source;
+	private Link link;
+	private ColumnNode target;
 
-public class InvokeDataMiningServiceCommandFactory extends CommandFactory {
-	private enum Arguments {
-		vWorksheetId, tripleStoreUrl, modelContext, dataMiningURL
+	public MappingStruct(InternalNode source) {
+		this.source = source;
+		this.link = null;
+		this.target = null;
 	}
 	
-	@Override
-	public Command createCommand(HttpServletRequest request,
-			VWorkspace vWorkspace) {
-		String vWorksheetId = request.getParameter(Arguments.vWorksheetId.name());
-		String url = request.getParameter(Arguments.tripleStoreUrl.name());
-		String context = request.getParameter(Arguments.modelContext.name());
-		String dmURL = request.getParameter(Arguments.dataMiningURL.name());
-		return new InvokeDataMiningServiceCommand(getNewId(vWorkspace), vWorksheetId, url, context, dmURL);
+	public MappingStruct(InternalNode source, Link link, ColumnNode target) {
+		this.source = source;
+		this.link = link;
+		this.target = target;
 	}
 
+	public InternalNode getSource() {
+		return source;
+	}
+
+	public Link getLink() {
+		return link;
+	}
+
+	public ColumnNode getTarget() {
+		return target;
+	}
+
+	
 }

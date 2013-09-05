@@ -21,33 +21,42 @@
 
 package edu.isi.karma.modeling.research.experiment2;
 
-import edu.isi.karma.rep.alignment.ColumnNode;
-import edu.isi.karma.rep.alignment.InternalNode;
-import edu.isi.karma.rep.alignment.Link;
+public class CoherenceItem implements Comparable<CoherenceItem>{
 
-public class LabelStruct {
+	private int x; // explain this
+	private int y; // explain this
 	
-	private InternalNode source;
-	private Link link;
-	private ColumnNode target;
-	
-	public LabelStruct(InternalNode source, Link link, ColumnNode target) {
-		this.source = source;
-		this.link = link;
-		this.target = target;
+	public CoherenceItem(int x, int y) {		
+		this.x = x;
+		this.y = y;
 	}
 
-	public InternalNode getSource() {
-		return source;
+	public int getX() {
+		return x;
 	}
 
-	public Link getLink() {
-		return link;
+	public int getY() {
+		return y;
 	}
 
-	public ColumnNode getTarget() {
-		return target;
+	@Override
+	public int compareTo(CoherenceItem o) {
+		if (this.x > o.x)
+			return -1;
+		else if (this.x < o.x)
+			return 1;
+		else {
+			if (this.y > o.y)
+				return -1;
+			else if (this.y < o.y)
+				return 1;
+			else
+				return 0;
+		}
 	}
-	
+
+	public double getDouble() {
+		return this.x * 10 + this.y;
+	}
 	
 }

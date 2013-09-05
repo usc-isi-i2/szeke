@@ -19,27 +19,9 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.controller.command.alignment;
+package edu.isi.karma.modeling.research.experiment2;
 
-import javax.servlet.http.HttpServletRequest;
-
-import edu.isi.karma.controller.command.Command;
-import edu.isi.karma.controller.command.CommandFactory;
-import edu.isi.karma.view.VWorkspace;
-
-public class InvokeDataMiningServiceCommandFactory extends CommandFactory {
-	private enum Arguments {
-		vWorksheetId, tripleStoreUrl, modelContext, dataMiningURL
-	}
-	
-	@Override
-	public Command createCommand(HttpServletRequest request,
-			VWorkspace vWorkspace) {
-		String vWorksheetId = request.getParameter(Arguments.vWorksheetId.name());
-		String url = request.getParameter(Arguments.tripleStoreUrl.name());
-		String context = request.getParameter(Arguments.modelContext.name());
-		String dmURL = request.getParameter(Arguments.dataMiningURL.name());
-		return new InvokeDataMiningServiceCommand(getNewId(vWorkspace), vWorksheetId, url, context, dmURL);
-	}
-
+public enum SemanticLabelType {
+	Class,
+	DataProperty
 }

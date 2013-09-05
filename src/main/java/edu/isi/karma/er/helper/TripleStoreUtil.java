@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpUtils;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,12 +48,14 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.eclipse.jetty.http.HttpURI;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.micromata.opengis.kml.v_2_2_0.Data;
 import edu.isi.karma.util.HTTPUtil;
 
 public class TripleStoreUtil {
@@ -131,7 +135,7 @@ public class TripleStoreUtil {
 				}
 				// check for karama_models repo
 				if (!repositories.contains(karma_model_repo)) {
-					System.out.println("karma_models not found");
+					logger.info("karma_models not found");
 					if (create_repo(karma_model_repo, "Karma default model repository", "native")) {
 						retVal = true;
 					} else {
@@ -141,7 +145,7 @@ public class TripleStoreUtil {
 				}
 				// check for karama_data repo
 				if (!repositories.contains(karma_data_repo)) {
-					System.out.println("karma_data not found");
+					logger.info("karma_data not found");
 					if (create_repo(karma_data_repo, "Karma default data repository", "native")) {
 						retVal = true;
 					} else {
@@ -159,7 +163,6 @@ public class TripleStoreUtil {
 	}
 	
 	private static boolean checkConnection(String url) {
-//		initialize();
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget;
 		HttpResponse response;
@@ -200,12 +203,12 @@ public class TripleStoreUtil {
 	 * This method fetches all the source names of the models from the triple store
 	 * @param TripleStoreURL : the triple store URL
 	 * */
-	public HashMap<String, String> fetchModelNames(String TripleStoreURL) { 
+	public HashMap<String, ArrayList<String>> fetchModelNames(String TripleStoreURL) { 
 		if(TripleStoreURL == null || TripleStoreURL.isEmpty()) {
 			TripleStoreURL = defaultServerUrl + "/"  +karma_model_repo;
 		}
-		HashMap<String, String> list = new HashMap<String, String>();
-		HttpClient httpclient = new DefaultHttpClient();
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> urls = new ArrayList<String>();
 		
 		if(TripleStoreURL.charAt(TripleStoreURL.length() - 1) == '/') {
 			TripleStoreURL = TripleStoreURL.substring(0, TripleStoreURL.length()-2);
@@ -217,51 +220,36 @@ public class TripleStoreUtil {
 			logger.info("Connection Test passed");
 		} else {
 			logger.info("Failed connection test : " + TripleStoreURL);
-			return new HashMap<String, String>();
+			return null;
 		}
 		
 		try {
 			String queryString = "PREFIX km-dev:<http://isi.edu/integration/karma/dev#> SELECT ?y ?z where { ?x km-dev:sourceName ?y . ?x km-dev:serviceUrl ?z . } ORDER BY ?y ?z";
 			logger.debug("query: " + queryString);
 			
-			List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-			formparams.add(new BasicNameValuePair("query",queryString));
-			formparams.add(new BasicNameValuePair("queryLn","SPARQL"));
+			Map<String, String> formparams = new HashMap<String, String>();
+			formparams.put("query", queryString);
+			formparams.put("queryLn", "SPARQL");
+			String responseString =  HTTPUtil.executeHTTPPostRequest(TripleStoreURL, null, "application/sparql-results+json", formparams);
 			
-			HttpPost httppost = new HttpPost(TripleStoreURL);
-			httppost.setEntity(new UrlEncodedFormEntity(formparams, "UTF-8"));
-			httppost.setHeader("Accept", "application/sparql-results+json");
-			HttpResponse response = httpclient.execute(httppost);
-			
-			for(Header h : response.getAllHeaders()) {
-				logger.debug(h.getName() +  " : " + h.getValue());
-			}
-			logger.info("StatusCode: " + response.getStatusLine().getStatusCode());
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				BufferedReader buf = new BufferedReader(new InputStreamReader(entity.getContent()));
-				StringBuffer jsonString = new StringBuffer();
-				String line = buf.readLine();
-				while(line != null) {
-					System.out.println(line);
-					jsonString.append(line);
-					line = buf.readLine();
-				}
-				
-				JSONObject data = new JSONObject(jsonString.toString());
-				JSONArray values = data.getJSONObject("results").getJSONArray("bindings");
+			if (responseString != null) {
+				JSONObject models = new JSONObject(responseString);
+				JSONArray values = models.getJSONObject("results").getJSONArray("bindings");
 				int count = 0;
 				while(count < values.length()) {
 					JSONObject o = values.getJSONObject(count++);
-					list.put(o.getJSONObject("y").getString("value"), o.getJSONObject("z").getString("value"));
+					names.add(o.getJSONObject("y").getString("value"));
+					urls.add(o.getJSONObject("z").getString("value"));
 				}
 			}
-			logger.debug("repositories fetched: " + list.toString());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		return list;
+		HashMap<String, ArrayList<String>> values = new HashMap<String, ArrayList<String>>();
+		values.put("model_names", names);
+		values.put("model_urls", urls);
+		return values;
 	}
 
 	/**
@@ -277,7 +265,6 @@ public class TripleStoreUtil {
 		boolean retVal = false;
 		URI uri = null;
 		HttpResponse response = null;
-		System.out.println("replaceFlag : " + replaceFlag);
 		// check the connection first
 		if (checkConnection(tripleStoreURL)) {
 			logger.info("Connection Test passed");
@@ -400,26 +387,28 @@ public class TripleStoreUtil {
 	 * 
 	 * @param query: SPARQL query
 	 * @param tripleStoreUrl: SPARQL endpoint address of the triple store
+	 * @param acceptContentType: The accept context type in the header
+	 * @param contextType: 
 	 * @return
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static org.json.JSONObject invokeSparqlQuery(String query, 
-			String tripleStoreUrl) throws ClientProtocolException, IOException, JSONException {
+	public static String invokeSparqlQuery(String query, String tripleStoreUrl,
+			 String acceptContentType, String contextType) throws ClientProtocolException, IOException, JSONException {
 		
 		Map<String, String> formParams = new HashMap<String, String>();
 		formParams.put("query", query);
 		formParams.put("queryLn", "SPARQL");
 		
 		String response = HTTPUtil.executeHTTPPostRequest(tripleStoreUrl,
-				"", "application/sparql-results+json", formParams);
+				contextType, acceptContentType, formParams);
 		
 		if (response == null || response.isEmpty()) return null;
 		
-		return new org.json.JSONObject(response);
+		return response;
 	}
-
+	
 	
 	public static boolean create_repo(String repo_name, String repo_desc, String type ) {
 		// TODO : Take the repository type as an enum - native, memory, etc
@@ -449,7 +438,7 @@ public class TripleStoreUtil {
 				BufferedReader buf = new BufferedReader(new InputStreamReader(entity.getContent()));
 				String line = buf.readLine();
 				while(line != null) {
-					System.out.println(line);
+					logger.info(line);
 					out.append(line);
 					line = buf.readLine();
 				}
@@ -472,12 +461,17 @@ public class TripleStoreUtil {
 			tripleStoreUrl = defaultDataRepoUrl;
 		}
 		JSONObject retVal = new JSONObject();
-		String queryString = "SELECT ?x ?z "
-				+ "WHERE { GRAPH <"+graph.trim()+"> { "
-				+ "?x  ?p <http://isi.edu/integration/karma/ontologies/model/current/Input> . "
-				+ "?x  <http://isi.edu/integration/karma/ontologies/model/current/hasValue> ?z . } }";
+		StringBuffer queryString = new StringBuffer();
+		queryString.append("SELECT ?x ?z ")
+			.append("WHERE { GRAPH <").append(graph.trim()).append("> { ")
+			.append("?x  ?p <http://isi.edu/integration/karma/ontologies/model/current/Input> . "
+				+ "?x  <http://isi.edu/integration/karma/ontologies/model/current/hasValue> ?z . } }");
 		
-		JSONObject data = invokeSparqlQuery(queryString, tripleStoreUrl);
+		String sData = invokeSparqlQuery(queryString.toString(), tripleStoreUrl, "application/sparql-results+json", null);
+		if (sData == null | sData.isEmpty()) {
+			logger.error("Enpty response object from query : " + queryString.toString());
+		}
+		JSONObject data = new JSONObject(sData);
 		JSONArray d1 = data.getJSONObject("results").getJSONArray("bindings");
 		int count = 0;
 		HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
@@ -493,4 +487,5 @@ public class TripleStoreUtil {
 		}
 		return new JSONObject(results);
 	}
+	
 }

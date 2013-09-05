@@ -22,58 +22,61 @@
 package edu.isi.karma.controller.update;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.isi.karma.view.VWorkspace;
 
-public class FetchR2RMLUpdate extends AbstractUpdate {
+public class InvokeDataMiningServiceUpdate extends AbstractUpdate {
 
-	private static Logger logger = LoggerFactory.getLogger(FetchR2RMLUpdate.class);
+	private static Logger logger = LoggerFactory.getLogger(InvokeDataMiningServiceUpdate.class);
 	
-	private ArrayList<String> model_Names;
-	private ArrayList<String> model_Urls;
+	private String dataFormat;
+	private JSONObject data;
 	
 	private enum JsonKeys {
-		models
+		results
+	}
+	
+	public enum DataPrcessingFormats {
+		testFormat
 	}
 	
 	private enum JsonValues {
-		FetchDataMiningModelsUpdate
+		InvokeDataMiningServiceUpdate
 	}
 
-	public FetchR2RMLUpdate(ArrayList<String> names, ArrayList<String> urls)
+	public InvokeDataMiningServiceUpdate(JSONObject output, String dataformat)
 	{
-		this.model_Names = names;
-		this.model_Urls = urls;
+		this.data = output;
+		if (dataformat == null || dataformat.isEmpty()) {
+			dataformat = DataPrcessingFormats.testFormat.name();
+		}
+		this.dataFormat = dataformat;
 		
 	}
 	@Override
 	public void generateJson(String prefix, PrintWriter pw, VWorkspace vWorkspace) 
 	{
-		JSONArray list = new JSONArray();
-		try {
-			int count = 0;
-			while(count < this.model_Names.size()) {
-				JSONObject obj = new JSONObject();
-				obj.put("name", this.model_Names.get(count));
-				obj.put("url",  this.model_Urls.get(count));
-				count++;
-				list.put(obj);
-				
+		try { 
+			if (this.dataFormat.equalsIgnoreCase(DataPrcessingFormats.testFormat.name()) ) {
+				pw.print(processTestFormat());
 			}
-			JSONObject obj = new JSONObject();
-			obj.put(GenericJsonKeys.updateType.name(), JsonValues.FetchDataMiningModelsUpdate.name());
-			obj.put(JsonKeys.models.name(), list);
-			pw.print(obj.toString());
 		} catch (Exception e) {
 			logger.error("Error generating JSON!", e);
 		}
+	}
+	
+	private String processTestFormat() {
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put(GenericJsonKeys.updateType.name(), JsonValues.InvokeDataMiningServiceUpdate.name());
+			obj.put(JsonKeys.results.name(), this.data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return obj.toString();
 	}
 }
