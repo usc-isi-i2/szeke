@@ -19,9 +19,34 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.modeling.research.experiment2;
+package edu.isi.karma.cleaning.QuestionableRecord;
 
-public enum SemanticLabelType {
-	Class,
-	DataProperty
+import java.util.Vector;
+
+import edu.isi.karma.cleaning.RecFeature;
+import edu.isi.karma.cleaning.TNode;
+
+//type count feature
+public class Feature2 implements RecFeature {
+
+	public int type;
+	public Vector<TNode> xNodes =new Vector<TNode>();
+	public Feature2(int type,Vector<TNode> xNodes)
+	{
+		this.type = type;
+		this.xNodes = xNodes;
+	}
+	public double computerScore()
+	{
+		double res = 0.0;
+		if(xNodes == null)
+			return 0.0;
+		for(TNode x:xNodes)
+		{
+			if(x.type == type)
+				res += 1;
+		}
+		return res;
+	}
+
 }

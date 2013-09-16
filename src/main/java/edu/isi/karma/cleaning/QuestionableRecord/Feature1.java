@@ -19,18 +19,20 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.cleaning;
+package edu.isi.karma.cleaning.QuestionableRecord;
 
 import java.util.Vector;
 
-//type count feature
-public class Feature2 implements RecFeature {
+import edu.isi.karma.cleaning.RecFeature;
+import edu.isi.karma.cleaning.TNode;
 
-	public int type;
+//counting  text feature
+public class Feature1 implements RecFeature{
+	public String target;
 	public Vector<TNode> xNodes =new Vector<TNode>();
-	public Feature2(int type,Vector<TNode> xNodes)
+	public Feature1(String tar,Vector<TNode> xNodes)
 	{
-		this.type = type;
+		target = tar;
 		this.xNodes = xNodes;
 	}
 	public double computerScore()
@@ -40,10 +42,9 @@ public class Feature2 implements RecFeature {
 			return 0.0;
 		for(TNode x:xNodes)
 		{
-			if(x.type == type)
+			if(x.text.compareTo(target)==0)
 				res += 1;
 		}
 		return res;
 	}
-
 }

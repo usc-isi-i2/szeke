@@ -19,29 +19,40 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.cleaning;
+package edu.isi.karma.cleaning.QuestionableRecord;
 
-import java.util.Vector;
+import edu.isi.karma.cleaning.RecFeature;
 
-//counting  text feature
-public class Feature1 implements RecFeature{
-	public String target;
-	public Vector<TNode> xNodes =new Vector<TNode>();
-	public Feature1(String tar,Vector<TNode> xNodes)
+// reverse count feature
+public class Feature3 implements RecFeature {
+	int rcnt = 0;
+	String resString;
+	//calculate the number of reverse order
+	public Feature3(String res)
 	{
-		target = tar;
-		this.xNodes = xNodes;
+		this.resString = res;
 	}
-	public double computerScore()
-	{
-		double res = 0.0;
-		if(xNodes == null)
-			return 0.0;
-		for(TNode x:xNodes)
+	@Override
+	public double computerScore() {
+		int pre = -1;
+		double cnt = 0;
+		for(int c=0; c<resString.length(); c++)
 		{
-			if(x.text.compareTo(target)==0)
-				res += 1;
+			if(Character.isDigit(resString.charAt(c)))
+			{
+				if(pre != -1)
+				{
+					pre = c;
+					continue;
+				}
+				if(c <pre)
+				{
+					pre = c;
+					cnt ++;
+				}
+			}
 		}
-		return res;
+		return cnt;
 	}
+
 }

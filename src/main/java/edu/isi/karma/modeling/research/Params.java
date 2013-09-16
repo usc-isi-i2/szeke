@@ -19,49 +19,20 @@
  * and related projects, please see: http://www.isi.edu/integration
  ******************************************************************************/
 
-package edu.isi.karma.cleaning;
+package edu.isi.karma.modeling.research;
 
-import java.util.Vector;
+public class Params {
 
-public class FeatureVector {
-	String[] symbol = {"#",";",",","!","~","@","$","%","^","&","*","(",")","_","-","{","}","[","]","\"","'",":","?","<",">","."};
-	int[] types = {TNode.NUMTYP,TNode.SYBSTYP,TNode.LWRDTYP,TNode.UWRDTYP};
-	Vector<RecFeature> x = new Vector<RecFeature>();
-	public int size;
+	private static String DATASET_NAME = "ds2";
+	private static String ROOT_DIR = "/Users/mohsen/Dropbox/Service Modeling/iswc2013-" + DATASET_NAME + "/";
 	
-	public FeatureVector()
-	{
-		
-		
-	}
-	public int size()
-	{
-		return symbol.length+types.length+1;
-	}
-	public Vector<RecFeature> createVector(String raw,String color)
-	{
-		Vector<RecFeature> v = new Vector<RecFeature>();
-		Ruler r = new Ruler();
-		r.setNewInput(raw);
-		Vector<TNode> vt = new Vector<TNode>();
-		vt = r.vec;
-		constructVector(vt,color,v);
-		return v;
-	}
-	public void constructVector(Vector<TNode> t,String color,Vector<RecFeature> v)
-	{
-		
-		for(String s:symbol)
-		{
-			Feature1 feature1 = new Feature1(s, t);
-			v.add(feature1);
-		}
-		for(int type:types)
-		{
-			Feature2 feature2 = new Feature2(type, t);
-			v.add(feature2);
-		}
-		Feature3 feature3 = new Feature3(color);
-		v.add(feature3);
-	}
+	public static String ONTOLOGY_DIR = ROOT_DIR + "ontologies/";
+	
+	public static String INPUT_DIR = ROOT_DIR + "input/";
+	public static String OUTPUT_DIR = ROOT_DIR + "output/";
+
+	public static String GRAPHS_DIR = ROOT_DIR + "graph/";
+	public static String JGRAPHT_DIR = ROOT_DIR + "jgrapht/";
+	public static String GRAPHVIS_DIR = ROOT_DIR + "graphviz/";
+
 }
