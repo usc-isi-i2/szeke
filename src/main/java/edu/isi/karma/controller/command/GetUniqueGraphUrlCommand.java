@@ -21,7 +21,6 @@
 package edu.isi.karma.controller.command;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,27 +31,28 @@ import edu.isi.karma.controller.update.AbstractUpdate;
 import edu.isi.karma.controller.update.ErrorUpdate;
 import edu.isi.karma.controller.update.UpdateContainer;
 import edu.isi.karma.er.helper.TripleStoreUtil;
+import edu.isi.karma.rep.Worksheet;
 import edu.isi.karma.view.VWorkspace;
 
 /**
  * Class responsible for fetching all the graphs in the tripleStore
  */
-public class FetchGraphsFromTripleStoreCommand extends Command {
+public class GetUniqueGraphUrlCommand extends Command {
 	private String tripleStoreUrl;
+	private String vWorksheetId;
+	private String graphUriTobeValidated;
 	
 	private enum JsonKeys {
-		updateType, graphs, tripleStoreUrl
+		updateType, graphUri, vWorksheetId
 	}
 	
-	private static Logger logger = LoggerFactory.getLogger(FetchGraphsFromTripleStoreCommand.class);
+	private static Logger logger = LoggerFactory.getLogger(GetUniqueGraphUrlCommand.class);
 	
-	public String getTripleStoreUrl() {
-		return tripleStoreUrl;
-	}
-
-	protected FetchGraphsFromTripleStoreCommand(String id, String url){
+	protected GetUniqueGraphUrlCommand(String id, String vWorksheetId, String url, String context ){
 		super(id);
 		this.tripleStoreUrl=url;
+		this.vWorksheetId = vWorksheetId;
+		this.graphUriTobeValidated = context;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class FetchGraphsFromTripleStoreCommand extends Command {
 
 	@Override
 	public String getTitle() {
-		return "FetchGraphsFromTripleStore";
+		return "GetUniqueGraphUrl";
 	}
 
 	@Override
@@ -78,24 +78,38 @@ public class FetchGraphsFromTripleStoreCommand extends Command {
 	@Override
 	public UpdateContainer doIt(VWorkspace vWorkspace) throws CommandException {
 		TripleStoreUtil utilObj = new TripleStoreUtil();
-		final ArrayList<String> graphs = utilObj.getContexts(this.tripleStoreUrl);
-		if(graphs == null) {
-			return new UpdateContainer(new ErrorUpdate("Error occurred while fetching graphs!"));
-		}
-		logger.info("Graphs fetched : " + graphs.size());
+
+		// get the source name for this work sheet
+		Worksheet worksheet = vWorkspace.getViewFactory().getVWorksheet(this.vWorksheetId).getWorksheet();
 		
+		// prepare the graph url if graphUri is not provided
+		if(this.graphUriTobeValidated == null || this.graphUriTobeValidated.isEmpty()) {
+			String title = worksheet.getTitle();
+			title = title.replace(".", "_");
+			this.graphUriTobeValidated = "http://localhost.com/worksheets/"+title;
+		}
+		
+		// check for uniqueness with the existing contexts
+		if(!utilObj.isUniqueGraphUri(this.tripleStoreUrl, this.graphUriTobeValidated)) {
+			// modify the url if required
+			if(this.graphUriTobeValidated.charAt(this.graphUriTobeValidated.length()-1) != '/') {
+				this.graphUriTobeValidated += "/";
+			}
+			this.graphUriTobeValidated += String.valueOf(System.nanoTime());
+		}
+		final String graphUri = this.graphUriTobeValidated;
+		logger.info("GraphUri generated : " + graphUri);
 		try {
 			return new UpdateContainer(new AbstractUpdate() {
-				
 				@Override
 				public void generateJson(String prefix, PrintWriter pw, VWorkspace vWorkspace) {
 					JSONObject obj = new JSONObject();
 					try {
-						obj.put(JsonKeys.updateType.name(), "FetchGraphsFromTripleStore");
-						obj.put(JsonKeys.graphs.name(), graphs);
+						obj.put(JsonKeys.updateType.name(), "GetUniqueGraphUrl");
+						obj.put(JsonKeys.graphUri.name(), graphUri);
 						pw.println(obj.toString());
 					} catch (JSONException e) {
-						logger.error("Error occurred while fetching worksheet properties!", e);
+						logger.error("Error occurred while creating unique graphUri !", e);
 					}
 				}
 			});
